@@ -46,7 +46,7 @@ ex_hold_count,ex_shift_count,ex_same_count = 0,0,0
 short_count = 0
 long_count = 0
 
-    
+#these variables are in terms of number of frames    
 start_speech = 28 # 1.4 seconds of speech before overlap
 start_gaps_allowed = 5 # 5
 overlap_min = 2 # 100 ms of speech minimum for overlap to fall into either category
@@ -66,24 +66,25 @@ f_overlaps_list_ex = []
 first_spkr_distribution,second_spkr_distribution = [],[]
 
 for seq in complete_file_list:
-    annotations = annotations_dict[seq]
+    annotations = annotations_dict[seq] #get the matrix for this frame from the annotations dictionary
     g_overlaps = []
     f_overlaps = []
     g_overlaps_ex = []
     f_overlaps_ex = []
         
     #%% overlaps
-    overlapping_frames = (annotations[:,0] & annotations[:,1]) 
+    overlapping_frames = (annotations[:,0] & annotations[:,1]) #returns True if both speakers are speaking
     
     for g_f,f_g in zip([0,1],[1,0]):
-        for indx in range(start_speech,len(annotations)-short_class_length-eval_length):
-            if (np.sum(1*(annotations[indx-start_speech:indx,g_f]))>=(start_speech- start_gaps_allowed)) and all(~(annotations[indx-start_speech:indx,f_g])) \
-            and all(overlapping_frames[indx:indx+overlap_min]):
-                overlap_count = overlap_count+1
+        for indx in range(start_speech,len(annotations)-short_class_length-eval_length): # only counting overlaps which are at least 100ms and then someone speaks within a second
+            if (np.sum(1*(annotations[indx-start_speech:indx,g_f]))>=(start_speech- start_gaps_allowed)) \ # checking that g is speaking (with pauses allowed) in the previous window
+            and all(~(annotations[indx-start_speech:indx,f_g])) \ # checking that f isn't speaking at all in the previous window
+            and all(overlapping_frames[indx:indx+overlap_min]): # checking that the speakers are overlapping in this window for at least 2 frames
+                overlap_count = overlap_count+1 #if above conditions are true, we consider this an overlap
                 eval_indx = indx+overlap_min
 #                first_spkr_distribution.append(annotations[indx+overlap_min:indx+overlap_min+eval_length,g_f])
 #                second_spkr_distribution.append(annotations[indx+overlap_min:indx+overlap_min+eval_length,f_g])
-                # to evaluate check which speaker has greater prob of speaking over 20 frames from eval_indx
+                # to evaluate check which speaker has greater prob of speaking over 20 frames from eval_indx (but this is gold standard so probs will be 1 or 0 for each frame)
                 if sum(1*annotations[indx+short_class_length:indx+short_class_length+eval_length,g_f])> \
                 sum(1*annotations[indx+short_class_length:indx+short_class_length+eval_length,f_g]):
                     hold_count +=1
@@ -100,7 +101,7 @@ for seq in complete_file_list:
                         f_overlaps.append([eval_indx,1])
                 else:
                     same_count +=1
-                # exclusive version
+                # exclusive version - instead of measuring probability of each speaker speaking, this only considers cases where one speaker is speaking and the other doesnt speak at all during the evaluation window
                 if (sum(1*annotations[indx+short_class_length:indx+short_class_length+eval_length,g_f])>0) and\
                 (sum(1*annotations[indx+short_class_length:indx+short_class_length+eval_length,f_g])==0):
                     ex_hold_count +=1

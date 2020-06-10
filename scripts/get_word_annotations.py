@@ -52,10 +52,10 @@ for file in files_feature_list:
 
 #%% Create delayed frame annotations
 
-#delete these three
-lengths_list = []
-longer_than_one_list = []
-added_to_end_list = 0
+# #delete these three
+# lengths_list = []
+# longer_than_one_list = []
+# added_to_end_list = 0
 
 max_len = 0
 for i in range(0,len(files_feature_list)):
@@ -78,9 +78,9 @@ for i in range(0,len(files_feature_list)):
         curr_words = [ word_to_ix[wrd] for wrd in word_frame_list]
 
         # delete this stuff
-        lengths_list.append(len(curr_words))
-        if len(curr_words) > 1:
-            longer_than_one_list.append(curr_words)
+#         lengths_list.append(len(curr_words))
+#         if len(curr_words) > 1:
+#             longer_than_one_list.append(curr_words)
 
         if len(curr_words)> max_len:
             max_len = len(curr_words)

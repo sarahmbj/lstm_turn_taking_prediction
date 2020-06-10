@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+"""This script takes in csv files for speakers f and g from './data/extracted_annotations', 
+time_scale_folder' (time_scale_folder used in prepare_data.py is words_advanced_50ms_averaged 
+and then words_advanced_10ms_averaged).
+The output of this script is a vector (h5py dataset) for each file, for each speaker, 
+for each feature of those featur≠e values over time, in h5py dataset format, stored as 
+'./data/datasets/*.hdf5' (file name is whatever output_name is set to: when run from 
+prepare_data.py it creates words_split_50ms.hdf5 and words_split_10ms_5_chunked.hdf5).
+Don't think this does any processing over the data, other than storing it in a different format?"""
 
 import os
 import numpy as np
@@ -98,6 +106,10 @@ t_1=t.time()
 #for file_name in file_list:
 #file_name = file_list[0]
 def file_run(file_name):
+"""Takes a file name as an argument and uses it to define filepaths to load and save data in csv format. Returns a dictionary 
+    containing the f (information follower) & g (information giver) word features. Annot_f is a column of the ‘follower’ csv with the heading
+    ‘frameTimes’. Each item in the column is added to the list ‘split_indices’. Max_len is set equal to the length of the item in data_f_temp 
+    with the most words(?). Function iterates over features_list (but it is a list with a single item, ['word']) and fills arrays with the f&g data for each feature. """
     annot_f = pd.read_csv(annotations_dir+'/'+file_name+'.'+data_select_dict[data_select][0]+'.csv',delimiter=',')
 #    annot_g = pd.read_csv(annotations_dir+'/'+file_name+'.'+data_select_dict[data_select][1]+'.csv',delimiter=',')
                     

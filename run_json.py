@@ -52,7 +52,7 @@ else:
     test_batch_size = 1
 
 # %% Batch settings
-alpha = 0.99  # smoothing constant
+alpha = 0.99  # smoothing constant DONT THINK THIS GETS USED
 init_std = 0.5
 momentum = 0
 test_batch_size = 1  # this should stay fixed at 1 when using slow test because the batches are already set in the data loader
@@ -65,7 +65,7 @@ num_layers = 1
 onset_test_flag = True
 annotations_dir = './data/extracted_annotations/voice_activity/'
 
-proper_num_args = 2
+proper_num_args = 2 # when called as subprocess, this consists of './run_json.py' and a dictionary of the other args
 print('Number of arguments is: ' + str(len(argv)))
 
 if not (len(argv) == proper_num_args):
@@ -152,8 +152,8 @@ if not (len(argv) == proper_num_args):
 
 else:
 
-    json_dict = json.loads(argv[1])
-    locals().update(json_dict)
+    json_dict = json.loads(argv[1]) # this argument is a dictionary of the settings for this experiment
+    locals().update(json_dict) # every key-value in the dictionary become objects in the local namespace
     # print features:
     feature_print_list = list()
     for feat_dict in feature_dict_list:
@@ -163,7 +163,7 @@ else:
     print('Features being used: ' + print_list)
     print('Early stopping: ' + str(early_stopping))
 
-lstm_settings_dict = {
+lstm_settings_dict = {  #this works because these variables are set in locals from json_dict
     'no_subnets': no_subnets,
     'hidden_dims': {
         'master': hidden_nodes_master,
@@ -224,7 +224,7 @@ else:
                                          prediction_length, 'train', data_select=data_set_select)
     test_dataloader = DataLoader(test_dataset, batch_size=test_batch_size, shuffle=True, num_workers=0, drop_last=False)
 
-lstm_settings_dict = train_dataset.get_lstm_settings_dict(lstm_settings_dict)
+lstm_settings_dict = train_dataset.get_lstm_settings_dict(lstm_settings_dict) #add some extra items to the lstm settings related to the dataset
 print('time taken to load data: ' + str(t.time() - t1))
 
 # %% Load list of test files
@@ -418,7 +418,7 @@ def test():
                     # make sure the index is not out of bounds
                     if frame_indx < len(results_dict[conv_key + '/' + g_f_key]):
                         true_vals.append(true_val)
-                        if np.sum(
+                        if np.sum( # using model outputs to decide a prediction of hold or shift
                                 results_dict[conv_key + '/' + g_f_key][frame_indx, 0:length_of_future_window]) > np.sum(
                                 results_dict[conv_key + '/' + g_f_key_not[0]][frame_indx, 0:length_of_future_window]):
                             predicted_class.append(0)
@@ -426,7 +426,7 @@ def test():
                             predicted_class.append(1)
         f_score = f1_score(true_vals, predicted_class, average='weighted')
         results_save['f_scores_' + pause_str].append(f_score)
-        tn, fp, fn, tp = confusion_matrix(true_vals, predicted_class).ravel()
+        tn, fp, fn, tp = confusion_matrix(true_vals, predicted_class).ravel() # true negative, false positive etc.
         results_save['tn_' + pause_str].append(tn)
         results_save['fp_' + pause_str].append(fp)
         results_save['fn_' + pause_str].append(fn)
@@ -435,7 +435,7 @@ def test():
             f1_score(true_vals, np.zeros([len(predicted_class)]).tolist(), average='weighted')))
     # get prediction at onset f-scores 
     # first get best threshold from training data
-    if onset_test_flag:
+    if onset_test_flag: # this is set to true at top of file
         onset_train_true_vals = list()
         onset_train_mean_vals = list()
         onset_threshs = []
@@ -521,7 +521,7 @@ def test():
         results_save['fp_' + overlap_str].append(fp)
         results_save['fn_' + overlap_str].append(fn)
         results_save['tp_' + overlap_str].append(tp)
-    # get error per person
+    # get error per person (to use with plot_person_error())
     bar_chart_labels = []
     bar_chart_vals = []
     for conv_key in test_file_list:
@@ -582,12 +582,12 @@ results_save['train_losses'], results_save['test_losses'], results_save['indiv_p
 
 # %% Training
 for epoch in range(0, num_epochs):
-    model.train()
+    model.train() #tells model you are in training mode, so e.g. apply dropout
     t_epoch_strt = t.time()
     loss_list = []
     model.change_batch_size_reset_states(train_batch_size)
 
-    if onset_test_flag:
+    if onset_test_flag: #this is set to true at top of file
         # setup results_dict
         train_results_dict = dict()
         #            losses_dict = dict()
@@ -595,7 +595,7 @@ for epoch in range(0, num_epochs):
         for file_name in train_file_list:
             #            for g_f in ['g','f']:
             for g_f in data_select_dict[data_set_select]:
-                # create new arrays for the results
+                # create new arrays for the onset results (the continuous predictions)
                 train_results_dict[file_name + '/' + g_f] = np.zeros(
                     [train_results_lengths[file_name], prediction_length])
                 train_results_dict[file_name + '/' + g_f][:] = np.nan
@@ -607,7 +607,7 @@ for epoch in range(0, num_epochs):
 
         model_input = []
 
-        for b_i, bat in enumerate(batch):
+        for b_i, bat in enumerate(batch): #b_i is each item in the batch i.e. a frame
             if len(bat) == 0:
                 model_input.append(bat)
             elif (b_i == 1) or (b_i == 3):

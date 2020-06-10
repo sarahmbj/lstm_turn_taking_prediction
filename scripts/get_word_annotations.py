@@ -17,9 +17,11 @@ if len(sys.argv)==2:
 else:
     speed_setting = 0 # 0 for 50ms, 1 for 10ms
 
+#define filepaths depending on speed setting, 50ms or 10ms
 if speed_setting == 0:
     path_to_features = './data/signals/gemaps_features_processed_50ms/znormalized/'
     path_to_extracted_annotations = './data/extracted_annotations/words_advanced_50ms_raw/'
+    #define number of frames for delaying the word.
     frame_delay = 2  # word should only be output 100 ms after it is said
     max_len_setting = 2 # using 2 for the moment for the purpose of speed
 elif speed_setting ==1:

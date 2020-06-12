@@ -95,8 +95,9 @@ class TurnPredictionDataset(Dataset):
                             for embed_key in ['features','embedding','title_string','embedding_num','embedding_in_dim','embedding_out_dim','embedding_use_func','use_glove','glove_embed_table']:
                                 embed_info[embed_key] = feature_dict[embed_key]                         
                             self.embedding_info[feature_dict['modality']].append(embed_info)
-                            self.total_embed_in_dim[feature_dict['modality']] = self.total_embed_in_dim[feature_dict['modality']] + embed_info['embedding_in_dim']
-                            self.total_embed_out_dim[feature_dict['modality']] = self.total_embed_out_dim[feature_dict['modality']] + embed_info['embedding_out_dim']
+                            self.total_embed_in_dim[feature_dict['modality']] = self.total_embed_in_dim[feature_dict['modality']] + embed_info['embedding_in_dim'] #would be a one-hot over the vocab size
+                            self.total_embed_out_dim[feature_dict['modality']] = self.total_embed_out_dim[feature_dict['modality']] + embed_info['embedding_out_dim'] # 64 dimensional embeddings in the paper
+                            # (??) get the index of the beginning and end of the one-hot representation of the vocabulary, in the overall concatenated input vector 
                             self.embedding_info[feature_dict['modality']][-1]['emb_indices'] = [(len(self.feature_name_list[ feature_dict['modality'] ]),len(self.feature_name_list[ feature_dict['modality'] ])+embed_info['embedding_in_dim'])]
                             
                         for feature_name in feature_dict['features']:         

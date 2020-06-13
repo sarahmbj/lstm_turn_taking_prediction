@@ -77,7 +77,8 @@ for seq in complete_file_list:
     
     for g_f,f_g in zip([0,1],[1,0]):
         for indx in range(start_speech,len(annotations)-short_class_length-eval_length): # only counting overlaps which are at least 100ms and then someone speaks within a second
-            if (np.sum(1*(annotations[indx-start_speech:indx,g_f]))>=(start_speech- start_gaps_allowed)) \ # checking that g is speaking (with pauses allowed) in the previous window
+            # checking that g is speaking (with pauses allowed) in the previous window
+            if (np.sum(1*(annotations[indx-start_speech:indx,g_f]))>=(start_speech- start_gaps_allowed)) \
             and all(~(annotations[indx-start_speech:indx,f_g])) \ # checking that f isn't speaking at all in the previous window
             and all(overlapping_frames[indx:indx+overlap_min]): # checking that the speakers are overlapping in this window for at least 2 frames
                 overlap_count = overlap_count+1 #if above conditions are true, we consider this an overlap

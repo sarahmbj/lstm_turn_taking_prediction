@@ -65,7 +65,8 @@ for seq in complete_file_list:
                 # check that selection is right length and includes right info
                 selection = annotations[indx+onset_min-1:indx+onset_min+short_max_extra-1,g_f]
 #                if all(annotations[indx:indx+onset_min+long_min_extra,g_f]):
-                if annotations[indx,g_f] and annotations[indx+onset_min+long_min_extra,g_f] and \ # if the speaker is speaking at the index, and also speaking 3s later
+                # if the speaker is speaking at the index, and also speaking 3s later
+                if annotations[indx,g_f] and annotations[indx+onset_min+long_min_extra,g_f] and \
                     sum(1*annotations[indx:indx+onset_min+long_min_extra,g_f])>50: #and if they are speaking for more than 50 of those frames (2.5s)
                     long_count = long_count + 1 # then this counts as a long utterance
                     if g_f == 0: # 0 is g, 1 is f - add the type of utterance and frame index to the list of onsets for the speaker in question

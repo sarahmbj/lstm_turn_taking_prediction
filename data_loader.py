@@ -35,7 +35,7 @@ time_label_select_dict = {0:'frame_time', # gemaps
                     1:'timestamp'} # openface
 
 class TurnPredictionDataset(Dataset):
-    
+
     def __init__(self,feature_dict_list,annotations_dir,file_list,seq_length,prediction_length=60,set_type='test',data_select = 0):
         # inputs: feature_dict_list is string path of folder with extracted data csv files
         # file_list is string with path to a .txt file with file list in it
@@ -58,49 +58,49 @@ class TurnPredictionDataset(Dataset):
 
         #%% embedding stuff
         self.feature_size = 0
-        
+
         #%% Train
         if self.set_type == 'train':
             print('loading training data into memory')
-            for filename in self.file_list:
+            for filename in self.file_list: ### self file list is the list of dialogue files that are being used for training -- e.g. q1ec1, q1ec2, etc.
                 # !!! Should at some point combine all the fs and gs so that there is less code duplication
                 # split data into data_f and data_g
                 # !!! data is dictionary in form: data_f['modality']['x_type']['feature']
-                data_f  = {'acous':{'x':{},'x_i':{}},
+                data_f  = {'acous':{'x':{},'x_i':{}}, # makes containers for features in files
                            'visual':{'x':{},'x_i':{} }}
                 data_g  = {'acous':{'x':{},'x_i':{}},
                            'visual':{'x':{},'x_i':{} }}
-                self.total_embed_in_dim = {'acous':0,'visual':0}
-                self.total_embed_out_dim = {'acous':0,'visual':0}
-                self.feature_name_list = {'acous':[],'visual':[]}
-                self.embedding_info={'acous' : [],'visual':[]} #is set every file loop, probably some other more efficient way 
-                annot_f = pd.read_csv(self.annotations_dir+'/'+filename+'.'+data_select_dict[data_select][0]+'.csv',delimiter=',')
+                self.total_embed_in_dim = {'acous':0,'visual':0} # the input dimension -- probably size of a one-hot over vocab -- given embedding dictatated by index in vocab
+                self.total_embed_out_dim = {'acous':0,'visual':0} # a dense embedding -- size like 50
+                self.feature_name_list = {'acous':[],'visual':[]} #
+                self.embedding_info={'acous' : [],'visual':[]} #is set every file loop, probably some other more efficient way
+                annot_f = pd.read_csv(self.annotations_dir+'/'+filename+'.'+data_select_dict[data_select][0]+'.csv',delimiter=',') # remember -- dataselect dictionary just returns f or g
                 annot_g = pd.read_csv(self.annotations_dir+'/'+filename+'.'+data_select_dict[data_select][1]+'.csv',delimiter=',')
-                
-                for feature_dict in self.feature_dict_list:
-                    
+
+                for feature_dict in self.feature_dict_list: # how long is this, generally? I don't actually know! Default given by run_json is just gemaps_50ms_dict_list
+
                     # Get settings for the modality
-                    if not(feature_dict['modality'] in self.active_modalities): 
+                    if not(feature_dict['modality'] in self.active_modalities): # add the modality of the list to the active modalities if not in the list yet
                         self.active_modalities.append(feature_dict['modality'])
-                        self.time_step_size[feature_dict['modality']] = feature_dict['time_step_size']
-                        self.is_irregular[feature_dict['modality']] = feature_dict['is_irregular'] # uses time_bools to change lstm input or not
+                        self.time_step_size[feature_dict['modality']] = feature_dict['time_step_size'] # e.g. self.time_step_size = {acous: 10ms}
+                        self.is_irregular[feature_dict['modality']] = feature_dict['is_irregular'] # uses time_bools to change lstm input or not ## where do the boolean values come in?
                         self.uses_master_time_rate_bool[feature_dict['modality']] = feature_dict['uses_master_time_rate'] # is 50ms or 10ms sampled
-                    
-                    if not(feature_dict['is_h5_file']):
-                        data_f_temp = pd.read_csv(feature_dict['folder_path']+'/'+filename+'.'+data_select_dict[data_select][0]+'.csv')
+
+                    if not(feature_dict['is_h5_file']): # all csv files dealt with using this function
+                        data_f_temp = pd.read_csv(feature_dict['folder_path']+'/'+filename+'.'+data_select_dict[data_select][0]+'.csv') # gets features for this file list, e.g. gemaps processed 50 ms features
                         data_g_temp = pd.read_csv(feature_dict['folder_path']+'/'+filename+'.'+data_select_dict[data_select][1]+'.csv')
-                        if 'embedding' in feature_dict and feature_dict['embedding'] == True:
+                        if 'embedding' in feature_dict and feature_dict['embedding'] == True: # if the lexical features are embedded ? need to embed it ?
                             embed_info = {}
     #                        embed_info['features'] = feature_dict['features'] # need to add 'f_' and 'g_' do this at end
                             for embed_key in ['features','embedding','title_string','embedding_num','embedding_in_dim','embedding_out_dim','embedding_use_func','use_glove','glove_embed_table']:
-                                embed_info[embed_key] = feature_dict[embed_key]                         
+                                embed_info[embed_key] = feature_dict[embed_key]
                             self.embedding_info[feature_dict['modality']].append(embed_info)
-                            self.total_embed_in_dim[feature_dict['modality']] = self.total_embed_in_dim[feature_dict['modality']] + embed_info['embedding_in_dim'] #would be a one-hot over the vocab size
+                            self.total_embed_in_dim[feature_dict['modality']] = self.total_embed_in_dim[feature_dict['modality']] + embed_info['embedding_in_dim'] # would be a one-hot over the vocab size
                             self.total_embed_out_dim[feature_dict['modality']] = self.total_embed_out_dim[feature_dict['modality']] + embed_info['embedding_out_dim'] # 64 dimensional embeddings in the paper
-                            # (??) get the index of the beginning and end of the one-hot representation of the vocabulary, in the overall concatenated input vector 
+                            # (??) get the index of the beginning and end of the one-hot representation of the vocabulary, in the overall concatenated input vector
                             self.embedding_info[feature_dict['modality']][-1]['emb_indices'] = [(len(self.feature_name_list[ feature_dict['modality'] ]),len(self.feature_name_list[ feature_dict['modality'] ])+embed_info['embedding_in_dim'])]
-                            
-                        for feature_name in feature_dict['features']:         
+
+                        for feature_name in feature_dict['features']:
                             data_f[ feature_dict['modality'] ]['x'][feature_name] = data_f_temp[feature_name]
                             data_g[ feature_dict['modality'] ]['x'][feature_name] = data_g_temp[feature_name]
                         self.feature_name_list[ feature_dict['modality'] ] += feature_dict['features'] # this makes other code for name lists superfluous
@@ -113,17 +113,17 @@ class TurnPredictionDataset(Dataset):
                             data_f[ feature_dict['modality'] ]['x_i'][feature_name] = h_data[filename+'/'+data_select_dict[data_select][0]+'/x_i/'+feature_name]
                             data_g[ feature_dict['modality'] ]['x'][feature_name] = h_data[filename+'/'+data_select_dict[data_select][1]+'/x/'+feature_name]
                             data_g[ feature_dict['modality'] ]['x_i'][feature_name] = h_data[filename+'/'+data_select_dict[data_select][1]+'/x_i/'+feature_name]
-                        
+
                         if 'embedding' in feature_dict and feature_dict['embedding'] == True:
                             embed_info = {}
     #                        embed_info['features'] = feature_dict['features'] # need to add 'f_' and 'g_' do this at end
                             for embed_key in ['features','embedding','title_string','embedding_num','embedding_in_dim','embedding_out_dim','embedding_use_func','use_glove','glove_embed_table']:
-                                embed_info[embed_key] = feature_dict[embed_key]                         
+                                embed_info[embed_key] = feature_dict[embed_key]
                             self.embedding_info[feature_dict['modality']].append(embed_info)
                             self.total_embed_in_dim[feature_dict['modality']] = self.total_embed_in_dim[feature_dict['modality']] + embed_info['embedding_in_dim']
                             self.total_embed_out_dim[feature_dict['modality']] = self.total_embed_out_dim[feature_dict['modality']] + embed_info['embedding_out_dim']
                             self.embedding_info[feature_dict['modality']][-1]['emb_indices'] = [(len(self.feature_name_list[ feature_dict['modality'] ]),len(self.feature_name_list[ feature_dict['modality'] ])+embed_info['embedding_in_dim'])]
-          
+
                         self.feature_name_list[feature_dict['modality']] += feature_dict['features']
 #                        self.time_step_size[feature_dict['modality']] = np.max([self.time_step_size[feature_dict['modality']],data_f[ feature_dict['modality'] ]['x'][feature_name].shape[-1]])
 #                        self.uses_master_time_rate_bool[feature_dict['modality']] = feature_dict['uses_master_time_rate']
@@ -132,22 +132,22 @@ class TurnPredictionDataset(Dataset):
                                             'visual':len(data_f['visual']['x'].keys())}# this is half the dimension of the output of dataloader
                 self.num_feat_for_lstm = {'acous' : 2*(self.num_feat_per_person['acous'] - self.total_embed_in_dim['acous'] + self.total_embed_out_dim['acous']),
                                           'visual' : 2*(self.num_feat_per_person['visual'] - self.total_embed_in_dim['visual'] + self.total_embed_out_dim['visual'] )}
-                
-                #### split features into batches 
+
+                #### split features into batches
                 file_dur = len(annot_f)
                 num_batches = int(np.floor(file_dur/self.seq_length))
                 self.results_lengths[filename] = num_batches * self.seq_length
                 data_f_np_times = np.array(annot_f['frameTimes'])
                 data_g_np_times = np.array(annot_g['frameTimes'])
-                
+
 #                data_f_feature_names = {'acous':['f_'+ s for s in list(data_f['acous']['x'].keys())],
 #                                        'visual':['f_'+s for s in list(data_f['visual']['x'].keys())]}
 #                data_g_feature_names = {'acous':['g_'+ s for s in list(data_g['acous']['x'].keys())],
-#                                        'visual':['g_'+s for s in list(data_g['visual']['x'].keys())]}               
+#                                        'visual':['g_'+s for s in list(data_g['visual']['x'].keys())]}
 
                 predict_f_np = np.array([np.roll(annot_f['val'],-roll_indx) for roll_indx in range(1,prediction_length+1) ]).transpose()
                 predict_g_np = np.array([np.roll(annot_g['val'],-roll_indx) for roll_indx in range(1,prediction_length+1) ]).transpose()
-                
+
                 data_f_np_dict, data_g_np_dict, data_f_np_dict_list, data_g_np_dict_list, data_f_np_bools, data_g_np_bools = {},{},{},{},{},{}
 #                for modality in self.feature_name_list.keys():
                 for modality in self.active_modalities:
@@ -155,7 +155,7 @@ class TurnPredictionDataset(Dataset):
 #                    print(self.is_irregular[modality])
                     if not(self.is_irregular[modality]):
                         data_f_np_dict_list[modality] = list()
-                        data_g_np_dict_list[modality] = list() 
+                        data_g_np_dict_list[modality] = list()
                         for feature_name in self.feature_name_list[modality]:
                             data_f_np_dict_list[modality].append(np.squeeze(np.array(data_f[modality]['x'][feature_name]))) #!!!
                             data_g_np_dict_list[modality].append(np.squeeze(np.array(data_g[modality]['x'][feature_name])))
@@ -163,17 +163,17 @@ class TurnPredictionDataset(Dataset):
 #                        data_g_np_dict[modality] = np.asarray(data_g_np_dict_list[modality])
                         data_f_np_dict[modality] = np.asarray(data_f_np_dict_list[modality]).reshape([len(data_f_np_dict_list[modality]),len(data_f_np_dict_list[modality][0]),self.time_step_size[modality]])
                         data_g_np_dict[modality] = np.asarray(data_g_np_dict_list[modality]).reshape([len(data_g_np_dict_list[modality]),len(data_g_np_dict_list[modality][0]),self.time_step_size[modality]])
-                        
+
                     else:
                         data_f_np_dict_list[modality] = list()
-                        data_g_np_dict_list[modality] = list() 
-                        
+                        data_g_np_dict_list[modality] = list()
+
                         for feature_name in self.feature_name_list[modality]:
-                            data_f_np_dict_list[modality].append(np.array(data_f[modality]['x'][feature_name])) 
+                            data_f_np_dict_list[modality].append(np.array(data_f[modality]['x'][feature_name]))
                             data_g_np_dict_list[modality].append(np.array(data_g[modality]['x'][feature_name]))
                         data_f_np_dict[modality] = np.zeros([len(data_f_np_dict_list[modality]),len(data_f_np_dict_list[modality][0]),self.time_step_size[modality]])
                         data_g_np_dict[modality] = np.zeros([len(data_g_np_dict_list[modality]),len(data_g_np_dict_list[modality][0]),self.time_step_size[modality]])
-                        if self.data_select == 0: 
+                        if self.data_select == 0:
                             data_f_np_dict[modality][:,:,:data_f_np_dict_list[modality][0].shape[-1]] = np.asarray(data_f_np_dict_list[modality]).reshape([len(data_f_np_dict_list[modality]),len(data_f_np_dict_list[modality][0]),self.time_step_size[modality]])
                             data_g_np_dict[modality][:,:,:data_g_np_dict_list[modality][0].shape[-1]] = np.asarray(data_g_np_dict_list[modality]).reshape([len(data_g_np_dict_list[modality]),len(data_g_np_dict_list[modality][0]),self.time_step_size[modality]])
                         else:
@@ -183,14 +183,14 @@ class TurnPredictionDataset(Dataset):
                         # get bool indices
                         data_f_np_bools[modality] = np.zeros([data_f[modality]['x_i'][feature_name].shape[0], self.time_step_size[modality]])
                         data_g_np_bools[modality] = np.zeros([data_g[modality]['x_i'][feature_name].shape[0], self.time_step_size[modality]])
-#                        data_f_np_bools[modality][:,:data_f[ modality]['x_i'][feature_name].shape[-1] ] = np.asarray(data_f[modality]['x_i'][feature_name],dtype=np.float32) # note: all features should have the same bool matrix in current implementation 
+#                        data_f_np_bools[modality][:,:data_f[ modality]['x_i'][feature_name].shape[-1] ] = np.asarray(data_f[modality]['x_i'][feature_name],dtype=np.float32) # note: all features should have the same bool matrix in current implementation
 #                        data_g_np_bools[modality][:,:data_g[ modality]['x_i'][feature_name].shape[-1] ] = np.asarray(data_g[modality]['x_i'][feature_name],dtype=np.float32)
                         data_f_np_bools[modality][:,:data_f[ modality]['x_i'][feature_name].shape[-1] ] = \
-                            np.asarray(data_f[modality]['x_i'][feature_name] , dtype=np.float32) + np.asarray(data_g[modality]['x_i'][feature_name] , dtype=np.float32) # note: all features should have the same bool matrix in current implementation 
+                            np.asarray(data_f[modality]['x_i'][feature_name] , dtype=np.float32) + np.asarray(data_g[modality]['x_i'][feature_name] , dtype=np.float32) # note: all features should have the same bool matrix in current implementation
                         data_g_np_bools[modality][:,:data_g[ modality]['x_i'][feature_name].shape[-1] ] = \
                             np.asarray(data_g[modality]['x_i'][feature_name] , dtype=np.float32) + np.asarray(data_f[modality]['x_i'][feature_name] , dtype=np.float32)
-                
-                # features for g  
+
+                # features for g
                 for i in range(1,num_batches + 1):
                     datapoint, data_temp_x,data_temp_x_i = {},{},{}
                     for modality in self.active_modalities:
@@ -223,7 +223,7 @@ class TurnPredictionDataset(Dataset):
                     datapoint['time_bools'] = data_temp_x_i
                     self.dataset.append(datapoint)
                     self.len += 1
-               
+
                 # features for f
                 for i in range(1,num_batches + 1):
                     datapoint, data_temp_x,data_temp_x_i = {},{},{}
@@ -258,11 +258,11 @@ class TurnPredictionDataset(Dataset):
                     datapoint['time_bools']= data_temp_x_i
                     self.dataset.append(datapoint)
                     self.len += 1
-        
+
         #%%  Load test data
-        # if test is selected, the dataloader batch size should be set to one,drop_last=False. Data will 
+        # if test is selected, the dataloader batch size should be set to one,drop_last=False. Data will
         elif self.set_type == 'test':
-            
+
             print('loading test data into memory')
             # Sort the conversations by length and divide into sections of length seq_length
             self.dataset = list()
@@ -270,34 +270,34 @@ class TurnPredictionDataset(Dataset):
             data_f_list_np,predict_f_list,data_f_list_ft,data_g_list_ft,predict_g_list,data_g_list_np = [],[],[],[],[],[]
             seq_length_list,data_f_np_bools_list, data_g_np_bools_list = [],[],[]
             self.feature_size = 0
-            
-            for filename,conv_indx_i in zip(self.file_list,range(len(self.file_list))):           
+
+            for filename,conv_indx_i in zip(self.file_list,range(len(self.file_list))):
 #                data_f_pd = pd.DataFrame()
 #                data_g_pd = pd.DataFrame()
                 data_f  = {'acous':{'x':{},'x_i':{}},
                            'visual':{'x':{},'x_i':{} }}
                 data_g  = {'acous':{'x':{},'x_i':{}},
-                           'visual':{'x':{},'x_i':{} }}      
+                           'visual':{'x':{},'x_i':{} }}
                 self.total_embed_in_dim = {'acous':0,'visual':0}
                 self.total_embed_out_dim = {'acous':0,'visual':0}
                 self.feature_name_list = {'acous':[],'visual':[]}
 #                self.uses_master_time_rate_bool = {'acous':True,'visual':True}
 #                self.time_step_size = {'acous':1,'visual':1}
 #                self.is_irregular = {'acous':False,'visual':False}
-                
+
                 self.embedding_info = {'acous' : [],'visual':[]} #is set every file loop, probably some other more efficient way
                 annot_f = pd.read_csv(self.annotations_dir+'/'+filename+'.'+data_select_dict[data_select][0]+'.csv',delimiter=',')
                 annot_g = pd.read_csv(self.annotations_dir+'/'+filename+'.'+data_select_dict[data_select][1]+'.csv',delimiter=',')
-                
+
                 for feature_dict in self.feature_dict_list:
                     # Get settings for the modality
-                    if not(feature_dict['modality'] in self.active_modalities): 
+                    if not(feature_dict['modality'] in self.active_modalities):
                         self.active_modalities.append(feature_dict['modality'])
                         self.time_step_size[feature_dict['modality']] = feature_dict['time_step_size']
                         self.is_irregular[feature_dict['modality']] = feature_dict['is_irregular']
                         self.uses_master_time_rate_bool[feature_dict['modality']] = feature_dict['uses_master_time_rate']
 
-                    
+
                     if not(feature_dict['is_h5_file']):
                         data_f_temp = pd.read_csv(feature_dict['folder_path']+'/'+filename+'.'+data_select_dict[data_select][0]+'.csv')
                         data_g_temp = pd.read_csv(feature_dict['folder_path']+'/'+filename+'.'+data_select_dict[data_select][1]+'.csv')
@@ -305,13 +305,13 @@ class TurnPredictionDataset(Dataset):
                             embed_info = {}
     #                        embed_info['features'] = feature_dict['features'] # need to add 'f_' and 'g_' do this at end
                             for embed_key in ['features','embedding','title_string','embedding_num','embedding_in_dim','embedding_out_dim','embedding_use_func','use_glove','glove_embed_table']:
-                                embed_info[embed_key] = feature_dict[embed_key]                         
+                                embed_info[embed_key] = feature_dict[embed_key]
                             self.embedding_info[feature_dict['modality']].append(embed_info)
                             self.total_embed_in_dim[feature_dict['modality']] = self.total_embed_in_dim[feature_dict['modality']] + embed_info['embedding_in_dim']
                             self.total_embed_out_dim[feature_dict['modality']] = self.total_embed_out_dim[feature_dict['modality']] + embed_info['embedding_out_dim']
                             self.embedding_info[feature_dict['modality']][-1]['emb_indices'] = [(len(self.feature_name_list[ feature_dict['modality'] ]),len(self.feature_name_list[ feature_dict['modality'] ])+embed_info['embedding_in_dim'])]
-                            
-                        for feature_name in feature_dict['features']:         
+
+                        for feature_name in feature_dict['features']:
                             data_f[ feature_dict['modality'] ]['x'][feature_name] = data_f_temp[feature_name]
                             data_g[ feature_dict['modality'] ]['x'][feature_name] = data_g_temp[feature_name]
                         self.feature_name_list[ feature_dict['modality'] ] += feature_dict['features'] # this makes other code for name lists superfluous
@@ -326,45 +326,45 @@ class TurnPredictionDataset(Dataset):
                             data_f[ feature_dict['modality'] ]['x_i'][feature_name] = h_data[filename+'/'+data_select_dict[data_select][0]+'/x_i/'+feature_name]
                             data_g[ feature_dict['modality'] ]['x'][feature_name] = h_data[filename+'/'+data_select_dict[data_select][1]+'/x/'+feature_name]
                             data_g[ feature_dict['modality'] ]['x_i'][feature_name] = h_data[filename+'/'+data_select_dict[data_select][1]+'/x_i/'+feature_name]
-                            
+
                         if 'embedding' in feature_dict and feature_dict['embedding'] == True:
                             embed_info = {}
     #                        embed_info['features'] = feature_dict['features'] # need to add 'f_' and 'g_' do this at end
                             for embed_key in ['features','embedding','title_string','embedding_num','embedding_in_dim','embedding_out_dim','embedding_use_func','use_glove','glove_embed_table']:
-                                embed_info[embed_key] = feature_dict[embed_key]                         
+                                embed_info[embed_key] = feature_dict[embed_key]
                             self.embedding_info[feature_dict['modality']].append(embed_info)
                             self.total_embed_in_dim[feature_dict['modality']] = self.total_embed_in_dim[feature_dict['modality']] + embed_info['embedding_in_dim']
                             self.total_embed_out_dim[feature_dict['modality']] = self.total_embed_out_dim[feature_dict['modality']] + embed_info['embedding_out_dim']
                             self.embedding_info[feature_dict['modality']][-1]['emb_indices'] = [(len(self.feature_name_list[ feature_dict['modality'] ]),len(self.feature_name_list[ feature_dict['modality'] ])+embed_info['embedding_in_dim'])]
-          
+
                         self.feature_name_list[feature_dict['modality']] += feature_dict['features']
 #                        self.time_step_size[feature_dict['modality']] = np.max([self.time_step_size[feature_dict['modality']],data_f[ feature_dict['modality'] ]['x'][feature_name].shape[-1]])
 #                        self.uses_master_time_rate_bool[feature_dict['modality']] = feature_dict['uses_master_time_rate']
 #                        self.is_irregular[feature_dict['modality']] = feature_dict['is_irregular']
-                
+
                 predict_g_list.append( np.array([np.roll(annot_g['val'],-roll_indx) for roll_indx in range(1,prediction_length+1) ]).transpose())
                 predict_f_list.append( np.array([np.roll(annot_f['val'],-roll_indx) for roll_indx in range(1,prediction_length+1) ]).transpose())
-                
+
                 data_f_np_dict, data_g_np_dict, data_f_np_dict_list, data_g_np_dict_list, data_f_np_bools, data_g_np_bools = {},{},{},{},{},{}
 #                for modality in self.feature_name_list.keys():
                 for modality in self.active_modalities:
                     if not(self.is_irregular[modality]):
                         data_f_np_dict_list[modality] = list()
-                        data_g_np_dict_list[modality] = list() 
+                        data_g_np_dict_list[modality] = list()
                         for feature_name in self.feature_name_list[modality]:
-#                            data_f_np_dict_list[modality].append(np.array(data_f[modality]['x'][feature_name])) 
+#                            data_f_np_dict_list[modality].append(np.array(data_f[modality]['x'][feature_name]))
 #                            data_g_np_dict_list[modality].append(np.array(data_g[modality]['x'][feature_name]))
-                            data_f_np_dict_list[modality].append(np.squeeze(np.array(data_f[modality]['x'][feature_name]))) 
+                            data_f_np_dict_list[modality].append(np.squeeze(np.array(data_f[modality]['x'][feature_name])))
                             data_g_np_dict_list[modality].append(np.squeeze(np.array(data_g[modality]['x'][feature_name])))
                         data_f_np_dict[modality] = np.asarray(data_f_np_dict_list[modality]).reshape([len(data_f_np_dict_list[modality]),len(data_f_np_dict_list[modality][0]),self.time_step_size[modality]])
                         data_g_np_dict[modality] = np.asarray(data_g_np_dict_list[modality]).reshape([len(data_g_np_dict_list[modality]),len(data_g_np_dict_list[modality][0]),self.time_step_size[modality]])
-                         
+
                     else:
                         data_f_np_dict_list[modality] = list()
-                        data_g_np_dict_list[modality] = list() 
-                        
+                        data_g_np_dict_list[modality] = list()
+
                         for feature_name in self.feature_name_list[modality]:
-                            data_f_np_dict_list[modality].append(np.array(data_f[modality]['x'][feature_name])) 
+                            data_f_np_dict_list[modality].append(np.array(data_f[modality]['x'][feature_name]))
                             data_g_np_dict_list[modality].append(np.array(data_g[modality]['x'][feature_name]))
                         data_f_np_dict[modality] = np.zeros([len(data_f_np_dict_list[modality]),len(data_f_np_dict_list[modality][0]),self.time_step_size[modality]])
                         data_g_np_dict[modality] = np.zeros([len(data_g_np_dict_list[modality]),len(data_g_np_dict_list[modality][0]),self.time_step_size[modality]])
@@ -377,13 +377,13 @@ class TurnPredictionDataset(Dataset):
                         # get bool indices
                         data_f_np_bools[modality] = np.zeros([data_f[modality]['x_i'][feature_name].shape[0],self.time_step_size[modality]])
                         data_g_np_bools[modality] = np.zeros([data_g[modality]['x_i'][feature_name].shape[0],self.time_step_size[modality]])
-#                        data_f_np_bools[modality][:,:data_f[ modality]['x_i'][feature_name].shape[-1] ] = np.asarray(data_f[modality]['x_i'][feature_name],dtype=np.float32) # note: all features should have the same bool matrix in current implementation 
+#                        data_f_np_bools[modality][:,:data_f[ modality]['x_i'][feature_name].shape[-1] ] = np.asarray(data_f[modality]['x_i'][feature_name],dtype=np.float32) # note: all features should have the same bool matrix in current implementation
 #                        data_g_np_bools[modality][:,:data_g[ modality]['x_i'][feature_name].shape[-1] ] = np.asarray(data_g[modality]['x_i'][feature_name],dtype=np.float32)
                         data_f_np_bools[modality][:,:data_f[ modality]['x_i'][feature_name].shape[-1] ] = \
-                            np.asarray(data_f[modality]['x_i'][feature_name] , dtype=np.float32) + np.asarray(data_g[modality]['x_i'][feature_name] , dtype=np.float32) # note: all features should have the same bool matrix in current implementation 
+                            np.asarray(data_f[modality]['x_i'][feature_name] , dtype=np.float32) + np.asarray(data_g[modality]['x_i'][feature_name] , dtype=np.float32) # note: all features should have the same bool matrix in current implementation
                         data_g_np_bools[modality][:,:data_g[ modality]['x_i'][feature_name].shape[-1] ] = \
                             np.asarray(data_g[modality]['x_i'][feature_name] , dtype=np.float32) + np.asarray(data_f[modality]['x_i'][feature_name] , dtype=np.float32)
-                
+
 #                data_f_list_np.append( data_f) # !!! not actually np array. change name later.
 #                data_g_list_np.append( data_g)
                 data_f_list_np.append(data_f_np_dict)
@@ -392,8 +392,8 @@ class TurnPredictionDataset(Dataset):
                 data_g_np_bools_list.append(data_g_np_bools)
                 data_f_list_ft.append( np.array(annot_f['frameTimes']))
                 data_g_list_ft.append( np.array(annot_g['frameTimes']))
-                
-                # Find out how many batches there are in 
+
+                # Find out how many batches there are in
                 seq_length_list.append((int(np.floor(len(data_f_list_ft[-1])/self.seq_length)),conv_indx_i,filename))
                 file_dur = len(annot_f)
                 num_batches = int(np.floor(file_dur/self.seq_length))
@@ -403,16 +403,16 @@ class TurnPredictionDataset(Dataset):
                                             'visual':len(data_f['visual']['x'].keys())}# this is half the dimension of the output of dataloader
                 self.num_feat_for_lstm = {'acous' : 2*(self.num_feat_per_person['acous'] - self.total_embed_in_dim['acous'] + self.total_embed_out_dim['acous']),
                                           'visual' : 2*(self.num_feat_per_person['visual'] - self.total_embed_in_dim['visual'] + self.total_embed_out_dim['visual'] )}
-            
+
             # sort lists
             seq_length_list = sorted(seq_length_list,reverse=True)
             length_list = [seq_length_list[row][0] for row in range(len(seq_length_list))]
             cindx_list = [seq_length_list[row][1] for row in range(len(seq_length_list))]
             cfile_list = [seq_length_list[row][2] for row in range(len(seq_length_list))]
-            
+
             max_length = length_list[0]
             # num_steps, conv_indx
-            # seq_length_list = np.array(seq_length_list) 
+            # seq_length_list = np.array(seq_length_list)
             # !!! from here
             for step_indx in range(max_length):
                 batch_len_count = 0
@@ -431,9 +431,9 @@ class TurnPredictionDataset(Dataset):
                 for modality in self.active_modalities:
                     batch_list_x[modality] = []
                     bool_list[modality] = []
-                    
+
                 data_temp_x, data_temp_x_i,datapoint = {},{},{}
-                
+
                 for conv_indx,conv_length,filename in zip(cindx_list,length_list,cfile_list):
                     # print(conv_indx)
                     if conv_length>step_indx:
@@ -455,10 +455,10 @@ class TurnPredictionDataset(Dataset):
                                 data_temp_x[modality][self.num_feat_per_person[modality]:,:,:self.time_step_size[modality]] = \
                                 data_f_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length]
                                 bool_list[modality].append(data_temp_x_i[modality])
-                        
+
                             batch_list_x[modality].append(data_temp_x[modality])
-                            
-                        
+
+
                         batch_list_y.append(predict_g_list[conv_indx][step_indx*self.seq_length:(step_indx+1)*self.seq_length])
                         batch_list_ft.append(data_g_list_ft[conv_indx][step_indx*self.seq_length:(step_indx+1)*self.seq_length])
                         batch_list_time_indices.append(np.array([step_indx*self.seq_length, (step_indx+1)*self.seq_length]))
@@ -467,7 +467,7 @@ class TurnPredictionDataset(Dataset):
                         conv_indx_list.append(conv_indx)
 #                        batch_list_feature_names.append(data_g_feature_names+data_f_feature_names)
                         batch_len_count += 1
-                        
+
                         # features for f (predicting f)
 #                        print('conv_length:'+str(conv_length))
 #                        print(step_indx)
@@ -486,10 +486,10 @@ class TurnPredictionDataset(Dataset):
                                 data_temp_x[modality][self.num_feat_per_person[modality]:,:,:self.time_step_size[modality]] = \
                                 data_g_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length]
                                 bool_list[modality].append(data_temp_x_i[modality])
-                        
+
                             batch_list_x[modality].append(data_temp_x[modality])
-                            
-                        
+
+
                         batch_list_y.append(predict_f_list[conv_indx][step_indx*self.seq_length:(step_indx+1)*self.seq_length])
                         batch_list_ft.append(data_f_list_ft[conv_indx][step_indx*self.seq_length:(step_indx+1)*self.seq_length])
                         batch_list_time_indices.append(np.array([step_indx*self.seq_length, (step_indx+1)*self.seq_length]))
@@ -498,8 +498,8 @@ class TurnPredictionDataset(Dataset):
                         conv_indx_list.append(conv_indx)
 #                        batch_list_feature_names.append(data_g_feature_names+data_f_feature_names)
                         batch_len_count += 1
-                        
-                datapoint['info'] = { 
+
+                datapoint['info'] = {
                         'batch_size':batch_len_count,
                         'g_f':batch_list_gf,
                         'file_names':batch_list_file_name,
@@ -509,7 +509,7 @@ class TurnPredictionDataset(Dataset):
                         'conv_indices':conv_indx_list,
 #                        'time_bools':{}
 #                        'feature_names':batch_list_feature_names
-                        }   
+                        }
                 # !!! dimensions: datapoint['x'][modality][batch,feats,seq,times]
                 datapoint['x'] = {}
                 datapoint['time_bools'] = {}
@@ -521,7 +521,7 @@ class TurnPredictionDataset(Dataset):
                 datapoint['y'] = np.array(batch_list_y)
                 self.dataset.append(datapoint)
                 self.len += 1
-                
+
             # pickle.dump(test_set,open('test_set.p','wb'))
             print('done loading testing data')
         else:
@@ -529,17 +529,17 @@ class TurnPredictionDataset(Dataset):
         for mod in ['acous','visual']:
             for embed_indx in range(len(self.embedding_info[mod])):
                 self.embedding_info[mod][embed_indx]['emb_indices'].append((self.embedding_info[mod][embed_indx]['emb_indices'][0][0] \
-                               + self.num_feat_per_person[mod], self.embedding_info[mod][embed_indx]['emb_indices'][0][1]+self.num_feat_per_person[mod] )) 
-    
+                               + self.num_feat_per_person[mod], self.embedding_info[mod][embed_indx]['emb_indices'][0][1]+self.num_feat_per_person[mod] ))
+
     def get_results_lengths(self):
         return self.results_lengths
-    
+
     def get_feature_size_dict(self):
         return self.num_feat_for_lstm
 
-    def get_embedding_info(self):   
+    def get_embedding_info(self):
         return self.embedding_info
-    
+
     def get_lstm_settings_dict(self,input_settings_dict):
         self.lstm_settings_dict = input_settings_dict
         for modality in self.active_modalities:
@@ -549,28 +549,28 @@ class TurnPredictionDataset(Dataset):
             self.lstm_settings_dict['is_irregular'][modality] = self.is_irregular[modality]
         return self.lstm_settings_dict
 
-    def get_master_time_rates(self):   
+    def get_master_time_rates(self):
         return self.uses_master_time_rate_bool
-    
-    def get_lstm_cell_usage(self):   
+
+    def get_lstm_cell_usage(self):
         return self.is_irregular
-    
-    def get_active_modalities(self):   
+
+    def get_active_modalities(self):
         return self.active_modalities
 
     def __len__(self):
         return self.len
-    
+
     def __getitem__(self,idx):
         output_list = []
         for mod in ['acous','visual']:
             if mod in self.active_modalities:
-                
+
                 if self.is_irregular[mod]:
                     output_list.append(torch.squeeze(torch.FloatTensor(self.dataset[idx]['x'][mod])))
-                
+
                 elif not(self.uses_master_time_rate_bool[mod]) and not(self.is_irregular[mod]):
-                    in_shape = self.dataset[idx]['x'][mod].shape 
+                    in_shape = self.dataset[idx]['x'][mod].shape
                     out_shape = in_shape[:-2] + tuple([in_shape[-1]*in_shape[-2]])
 #                    output_list.append(torch.FloatTensor(self.dataset[idx]['x'][mod]).view([-1,in_shape[-1]*in_shape[-2]]))
                     output_list.append(torch.FloatTensor(self.dataset[idx]['x'][mod]).view(out_shape))
@@ -589,4 +589,3 @@ class TurnPredictionDataset(Dataset):
                 output_list.append([])
 
         return output_list[0], output_list[1], output_list[2], output_list[3], torch.FloatTensor(self.dataset[idx]['y']).transpose(-2,-1), self.dataset[idx]['info']
-

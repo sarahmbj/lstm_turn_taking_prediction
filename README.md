@@ -15,7 +15,7 @@ The supplied code is designed to reproduce the main results from [1] that show t
 
 - Linux
 - PyTorch v>0.3.0
-- Anaconda 
+- Anaconda (Note: If using miniconda, you need to install: numpy, pandas, h5py, nltk, pytorch, matplotlib, scikit-learn)
 - nltk
 - Sox 
 - OpenSmile-2.3.0

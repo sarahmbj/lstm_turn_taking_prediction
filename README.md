@@ -1,5 +1,5 @@
 # LSTM Continuous Turn-Taking Prediction
-Original repo by mattroddy. Clarifying comments added in collaboration with lnaclst and elliottgruzin, then forked again to adapt for my own MSc research.
+Original repo by [mattroddy](https://github.com/mattroddy/lstm_turn_taking_prediction). Clarifying comments added in collaboration with lnaclst and elliottgruzin, then forked again to adapt for my own MSc research.
 
 Pytorch implementation for two papers:
 

@@ -26,16 +26,7 @@ no_subnets = True
 
 experiment_top_path = './no_subnets/'
 
-plat = platform.linux_distribution()[0]
-#plat = 'not_arch'
-if plat == 'arch': 
-    print('platform: arch')
-    py_env =  '/home/matt/anaconda3/bin/python'
-elif plat == 'debian':
-    py_env = '../../anaconda3/bin/python'
-else:
-    print('platform: '+plat)
-    py_env='/home/mroddy/anaconda3/envs/py36/bin/python'
+py_env = '/afs/inf.ed.ac.uk/user/s09/s0910315/miniconda3/bin/python'
 
 
 

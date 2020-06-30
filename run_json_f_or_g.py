@@ -232,9 +232,9 @@ if slow_test:
             test_on_g_dataloader = DataLoader(test_on_g_dataset, batch_size=1, shuffle=False, num_workers=0, drop_last=False,
                                          pin_memory=p_memory)
         elif test_set == 'test':
-            test_on_both_dataset = TurnPredictionDataset(feature_dict_list, annotations_dir, test_list_path, sequence_length,
+            test_dataset = TurnPredictionDataset(feature_dict_list, annotations_dir, test_list_path, sequence_length,
                                                  prediction_length, 'test_on_both', data_select=data_set_select)
-            test_on_both_dataloader = DataLoader(test_on_both_dataset, batch_size=1, shuffle=False, num_workers=0, drop_last=False,
+            test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0, drop_last=False,
                                          pin_memory=p_memory)
 
 else:

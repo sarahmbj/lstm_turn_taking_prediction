@@ -338,7 +338,7 @@ loss_func_BCE_Logit = nn.BCEWithLogitsLoss()
 
 
 # %% Test function
-def test(test_dataset=test_on_both_dataset):
+def test(test_dataset=test_dataset):
     losses_test = list()
     results_dict = dict()
     losses_dict = dict()
@@ -668,7 +668,7 @@ for epoch in range(0, num_epochs):
     # %% Test model
     t_epoch_end = t.time()
     model.eval()
-    test(test_dataset=test_on_both_dataset) #TODO: check this won't break the training!!!!
+    test(test_dataset=test_dataset) #TODO: check this won't break the training!!!!
     test(test_dataset=test_on_f_dataset_dataset)
     test(test_dataset=test_on_g_dataset)
     # TODO: work out how to save results for each test set individually (I dunno how this fits with model.train),

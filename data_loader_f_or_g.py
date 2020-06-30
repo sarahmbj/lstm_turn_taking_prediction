@@ -838,7 +838,7 @@ class TurnPredictionDataset(Dataset):
                     self.len += 1
         #%%  Load test data
         # if test is selected, the dataloader batch size should be set to one,drop_last=False. Data will
-        elif self.set_type == 'test':
+        elif self.set_type == 'test_on_both':
 
             print('loading test data into memory')
             # Sort the conversations by length and divide into sections of length seq_length

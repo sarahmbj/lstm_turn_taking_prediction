@@ -2,9 +2,9 @@ import os
 
 os.system('python scripts/extract_gemaps_dciem.py 0')
 os.system('python scripts/extract_gemaps_dciem.py 1')
-# os.system('python scripts/prepare_gemaps.py 0')
-# os.system('python scripts/prepare_gemaps.py 1')
-# os.system('python scripts/get_VA_annotations.py')
+os.system('python scripts/prepare_gemaps.py 0')
+os.system('python scripts/prepare_gemaps.py 1')
+# os.system('python scripts/get_VA_annotations_dciem.py')
 # os.system('python scripts/prepare_fast_data_acous.py')
 # os.system('python scripts/get_vocab.py')
 # os.system('python scripts/get_word_annotations.py 0')

@@ -42,14 +42,12 @@ import feature_vars as feat_dicts
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
 
 # %% Batch settings
-alpha = 0.99  # smoothing constant DONT THINK THIS GETS USED
+# alpha = 0.99  # smoothing constant DONT THINK THIS GETS USED
 init_std = 0.5
 momentum = 0
 train_batch_size = 128
 test_batch_size = 1  # this should stay fixed at 1 when using slow test because the batches are already set in the data loader
 
-# sequence_length = 800
-# dropout = 0
 prediction_length = 60  # (3 seconds of prediction)
 shuffle = True
 num_layers = 1

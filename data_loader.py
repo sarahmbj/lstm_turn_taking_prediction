@@ -190,39 +190,87 @@ class TurnPredictionDataset(Dataset):
                         data_g_np_bools[modality][:,:data_g[ modality]['x_i'][feature_name].shape[-1] ] = \
                             np.asarray(data_g[modality]['x_i'][feature_name] , dtype=np.float32) + np.asarray(data_f[modality]['x_i'][feature_name] , dtype=np.float32)
 
-                # features for g
-                for i in range(1,num_batches + 1):
-                    datapoint, data_temp_x,data_temp_x_i = {},{},{}
-                    for modality in self.active_modalities:
-                        if not(self.is_irregular[modality]):
-                            data_temp_x[modality] = np.empty([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
-                            data_temp_x[modality][0:self.num_feat_per_person[modality],:,:] = data_g_np_dict[modality][:,(i-1)*self.seq_length:i*self.seq_length,:]
-                            data_temp_x[modality][self.num_feat_per_person[modality]:,:,:] = data_f_np_dict[modality][:,(i-1)*self.seq_length:i*self.seq_length,:]
-                        else:
-                            data_temp_x[modality] = np.zeros([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
-                            data_temp_x_i[modality] = np.zeros([self.seq_length,self.time_step_size[modality]],dtype=np.float32)
-                            data_temp_x_i[modality][:self.seq_length,:self.time_step_size[modality]] = \
-                                data_g_np_bools[modality][(i-1)*self.seq_length:i*self.seq_length,:self.time_step_size[modality]]
-                            data_temp_x[modality][0:self.num_feat_per_person[modality],:,:self.time_step_size[modality]] = \
-                                data_g_np_dict[modality][:,(i-1)*self.seq_length:i*self.seq_length]
-                            data_temp_x[modality][self.num_feat_per_person[modality]:,:,:self.time_step_size[modality]] = \
-                                data_f_np_dict[modality][:,(i-1)*self.seq_length:i*self.seq_length]
-                    reset_states_flag = i==1 # during training the states are reset in the run_json code anyway so this value is unimportant
-                    datapoint['x'] = data_temp_x # note: might need to treat modalites is separate 'x's
-                    datapoint['y'] = predict_g_np[(i-1)*self.seq_length:i*self.seq_length]
-                    datapoint['info'] = {
-                            'reset_states_flag':reset_states_flag,
-                            'g_f': data_select_dict[data_select][1],
-                            'file_names':filename,
-                            'time_indices': np.array([(i-1)*self.seq_length, i*self.seq_length]),
-                            'time_frames':np.array(data_g_np_times[(i-1)*self.seq_length:i*self.seq_length]),
-                            'batch_num':i-1,
-#                            'feature_names':data_g_feature_names + data_f_feature_names
-#                            'time_bools':data_temp_x_i
+                def process_features(f_or_g):
+                        for i in range(1, num_batches + 1):
+                            datapoint, data_temp_x, data_temp_x_i = {}, {}, {}
+                            for modality in self.active_modalities:
+                                if not (self.is_irregular[modality]):
+                                    data_temp_x[modality] = np.empty(
+                                        [2 * self.num_feat_per_person[modality], self.seq_length,
+                                         self.time_step_size[modality]], dtype=np.float32)
+                                    data_temp_x[modality][0:self.num_feat_per_person[modality], :, :] = \
+                                        data_g_np_dict[modality][:, (i - 1) * self.seq_length:i * self.seq_length,:]
+                                    data_temp_x[modality][self.num_feat_per_person[modality]:, :, :] =\
+                                        data_f_np_dict[modality][:, (i - 1) * self.seq_length:i * self.seq_length,:]
+                                else:
+                                    data_temp_x[modality] = np.zeros(
+                                        [2 * self.num_feat_per_person[modality], self.seq_length,
+                                         self.time_step_size[modality]], dtype=np.float32)
+                                    data_temp_x_i[modality] = np.zeros([self.seq_length, self.time_step_size[modality]],
+                                                                       dtype=np.float32)
+                                    data_temp_x_i[modality][:self.seq_length, :self.time_step_size[modality]] = \
+                                        data_g_np_bools[modality][(i - 1) * self.seq_length:i * self.seq_length,
+                                        :self.time_step_size[modality]]
+                                    data_temp_x[modality][0:self.num_feat_per_person[modality], :,
+                                    :self.time_step_size[modality]] = \
+                                        data_g_np_dict[modality][:, (i - 1) * self.seq_length:i * self.seq_length]
+                                    data_temp_x[modality][self.num_feat_per_person[modality]:, :,
+                                    :self.time_step_size[modality]] = \
+                                        data_f_np_dict[modality][:, (i - 1) * self.seq_length:i * self.seq_length]
+                            reset_states_flag = i == 1  # during training the states are reset in the run_json code anyway so this value is unimportant
+                            datapoint['x'] = data_temp_x  # note: might need to treat modalites is separate 'x's
+                            datapoint['y'] = predict_g_np[(i - 1) * self.seq_length:i * self.seq_length]
+                            datapoint['info'] = {
+                                'reset_states_flag': reset_states_flag,
+                                'g_f': data_select_dict[data_select][1],
+                                'file_names': filename,
+                                'time_indices': np.array([(i - 1) * self.seq_length, i * self.seq_length]),
+                                'time_frames': np.array(data_g_np_times[(i - 1) * self.seq_length:i * self.seq_length]),
+                                'batch_num': i - 1,
+                                #                            'feature_names':data_g_feature_names + data_f_feature_names
+                                #                            'time_bools':data_temp_x_i
                             }
-                    datapoint['time_bools'] = data_temp_x_i
-                    self.dataset.append(datapoint)
-                    self.len += 1
+                            datapoint['time_bools'] = data_temp_x_i
+                            self.dataset.append(datapoint)
+                            self.len += 1
+
+                process_features('g')
+                # features for g
+#                 for i in range(1,num_batches + 1):
+#                     datapoint, data_temp_x,data_temp_x_i = {},{},{}
+#                     for modality in self.active_modalities:
+#                         if not(self.is_irregular[modality]):
+#                             data_temp_x[modality] = np.empty([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
+#                             data_temp_x[modality][0:self.num_feat_per_person[modality],:,:] = data_g_np_dict[modality][:,(i-1)*self.seq_length:i*self.seq_length,:]
+#                             data_temp_x[modality][self.num_feat_per_person[modality]:,:,:] = data_f_np_dict[modality][:,(i-1)*self.seq_length:i*self.seq_length,:]
+#                         else:
+#                             data_temp_x[modality] = np.zeros([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
+#                             data_temp_x_i[modality] = np.zeros([self.seq_length,self.time_step_size[modality]],dtype=np.float32)
+#                             data_temp_x_i[modality][:self.seq_length,:self.time_step_size[modality]] = \
+#                                 data_g_np_bools[modality][(i-1)*self.seq_length:i*self.seq_length,:self.time_step_size[modality]]
+#                             data_temp_x[modality][0:self.num_feat_per_person[modality],:,:self.time_step_size[modality]] = \
+#                                 data_g_np_dict[modality][:,(i-1)*self.seq_length:i*self.seq_length]
+#                             data_temp_x[modality][self.num_feat_per_person[modality]:,:,:self.time_step_size[modality]] = \
+#                                 data_f_np_dict[modality][:,(i-1)*self.seq_length:i*self.seq_length]
+#                     reset_states_flag = i==1 # during training the states are reset in the run_json code anyway so this value is unimportant
+#                     datapoint['x'] = data_temp_x # note: might need to treat modalites is separate 'x's
+#                     datapoint['y'] = predict_g_np[(i-1)*self.seq_length:i*self.seq_length]
+#                     datapoint['info'] = {
+#                             'reset_states_flag':reset_states_flag,
+#                             'g_f': data_select_dict[data_select][1],
+#                             'file_names':filename,
+#                             'time_indices': np.array([(i-1)*self.seq_length, i*self.seq_length]),
+#                             'time_frames':np.array(data_g_np_times[(i-1)*self.seq_length:i*self.seq_length]),
+#                             'batch_num':i-1,
+# #                            'feature_names':data_g_feature_names + data_f_feature_names
+# #                            'time_bools':data_temp_x_i
+#                             }
+#                     datapoint['time_bools'] = data_temp_x_i
+#                     self.dataset.append(datapoint)
+#                     self.len += 1
+
+
+
 
                 # features for f
                 for i in range(1,num_batches + 1):

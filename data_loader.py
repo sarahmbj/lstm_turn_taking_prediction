@@ -192,6 +192,7 @@ class TurnPredictionDataset(Dataset):
                         data_g_np_bools[modality][:,:data_g[ modality]['x_i'][feature_name].shape[-1] ] = \
                             np.asarray(data_g[modality]['x_i'][feature_name] , dtype=np.float32) + np.asarray(data_f[modality]['x_i'][feature_name] , dtype=np.float32)
                 if self.train_on_g == True:
+                    print("Appending features for g")
                     # features for g
                     for i in range(1,num_batches + 1):
                         datapoint, data_temp_x,data_temp_x_i = {},{},{}
@@ -226,6 +227,7 @@ class TurnPredictionDataset(Dataset):
                         self.dataset.append(datapoint)
                         self.len += 1
                 if self.train_on_f == True:
+                    print("Appending features for f")
                 # features for f
                     for i in range(1,num_batches + 1):
                         datapoint, data_temp_x,data_temp_x_i = {},{},{}
@@ -260,6 +262,7 @@ class TurnPredictionDataset(Dataset):
                         datapoint['time_bools']= data_temp_x_i
                         self.dataset.append(datapoint)
                         self.len += 1
+
 
         #%%  Load test data
         # if test is selected, the dataloader batch size should be set to one,drop_last=False. Data will
@@ -532,6 +535,11 @@ class TurnPredictionDataset(Dataset):
             for embed_indx in range(len(self.embedding_info[mod])):
                 self.embedding_info[mod][embed_indx]['emb_indices'].append((self.embedding_info[mod][embed_indx]['emb_indices'][0][0] \
                                + self.num_feat_per_person[mod], self.embedding_info[mod][embed_indx]['emb_indices'][0][1]+self.num_feat_per_person[mod] ))
+
+            print(len(self.dataset))
+            quit()
+            #TODO: remove previous two lines
+
 
     def get_results_lengths(self):
         return self.results_lengths

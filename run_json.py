@@ -30,7 +30,6 @@ import pandas as pd
 from sklearn.metrics import f1_score, roc_curve, confusion_matrix
 import time as t
 import pickle
-#import platform TODO: Delete after testing code still runs
 from sys import argv
 import json
 from random import randint
@@ -41,18 +40,6 @@ import feature_vars as feat_dicts
 
 # %% data set select
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
-
-
-# if data_set_select == 0: TODO: Delete after testing code still runs
-#     #    train_batch_size = 878
-#     train_batch_size = 128
-#     test_batch_size = 1
-# else:
-#     train_batch_size = 128
-#     # train_batch_size = 256
-#     #    train_batch_size = 830 # change this
-#     test_batch_size = 1
-# #
 
 # %% Batch settings
 alpha = 0.99  # smoothing constant DONT THINK THIS GETS USED
@@ -181,15 +168,6 @@ lstm_settings_dict = {  #this works because these variables are set in locals fr
     'dropout': dropout_dict,
     'freeze_glove':freeze_glove_embeddings
 }
-
-# %% Get OS type and whether to use cuda or not
-# plat = platform.linux_distribution()[0] TODO: Delete after testing code still runs (this functionality is deprecated anyway)
-# my_node = platform.node()
-#
-# if (plat == 'arch') | (my_node == 'Matthews-MacBook-Pro.local'):
-#     print('platform: arch')
-# else:
-#     print('platform: ' + str(plat))
 
 # Decide whether to use cuda or not
 use_cuda = torch.cuda.is_available()

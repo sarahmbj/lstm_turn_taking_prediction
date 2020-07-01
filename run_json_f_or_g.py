@@ -108,7 +108,7 @@ if not (len(argv) == proper_num_args):
         'visual_out': 0.
     }
 
-    train_set = 'train'  # default is to train on both f and g - can change to 'train_on_f' or 'train_on_g'
+    train_set = 'train_on_f'  # default is to train on both f and g - can change to 'train_on_f' or 'train_on_g'
     test_sets = ['test']  # default is to test on both f and g - can add 'test_on_f' and/or 'test_on_g' to split sets
 
     results_dir = './results'

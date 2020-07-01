@@ -536,7 +536,7 @@ class TurnPredictionDataset(Dataset):
                 self.embedding_info[mod][embed_indx]['emb_indices'].append((self.embedding_info[mod][embed_indx]['emb_indices'][0][0] \
                                + self.num_feat_per_person[mod], self.embedding_info[mod][embed_indx]['emb_indices'][0][1]+self.num_feat_per_person[mod] ))
 
-            print('Length of self.dataset: '+len(self.dataset))
+            print('Length of self.dataset: ',len(self.dataset))
             quit()
             #TODO: remove previous two lines
 

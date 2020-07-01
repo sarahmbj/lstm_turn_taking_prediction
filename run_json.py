@@ -30,7 +30,7 @@ import pandas as pd
 from sklearn.metrics import f1_score, roc_curve, confusion_matrix
 import time as t
 import pickle
-import platform
+#import platform TODO: Delete after testing code still runs
 from sys import argv
 import json
 from random import randint
@@ -41,20 +41,24 @@ import feature_vars as feat_dicts
 
 # %% data set select
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
-if data_set_select == 0:
-    #    train_batch_size = 878
-    train_batch_size = 128
-    test_batch_size = 1
-else:
-    train_batch_size = 128
-    # train_batch_size = 256
-    #    train_batch_size = 830 # change this
-    test_batch_size = 1
+
+
+# if data_set_select == 0: TODO: Delete after testing code still runs
+#     #    train_batch_size = 878
+#     train_batch_size = 128
+#     test_batch_size = 1
+# else:
+#     train_batch_size = 128
+#     # train_batch_size = 256
+#     #    train_batch_size = 830 # change this
+#     test_batch_size = 1
+# #
 
 # %% Batch settings
 alpha = 0.99  # smoothing constant DONT THINK THIS GETS USED
 init_std = 0.5
 momentum = 0
+train_batch_size = 128
 test_batch_size = 1  # this should stay fixed at 1 when using slow test because the batches are already set in the data loader
 
 # sequence_length = 800
@@ -179,16 +183,16 @@ lstm_settings_dict = {  #this works because these variables are set in locals fr
 }
 
 # %% Get OS type and whether to use cuda or not
-plat = platform.linux_distribution()[0]
-my_node = platform.node()
+# plat = platform.linux_distribution()[0] TODO: Delete after testing code still runs (this functionality is deprecated anyway)
+# my_node = platform.node()
+#
+# if (plat == 'arch') | (my_node == 'Matthews-MacBook-Pro.local'):
+#     print('platform: arch')
+# else:
+#     print('platform: ' + str(plat))
 
-if (plat == 'arch') | (my_node == 'Matthews-MacBook-Pro.local'):
-    print('platform: arch')
-else:
-    print('platform: ' + str(plat))
-
+# Decide whether to use cuda or not
 use_cuda = torch.cuda.is_available()
-
 print('Use CUDA: ' + str(use_cuda))
 
 if use_cuda:
@@ -544,7 +548,6 @@ def test():
 
 
 # %% Init model
-# model = LSTMPredictor(feature_size_dict, hidden_nodes, num_layers,train_batch_size,sequence_length,prediction_length,train_dataset.get_embedding_info(),dropout=dropout)
 embedding_info = train_dataset.get_embedding_info()
 
 model = LSTMPredictor(lstm_settings_dict=lstm_settings_dict, feature_size_dict=feature_size_dict,
@@ -593,7 +596,6 @@ for epoch in range(0, num_epochs):
         #            losses_dict = dict()
         train_results_lengths = train_dataset.get_results_lengths()
         for file_name in train_file_list:
-            #            for g_f in ['g','f']:
             for g_f in data_select_dict[data_set_select]:
                 # create new arrays for the onset results (the continuous predictions)
                 train_results_dict[file_name + '/' + g_f] = np.zeros(
@@ -619,13 +621,9 @@ for epoch in range(0, num_epochs):
         info = batch[5]
         model_output_logits = model(model_input)
 
-        #        model_output_logits = model(model_input[0],model_input[1],model_input[2],model_input[3])
-
-        # loss = loss_func_BCE(F.sigmoid(model_output_logits), y)
         loss = loss_func_BCE_Logit(model_output_logits,y)
         loss_list.append(loss.cpu().data.numpy())
         loss.backward()
-        #        optimizer.step()
         if grad_clip_bool:
             clip_grad_norm(model.parameters(), grad_clip)
         for opt in optimizer_list:
@@ -641,7 +639,6 @@ for epoch in range(0, num_epochs):
                                                                      gf_name_list,
                                                                      time_index_list,
                                                                      range(train_batch_length)):
-                #                train_results_dict[file_name+'/'+g_f_indx[0]][time_indices[0]:time_indices[1]] = model_output[batch_indx].data.cpu().numpy()
                 train_results_dict[file_name + '/' + g_f_indx][time_indices[0]:time_indices[1]] = model_output[
                     batch_indx].data.cpu().numpy()
 

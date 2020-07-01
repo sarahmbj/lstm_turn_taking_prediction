@@ -57,7 +57,7 @@ if not (len(argv) == proper_num_args):
     no_subnets = True
     feature_dict_list = feat_dicts.gemaps_50ms_dict_list
 
-    train_on_f = False
+    train_on_f = True
     train_on_g = True
 
     hidden_nodes_master = 50

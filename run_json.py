@@ -24,15 +24,12 @@ import matplotlib as mpl
 
 mpl.use('Agg')
 import matplotlib.pyplot as plt
-
 import pandas as pd
-
 from sklearn.metrics import f1_score, roc_curve, confusion_matrix
 import time as t
 import pickle
 from sys import argv
 import json
-from random import randint
 import os
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -43,9 +40,8 @@ data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
 
 # %% Batch settings
 init_std = 0.5
-# momentum = 0
 train_batch_size = 128
-test_batch_size = 1  # this should stay fixed at 1 when using slow test because the batches are already set in the data loader
+test_batch_size = 1  # should stay fixed at 1 when using slow test because batches are already set in the data loader
 
 prediction_length = 60  # (3 seconds of prediction)
 shuffle = True
@@ -53,13 +49,16 @@ num_layers = 1
 onset_test_flag = True
 annotations_dir = './data/extracted_annotations/voice_activity/'
 
-proper_num_args = 2 # when called as subprocess, this consists of './run_json.py' and a dictionary of the other args
+proper_num_args = 2  # when called as subprocess, this consists of './run_json.py' and a dictionary of the other args
 print('Number of arguments is: ' + str(len(argv)))
 
 if not (len(argv) == proper_num_args):
     # %% Single run settings (settings when not being called as a subprocess)
     no_subnets = True
-    feature_dict_list = feat_dicts.gemaps_50ms_dict_list 
+    feature_dict_list = feat_dicts.gemaps_50ms_dict_list
+
+    train_on_f = True
+    train_on_g = True
 
     hidden_nodes_master = 50
     hidden_nodes_acous = 50
@@ -75,7 +74,6 @@ if not (len(argv) == proper_num_args):
     slow_test = True
     early_stopping = True
     patience = 10
-
 
     l2_dict = {
         'emb': 0.0001,
@@ -186,7 +184,8 @@ t1 = t.time()
 # training set data loader
 print('feature dict list:', feature_dict_list)
 train_dataset = TurnPredictionDataset(feature_dict_list, annotations_dir, train_list_path, sequence_length,
-                                      prediction_length, 'train', data_select=data_set_select)
+                                      prediction_length, 'train', data_select=data_set_select, train_on_f=train_on_f,
+                                      train_on_g=train_on_g)
 train_dataloader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=shuffle, num_workers=0,
                               drop_last=True, pin_memory=p_memory)
 feature_size_dict = train_dataset.get_feature_size_dict()

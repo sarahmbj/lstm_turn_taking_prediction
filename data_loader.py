@@ -40,7 +40,6 @@ class TurnPredictionDataset(Dataset):
                  data_select=0, train_on_f=True, train_on_g=True):
         # inputs: feature_dict_list is string path of folder with extracted data csv files
         # file_list is string with path to a .txt file with file list in it
-        # todo: option to select features, correct docstring
         self.len = 0
         self.seq_length = seq_length
         self.feature_dict_list = feature_dict_list

@@ -193,7 +193,6 @@ class TurnPredictionDataset(Dataset):
                         data_g_np_bools[modality][:,:data_g[ modality]['x_i'][feature_name].shape[-1] ] = \
                             np.asarray(data_g[modality]['x_i'][feature_name] , dtype=np.float32) + np.asarray(data_f[modality]['x_i'][feature_name] , dtype=np.float32)
                 if self.train_on_g == True:
-                    print("Appending features for g")
                     # features for g
                     for i in range(1,num_batches + 1):
                         datapoint, data_temp_x,data_temp_x_i = {},{},{}
@@ -228,7 +227,6 @@ class TurnPredictionDataset(Dataset):
                         self.dataset.append(datapoint)
                         self.len += 1
                 if self.train_on_f == True:
-                    print("Appending features for f")
                 # features for f
                     for i in range(1,num_batches + 1):
                         datapoint, data_temp_x,data_temp_x_i = {},{},{}

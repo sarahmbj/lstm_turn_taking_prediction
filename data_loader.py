@@ -37,8 +37,8 @@ time_label_select_dict = {0:'frame_time', # gemaps
 
 class TurnPredictionDataset(Dataset):
 
-    def __init__(self, feature_dict_list, annotations_dir, file_list ,seq_length ,prediction_length=60, set_type='test',
-                 data_select=0, train_on_f=True, train_on_g=True):
+    def __init__(self, feature_dict_list, annotations_dir, file_list, seq_length, prediction_length=60, set_type='test',
+                 data_select=0, train_on_f=True, train_on_g=True, test_on_f=True, test_on_g=True):
         # inputs: feature_dict_list is string path of folder with extracted data csv files
         # file_list is string with path to a .txt file with file list in it
         self.len = 0
@@ -58,6 +58,8 @@ class TurnPredictionDataset(Dataset):
         self.is_irregular = {'acous':False,'visual':False}
         self.train_on_f = train_on_f
         self.train_on_g = train_on_g
+        self.test_on_f = test_on_f
+        self.test_on_g = test_on_g
 
         #%% embedding stuff
         self.feature_size = 0
@@ -444,64 +446,66 @@ class TurnPredictionDataset(Dataset):
                         # features for g (predicting g)
 #                        print('conv_length:'+str(conv_length))
 #                        print(step_indx)
-                        for modality in self.active_modalities:
-                            if not(self.is_irregular[modality]):
-                                data_temp_x[modality] = np.empty([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
-                                data_temp_x[modality][0:self.num_feat_per_person[modality],:,:] = data_g_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length,:]
-                                data_temp_x[modality][self.num_feat_per_person[modality]:,:,:] = data_f_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length,:]
-                            else:
-                                data_temp_x[modality] = np.zeros([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
-                                data_temp_x_i[modality] = np.zeros([self.seq_length,self.time_step_size[modality]],dtype=np.float32)
-                                data_temp_x_i[modality][:self.seq_length,:self.time_step_size[modality]] = \
-                                data_g_np_bools_list[conv_indx][modality][(step_indx)*self.seq_length:(step_indx+1)*self.seq_length,:self.time_step_size[modality]]
-                                data_temp_x[modality][0:self.num_feat_per_person[modality],:,:self.time_step_size[modality]] = \
-                                data_g_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length]
-                                data_temp_x[modality][self.num_feat_per_person[modality]:,:,:self.time_step_size[modality]] = \
-                                data_f_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length]
-                                bool_list[modality].append(data_temp_x_i[modality])
+                        if train_on_g is True:
+                            for modality in self.active_modalities:
+                                if not(self.is_irregular[modality]):
+                                    data_temp_x[modality] = np.empty([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
+                                    data_temp_x[modality][0:self.num_feat_per_person[modality],:,:] = data_g_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length,:]
+                                    data_temp_x[modality][self.num_feat_per_person[modality]:,:,:] = data_f_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length,:]
+                                else:
+                                    data_temp_x[modality] = np.zeros([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
+                                    data_temp_x_i[modality] = np.zeros([self.seq_length,self.time_step_size[modality]],dtype=np.float32)
+                                    data_temp_x_i[modality][:self.seq_length,:self.time_step_size[modality]] = \
+                                    data_g_np_bools_list[conv_indx][modality][(step_indx)*self.seq_length:(step_indx+1)*self.seq_length,:self.time_step_size[modality]]
+                                    data_temp_x[modality][0:self.num_feat_per_person[modality],:,:self.time_step_size[modality]] = \
+                                    data_g_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length]
+                                    data_temp_x[modality][self.num_feat_per_person[modality]:,:,:self.time_step_size[modality]] = \
+                                    data_f_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length]
+                                    bool_list[modality].append(data_temp_x_i[modality])
 
-                            batch_list_x[modality].append(data_temp_x[modality])
+                                batch_list_x[modality].append(data_temp_x[modality])
 
 
-                        batch_list_y.append(predict_g_list[conv_indx][step_indx*self.seq_length:(step_indx+1)*self.seq_length])
-                        batch_list_ft.append(data_g_list_ft[conv_indx][step_indx*self.seq_length:(step_indx+1)*self.seq_length])
-                        batch_list_time_indices.append(np.array([step_indx*self.seq_length, (step_indx+1)*self.seq_length]))
-                        batch_list_gf.append(data_select_dict[data_select][1])
-                        batch_list_file_name.append(filename)
-                        conv_indx_list.append(conv_indx)
-#                        batch_list_feature_names.append(data_g_feature_names+data_f_feature_names)
-                        batch_len_count += 1
+                            batch_list_y.append(predict_g_list[conv_indx][step_indx*self.seq_length:(step_indx+1)*self.seq_length])
+                            batch_list_ft.append(data_g_list_ft[conv_indx][step_indx*self.seq_length:(step_indx+1)*self.seq_length])
+                            batch_list_time_indices.append(np.array([step_indx*self.seq_length, (step_indx+1)*self.seq_length]))
+                            batch_list_gf.append(data_select_dict[data_select][1])
+                            batch_list_file_name.append(filename)
+                            conv_indx_list.append(conv_indx)
+    #                        batch_list_feature_names.append(data_g_feature_names+data_f_feature_names)
+                            batch_len_count += 1
 
                         # features for f (predicting f)
 #                        print('conv_length:'+str(conv_length))
 #                        print(step_indx)
-                        for modality in self.active_modalities:
-                            if not(self.is_irregular[modality]):
-                                data_temp_x[modality] = np.empty([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
-                                data_temp_x[modality][0:self.num_feat_per_person[modality],:,:] = data_f_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length,:]
-                                data_temp_x[modality][self.num_feat_per_person[modality]:,:,:] = data_g_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length,:]
-                            else:
-                                data_temp_x[modality] = np.zeros([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
-                                data_temp_x_i[modality] = np.zeros([self.seq_length,self.time_step_size[modality]],dtype=np.float32)
-                                data_temp_x_i[modality][:self.seq_length,:self.time_step_size[modality]] = \
-                                data_f_np_bools_list[conv_indx][modality][(step_indx)*self.seq_length:(step_indx+1)*self.seq_length,:self.time_step_size[modality]]
-                                data_temp_x[modality][0:self.num_feat_per_person[modality],:,:self.time_step_size[modality]] = \
-                                data_f_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length]
-                                data_temp_x[modality][self.num_feat_per_person[modality]:,:,:self.time_step_size[modality]] = \
-                                data_g_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length]
-                                bool_list[modality].append(data_temp_x_i[modality])
+                        if train_on_f is True:
+                            for modality in self.active_modalities:
+                                if not(self.is_irregular[modality]):
+                                    data_temp_x[modality] = np.empty([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
+                                    data_temp_x[modality][0:self.num_feat_per_person[modality],:,:] = data_f_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length,:]
+                                    data_temp_x[modality][self.num_feat_per_person[modality]:,:,:] = data_g_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length,:]
+                                else:
+                                    data_temp_x[modality] = np.zeros([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
+                                    data_temp_x_i[modality] = np.zeros([self.seq_length,self.time_step_size[modality]],dtype=np.float32)
+                                    data_temp_x_i[modality][:self.seq_length,:self.time_step_size[modality]] = \
+                                    data_f_np_bools_list[conv_indx][modality][(step_indx)*self.seq_length:(step_indx+1)*self.seq_length,:self.time_step_size[modality]]
+                                    data_temp_x[modality][0:self.num_feat_per_person[modality],:,:self.time_step_size[modality]] = \
+                                    data_f_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length]
+                                    data_temp_x[modality][self.num_feat_per_person[modality]:,:,:self.time_step_size[modality]] = \
+                                    data_g_list_np[conv_indx][modality][:,(step_indx)*self.seq_length:(step_indx+1)*self.seq_length]
+                                    bool_list[modality].append(data_temp_x_i[modality])
 
-                            batch_list_x[modality].append(data_temp_x[modality])
+                                batch_list_x[modality].append(data_temp_x[modality])
 
 
-                        batch_list_y.append(predict_f_list[conv_indx][step_indx*self.seq_length:(step_indx+1)*self.seq_length])
-                        batch_list_ft.append(data_f_list_ft[conv_indx][step_indx*self.seq_length:(step_indx+1)*self.seq_length])
-                        batch_list_time_indices.append(np.array([step_indx*self.seq_length, (step_indx+1)*self.seq_length]))
-                        batch_list_gf.append(data_select_dict[data_select][0])
-                        batch_list_file_name.append(filename)
-                        conv_indx_list.append(conv_indx)
-#                        batch_list_feature_names.append(data_g_feature_names+data_f_feature_names)
-                        batch_len_count += 1
+                            batch_list_y.append(predict_f_list[conv_indx][step_indx*self.seq_length:(step_indx+1)*self.seq_length])
+                            batch_list_ft.append(data_f_list_ft[conv_indx][step_indx*self.seq_length:(step_indx+1)*self.seq_length])
+                            batch_list_time_indices.append(np.array([step_indx*self.seq_length, (step_indx+1)*self.seq_length]))
+                            batch_list_gf.append(data_select_dict[data_select][0])
+                            batch_list_file_name.append(filename)
+                            conv_indx_list.append(conv_indx)
+    #                        batch_list_feature_names.append(data_g_feature_names+data_f_feature_names)
+                            batch_len_count += 1
 
                 datapoint['info'] = {
                         'batch_size':batch_len_count,

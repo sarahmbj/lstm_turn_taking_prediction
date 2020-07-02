@@ -203,7 +203,8 @@ if slow_test:
 else:
     # quick test loader
     test_dataset = TurnPredictionDataset(feature_dict_list, annotations_dir, test_list_path, sequence_length,
-                                         prediction_length, 'train', data_select=data_set_select)
+                                         prediction_length, 'train', data_select=data_set_select, test_on_f=test_on_f,
+                                         test_on_g=test_on_g)
     test_dataloader = DataLoader(test_dataset, batch_size=test_batch_size, shuffle=True, num_workers=0, drop_last=False)
 
 lstm_settings_dict = train_dataset.get_lstm_settings_dict(lstm_settings_dict) #add some extra items to the lstm settings related to the dataset
@@ -211,7 +212,7 @@ print('time taken to load data: ' + str(t.time() - t1))
 
 print(len(test_dataset))
 print(len(test_dataloader))
-pprint(type(test_dataset[0][0]))
+pprint(type(test_dataset[0]))
 quit() #TODO: remove these three lines
 
 # %% Load list of test files

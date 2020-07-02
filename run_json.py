@@ -210,7 +210,8 @@ lstm_settings_dict = train_dataset.get_lstm_settings_dict(lstm_settings_dict) #a
 print('time taken to load data: ' + str(t.time() - t1))
 
 print(len(test_dataset))
-quit() #TODO: remove these two lines
+print(len(test_dataloader))
+quit() #TODO: remove these three lines
 
 # %% Load list of test files
 test_file_list = list(pd.read_csv(test_list_path, header=None, dtype=str)[0])

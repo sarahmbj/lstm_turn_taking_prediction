@@ -59,6 +59,8 @@ if not (len(argv) == proper_num_args):
 
     train_on_f = True
     train_on_g = True
+    test_on_f = True
+    test_on_g = False
 
     hidden_nodes_master = 50
     hidden_nodes_acous = 50
@@ -193,7 +195,8 @@ feature_size_dict = train_dataset.get_feature_size_dict()
 if slow_test:
     # slow test loader
     test_dataset = TurnPredictionDataset(feature_dict_list, annotations_dir, test_list_path, sequence_length,
-                                         prediction_length, 'test', data_select=data_set_select)
+                                         prediction_length, 'test', data_select=data_set_select, test_on_f=test_on_f,
+                                         test_on_g=test_on_g)
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0, drop_last=False,
                                  pin_memory=p_memory)
 else:

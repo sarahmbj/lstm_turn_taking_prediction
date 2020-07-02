@@ -31,7 +31,7 @@ import pickle
 from sys import argv
 import json
 import os
-import pprint
+from pprint import pprint
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import feature_vars as feat_dicts
 
@@ -210,8 +210,8 @@ lstm_settings_dict = train_dataset.get_lstm_settings_dict(lstm_settings_dict) #a
 print('time taken to load data: ' + str(t.time() - t1))
 
 print(len(test_dataset))
-print(len(test_dataloader)
-print(test_dataloader[0])
+print(len(test_dataloader))
+pprint(test_dataloader[0])
 quit() #TODO: remove these three lines
 
 # %% Load list of test files

@@ -211,7 +211,7 @@ print('time taken to load data: ' + str(t.time() - t1))
 
 print(len(test_dataset))
 print(len(test_dataloader))
-pprint(test_dataset[0][0])
+pprint(type(test_dataset[0][0]))
 quit() #TODO: remove these three lines
 
 # %% Load list of test files

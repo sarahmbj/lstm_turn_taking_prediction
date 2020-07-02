@@ -19,7 +19,7 @@ print(results['indiv_perf'][0]) # these are the labels and values for the per sp
 # would really like to do error curve - but that is tricky (is the reporting at different delays a less granular version of that?
 
 def get_f_g_stats(pickled_results):
-    """Takes in pickled results file, prints stats about mean absolute error for f (instruction followers) and or g
+    """Takes in pickled results file, prints stats about mean absolute error for f (instruction followers) and for g
     (instruction givers) and for all speakers."""
     with open(pickled_results, "rb") as results_file:
         results = pickle.load(results_file)

@@ -189,7 +189,7 @@ experiment_features_lists = [
     feat_dicts.word_reg_dict_list_acous
 ]
 
-experiment_settings_list = [  # TODO: change this!
+experiment_settings_list = [ 
     Acous_10ms_Ling_50ms,
     Acous_10ms_Ling_50ms,
     Acous_10ms,

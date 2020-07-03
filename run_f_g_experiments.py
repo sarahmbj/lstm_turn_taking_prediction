@@ -272,8 +272,8 @@ def run_trial(parameters):
                          'grad_clip_bool': False,
                          'l2_dict': l2_dict,
                          'dropout_dict': drp_dict,
-                         'train_on_f': train_on_f,
-                         'train_on_g': train_on_g,
+                         'train_on_f': True,
+                         'train_on_g': True,
                          }
             json_dict = json.dumps(json_dict)
             arg_list = [json_dict]

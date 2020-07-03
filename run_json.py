@@ -61,8 +61,8 @@ if not (len(argv) == proper_num_args):
 
     train_on_f = True
     train_on_g = True
-    test_on_f = False
-    test_on_g = True
+    test_on_f = True
+    test_on_g = False
 
     hidden_nodes_master = 50
     hidden_nodes_acous = 50

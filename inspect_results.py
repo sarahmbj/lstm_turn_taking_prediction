@@ -3,21 +3,6 @@ import pickle
 import numpy as np
 from pprint import pprint
 
-file_to_inspect = "./results/sample_results/results.p"
-
-with open(file_to_inspect, "rb") as results_file:
-    results = pickle.load(results_file)
-
-print(len(results))
-print(type(results))
-print(results.keys())
-
-print(results['indiv_perf']) # a list of dictionaries - is it a dictionary for each run of the experiment?
-print(results['indiv_perf'][0]) # these are the labels and values for the per speaker bar chart - mean absolute error per speaker
-# would need to decide best epoch, and then get the mean error for f and for g by aggregating across all speakers
-#but do you want to report other values e.g. f-scores for things like in roddy paper? that wont be available here
-# would really like to do error curve - but that is tricky (is the reporting at different delays a less granular version of that?
-
 def get_f_g_stats(pickled_results):
     """Takes in pickled results file, prints stats about mean absolute error for f (instruction followers) and for g
     (instruction givers) and for all speakers."""
@@ -36,14 +21,19 @@ def get_f_g_stats(pickled_results):
 
     mean_f_error = sum(f_errors)/len(f_errors)
     mean_g_error = sum(g_errors)/len(g_errors)
-    mean_all_error = sum(all_errors)
+    mean_all_error = sum(all_errors)/len(all_errors)
     std_f_error = np.std(f_errors)
     std_g_error = np.std(g_errors)
     std_all_error = np.std(all_errors)
 
-    print(f'average error on f: {mean_f_error} standard deviation: {std_f_error}')
-    print(f'average error on f: {mean_g_error} standard deviation: {std_g_error}')
-    print(f'average error on f: {mean_all_error} standard deviation: {std_all_error}')
-    print(f'Difference between average error f and g: {abs(mean_f_error-mean_g_error)}')
+    print(f'average error on f: {mean_f_error:.3f} standard deviation: {std_f_error:.3f}')
+    print(f'average error on g: {mean_g_error:.3f} standard deviation: {std_g_error:.3f}')
+    print(f'average error on both: {mean_all_error:.3f} standard deviation: {std_all_error:.3f}')
+    print(f'Difference between average error f and g: {abs(mean_f_error-mean_g_error):.3f}')
 
-get_f_g_stats(file_to_inspect)
+print("\n Train on both")
+get_f_g_stats("results/f_g_test/results_train_on_both.p")
+print("\n Train on f")
+get_f_g_stats("results/f_g_test/results_train_on_f.p")
+print("\n Train on g")
+get_f_g_stats("results/f_g_test/results_train_on_g.p")

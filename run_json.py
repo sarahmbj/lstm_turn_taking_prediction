@@ -143,8 +143,11 @@ if not (len(argv) == proper_num_args):
 else:
 
     json_dict = json.loads(argv[1]) # this argument is a dictionary of the settings for this experiment
-
+    train_on_f = True
+    train_on_g = True
     locals().update(json_dict) # every key-value in the dictionary become objects in the local namespace
+
+
     # print features:
     feature_print_list = list()
     for feat_dict in feature_dict_list:

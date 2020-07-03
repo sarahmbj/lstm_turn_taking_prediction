@@ -34,7 +34,7 @@ test_list_path = './data/splits/testing.txt'
 # %% Experiment settings
 
 # note: master is the one that needs to be changed in all cases for the no_subnet experiments
-Acous_10ms_Ling_50ms_f_train = { #TODO: add in f_train/g_train settings to all these dicts
+Acous_10ms_Ling_50ms_ftrain = { #TODO: add in f_train/g_train settings to all these dicts
     'lr': 0.01,
     'l2_dict':
         {'emb': 0.0001,
@@ -56,7 +56,7 @@ Acous_10ms_Ling_50ms_f_train = { #TODO: add in f_train/g_train settings to all t
     'hidden_nodes_visual': 50
 }
 
-Acous_10ms_Ling_50ms_g_train = {
+Acous_10ms_Ling_50ms_gtrain = {
     'lr': 0.01,
     'l2_dict':
         {'emb': 0.0001,
@@ -189,13 +189,13 @@ experiment_features_lists = [
     feat_dicts.word_reg_dict_list_acous
 ]
 
-experiment_settings_list = [ 
-    Acous_10ms_Ling_50ms,
-    Acous_10ms_Ling_50ms,
-    Acous_10ms,
-    Acous_10ms,
-    Ling_50ms,
-    Ling_50ms
+experiment_settings_list = [
+    Acous_10ms_Ling_50ms_ftrain,
+    Acous_10ms_Ling_50ms_gtrain,
+    Acous_10ms_ftrain,
+    Acous_10ms_gtrain,
+    Ling_50ms_ftrain,
+    Ling_50ms_gtrain
 ]
 
 eval_metric_list = ['f_scores_50ms', 'f_scores_250ms', 'f_scores_500ms', 'f_scores_overlap_hold_shift',

@@ -447,6 +447,7 @@ class TurnPredictionDataset(Dataset):
 #                        print('conv_length:'+str(conv_length))
 #                        print(step_indx)
                         if self.test_on_g is True:
+                            print("inside self.test_on_g")
                             for modality in self.active_modalities:
                                 if not(self.is_irregular[modality]):
                                     data_temp_x[modality] = np.empty([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
@@ -479,6 +480,7 @@ class TurnPredictionDataset(Dataset):
 #                        print('conv_length:'+str(conv_length))
 #                        print(step_indx)
                         if self.test_on_f is True:
+                            print("inside self.test_on_f")
                             for modality in self.active_modalities:
                                 if not(self.is_irregular[modality]):
                                     data_temp_x[modality] = np.empty([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)

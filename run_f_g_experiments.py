@@ -55,7 +55,7 @@ Acous_10ms_Ling_50ms_ftrain = { #TODO: add in f_train/g_train settings to all th
     'hidden_nodes_acous': 50,
     'hidden_nodes_visual': 50,
     'train_on_f': True,
-    'train_on_g': False,
+    'train_on_g': False
 }
 
 Acous_10ms_Ling_50ms_gtrain = {
@@ -77,7 +77,9 @@ Acous_10ms_Ling_50ms_gtrain = {
     },
     'hidden_nodes_master': 50,
     'hidden_nodes_acous': 50,
-    'hidden_nodes_visual': 50
+    'hidden_nodes_visual': 50,
+    'train_on_f': False,
+    'train_on_g': True
 }
 
 Acous_10ms_ftrain = {
@@ -99,7 +101,9 @@ Acous_10ms_ftrain = {
          },
     'hidden_nodes_master': 60,
     'hidden_nodes_acous': 0,
-    'hidden_nodes_visual': 0
+    'hidden_nodes_visual': 0,
+    'train_on_f': True,
+    'train_on_g': False
     }
 
 Acous_10ms_gtrain = {
@@ -121,7 +125,9 @@ Acous_10ms_gtrain = {
          },
     'hidden_nodes_master': 60,
     'hidden_nodes_acous': 0,
-    'hidden_nodes_visual': 0
+    'hidden_nodes_visual': 0,
+    'train_on_f': False,
+    'train_on_g': Train
     }
 
 Ling_50ms_ftrain = {
@@ -143,7 +149,9 @@ Ling_50ms_ftrain = {
          },
     'hidden_nodes_master': 60,
     'hidden_nodes_acous': 0,
-    'hidden_nodes_visual': 0
+    'hidden_nodes_visual': 0,
+    'train_on_f': True,
+    'train_on_g': False
     }
 
 Ling_50ms_gtrain = {
@@ -165,7 +173,9 @@ Ling_50ms_gtrain = {
          },
     'hidden_nodes_master': 60,
     'hidden_nodes_acous': 0,
-    'hidden_nodes_visual': 0
+    'hidden_nodes_visual': 0,
+    'train_on_f': False,
+    'train_on_g': True
     }
 
 # %% Experiments list
@@ -272,8 +282,8 @@ def run_trial(parameters):
                          'grad_clip_bool': False,
                          'l2_dict': l2_dict,
                          'dropout_dict': drp_dict,
-                         'train_on_f': True,
-                         'train_on_g': True,
+                         'train_on_f': True,  # TODO: get these from experiment args
+                         'train_on_g': True,  # TODO: get these from experiment args
                          }
             json_dict = json.dumps(json_dict)
             arg_list = [json_dict]

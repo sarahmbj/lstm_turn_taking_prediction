@@ -367,9 +367,6 @@ for experiment_name, experiment_features_list, experiment_settings in zip(experi
                                                                           experiment_settings_list):
     param_list.append([experiment_name, experiment_features_list, experiment_settings])
 
-pprint(param_list)
-quit()
-
 # if __name__=='__main__':
 #    p = multiprocessing.Pool(num_workers)
 #    p.map(run_trial,param_list)   

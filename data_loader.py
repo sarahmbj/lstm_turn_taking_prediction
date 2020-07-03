@@ -195,6 +195,7 @@ class TurnPredictionDataset(Dataset):
                         data_g_np_bools[modality][:,:data_g[ modality]['x_i'][feature_name].shape[-1] ] = \
                             np.asarray(data_g[modality]['x_i'][feature_name] , dtype=np.float32) + np.asarray(data_f[modality]['x_i'][feature_name] , dtype=np.float32)
                 if self.train_on_g == True:
+                    print("getting training features for g")
                     # features for g
                     for i in range(1,num_batches + 1):
                         datapoint, data_temp_x,data_temp_x_i = {},{},{}
@@ -229,7 +230,8 @@ class TurnPredictionDataset(Dataset):
                         self.dataset.append(datapoint)
                         self.len += 1
                 if self.train_on_f == True:
-                # features for f
+                    print("getting training features for f")
+                    # features for f
                     for i in range(1,num_batches + 1):
                         datapoint, data_temp_x,data_temp_x_i = {},{},{}
                         for modality in self.active_modalities:
@@ -447,7 +449,7 @@ class TurnPredictionDataset(Dataset):
 #                        print('conv_length:'+str(conv_length))
 #                        print(step_indx)
                         if self.test_on_g is True:
-                            # print("inside self.test_on_g")
+                            print("getting testing features for g")
                             for modality in self.active_modalities:
                                 if not(self.is_irregular[modality]):
                                     data_temp_x[modality] = np.empty([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)
@@ -480,7 +482,7 @@ class TurnPredictionDataset(Dataset):
 #                        print('conv_length:'+str(conv_length))
 #                        print(step_indx)
                         if self.test_on_f is True:
-                            # print("inside self.test_on_f")
+                            print("getting testing features for f")
                             for modality in self.active_modalities:
                                 if not(self.is_irregular[modality]):
                                     data_temp_x[modality] = np.empty([2*self.num_feat_per_person[modality],self.seq_length,self.time_step_size[modality]],dtype=np.float32)

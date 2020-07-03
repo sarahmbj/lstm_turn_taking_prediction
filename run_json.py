@@ -143,7 +143,7 @@ if not (len(argv) == proper_num_args):
 else:
 
     json_dict = json.loads(argv[1]) # this argument is a dictionary of the settings for this experiment
-    train_on_f = True
+    train_on_f = True # these get overwritten if they are found in json_dict
     train_on_g = True
     test_on_f = True
     test_on_g = True

@@ -238,6 +238,9 @@ def run_trial(parameters):
     l2_dict = exp_settings['l2_dict']
     drp_dict = exp_settings['dropout_dict']
     best_lr = exp_settings['lr']
+    train_on_f = exp_settings['train_on_f']
+    train_on_g = exp_settings['train_on_g']
+
     #    best_l2 = l2_list[0]
     # Run full test
     # Run full test number_of_tests times
@@ -283,8 +286,8 @@ def run_trial(parameters):
                          'grad_clip_bool': False,
                          'l2_dict': l2_dict,
                          'dropout_dict': drp_dict,
-                         'train_on_f': True,  # TODO: get these from experiment args
-                         'train_on_g': True,  # TODO: get these from experiment args
+                         'train_on_f': train_on_f
+                         'train_on_g': train_on_g
                          }
             json_dict = json.dumps(json_dict)
             arg_list = [json_dict]

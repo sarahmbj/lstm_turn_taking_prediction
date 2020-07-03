@@ -271,7 +271,9 @@ def run_trial(parameters):
                          'freeze_glove_embeddings': False,
                          'grad_clip_bool': False,
                          'l2_dict': l2_dict,
-                         'dropout_dict': drp_dict
+                         'dropout_dict': drp_dict,
+                         'train_on_f': train_on_f,
+                         'train_on_g': train_on_g,
                          }
             json_dict = json.dumps(json_dict)
             arg_list = [json_dict]

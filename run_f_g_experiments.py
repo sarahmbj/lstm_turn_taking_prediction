@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from pprint import pprint
 # from subprocess import Popen,PIPE
 import subprocess
 import torch.multiprocessing as multiprocessing
@@ -365,6 +366,9 @@ for experiment_name, experiment_features_list, experiment_settings in zip(experi
                                                                           experiment_features_lists,
                                                                           experiment_settings_list):
     param_list.append([experiment_name, experiment_features_list, experiment_settings])
+
+pprint(param_list)
+quit()
 
 # if __name__=='__main__':
 #    p = multiprocessing.Pool(num_workers)

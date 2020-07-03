@@ -127,7 +127,7 @@ Acous_10ms_gtrain = {
     'hidden_nodes_acous': 0,
     'hidden_nodes_visual': 0,
     'train_on_f': False,
-    'train_on_g': Train
+    'train_on_g': True
     }
 
 Ling_50ms_ftrain = {

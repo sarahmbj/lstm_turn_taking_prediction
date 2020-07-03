@@ -681,7 +681,7 @@ plot_person_error(results_save['indiv_perf'][-1]['bar_chart_labels'],
                   results_save['indiv_perf'][-1]['bar_chart_vals'], 'barchart')
 plt.close('all')
 pickle.dump(results_save, open(results_dir + '/' + result_dir_name + '/results.p', 'wb'))
-print(f'should have done the pickle dump to {results_dir}/{result_dir_name}')
+print(f'************************should have done the pickle dump to {results_dir}/{result_dir_name}')
 torch.save(model.state_dict(), results_dir + '/' + result_dir_name + '/model.p')
 if len(argv) == proper_num_args:
     json.dump(argv[1], open(results_dir + '/' + result_dir_name + '/settings.json', 'w'), indent=4, sort_keys=True)

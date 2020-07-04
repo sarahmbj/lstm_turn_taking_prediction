@@ -1,12 +1,15 @@
-import pickle
+import torch
+from pprint import pprint
 
 
-def test_on_model(pickled_model):
+def load_model(pickled_model):
     with open(pickled_model, "rb") as model_file:
-        model = pickle.load(model_file)
+        if torch.cuda.is_available():
+            model = torch.load(model_file)
+        else:
+            model = torch.load(model_file, map_location=torch.device('cpu'))
         print(type(model))
-        print(model)
+        pprint(model)
 
 
-
-test_on_model('results/example_pickled_model/model.p')
+load_model('results/example_pickled_model/model.p')

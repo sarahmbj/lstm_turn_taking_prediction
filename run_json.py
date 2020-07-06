@@ -331,7 +331,6 @@ def test():
         model_input = []
 
         for b_i, bat in enumerate(batch):
-            print(f'bat:{bat}')
             if len(bat) == 0:
                 model_input.append(bat)
             elif (b_i == 1) or (b_i == 3):

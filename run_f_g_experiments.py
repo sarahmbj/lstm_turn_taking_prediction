@@ -58,7 +58,7 @@ Acous_10ms_Ling_50ms_ftrain = {
     'train_on_f': True, # TODO: set these all back to correct values after debugging
     'train_on_g': False,
     'test_on_f': True,
-    'test_on_g': True
+    'test_on_g': False
 }
 
 Acous_10ms_Ling_50ms_gtrain = {

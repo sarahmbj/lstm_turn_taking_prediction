@@ -8,3 +8,4 @@ results
 icmi_results
 __pycache__
 .idea
+/model_location.txt

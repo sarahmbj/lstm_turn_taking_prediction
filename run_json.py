@@ -143,11 +143,11 @@ if not (len(argv) == proper_num_args):
 else:
 
     json_dict = json.loads(argv[1]) # this argument is a dictionary of the settings for this experiment
-    train_on_f = True # these get overwritten if they are found in json_dict
+    train_on_f = True  # these get overwritten if they are found in json_dict
     train_on_g = True
     test_on_f = True
     test_on_g = True
-    locals().update(json_dict) # every key-value in the dictionary become objects in the local namespace
+    locals().update(json_dict)  # every key-value in the dictionary become objects in the local namespace
 
 
     # print features:
@@ -689,6 +689,9 @@ quit()
 pickle.dump(results_save, open(results_dir + '/' + result_dir_name + '/results.p', 'wb'))
 
 torch.save(model.state_dict(), results_dir + '/' + result_dir_name + '/model.p')
+#  write model location to file so it can be recovered to use different test sets
+with open("model_location.txt", "a") as file:
+    file.write(results_dir + '/' + result_dir_name + '/model.p')
 if len(argv) == proper_num_args:
     json.dump(argv[1], open(results_dir + '/' + result_dir_name + '/settings.json', 'w'), indent=4, sort_keys=True)
 

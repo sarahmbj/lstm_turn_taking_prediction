@@ -17,8 +17,6 @@ from time import gmtime, strftime
 # import shutil
 from random import randint
 
-# from test_on_existing_model import test_on_existing_model
-
 seq_length = 600
 no_subnets = False
 
@@ -377,12 +375,17 @@ def run_trial(parameters):
 
     json.dump(report_dict, open(trial_path + '/report_dict.json', 'w'), indent=4, sort_keys=True)
 
-def run_additional_test(parameters):
+def run_additional_test(parameters, test_on_f=True, test_on_g=True):
     experiment_name, experiment_features_list, exp_settings = parameters
 
     trial_path = experiment_top_path + experiment_name
 
-    test_path = trial_path + '/test/'
+    test_set = ""
+    if test_on_g is True:
+        test_set.append("_on_g")
+    if test_on_f is True:
+        test_set.append("_on_f")
+    test_path = trial_path + f'/test{test_set}/'
 
     if not (os.path.exists(trial_path)):
         os.mkdir(trial_path)
@@ -396,10 +399,10 @@ def run_additional_test(parameters):
     l2_dict = exp_settings['l2_dict']
     drp_dict = exp_settings['dropout_dict']
     best_lr = exp_settings['lr']
-    train_on_f = exp_settings['train_on_f']
-    train_on_g = exp_settings['train_on_g']
-    test_on_f = exp_settings['test_on_f']
-    test_on_g = exp_settings['test_on_g']
+    # train_on_f = exp_settings['train_on_f'] #no need for training sets here - testing only
+    # train_on_g = exp_settings['train_on_g']
+    # test_on_f = exp_settings['test_on_f'] #for additional tests, required test set is passed into function instead
+    # test_on_g = exp_settings['test_on_g']
 
     #    best_l2 = l2_list[0]
     # Run full test
@@ -446,20 +449,20 @@ def run_additional_test(parameters):
                          'grad_clip_bool': False,
                          'l2_dict': l2_dict,
                          'dropout_dict': drp_dict,
-                         'train_on_f': train_on_f,
-                         'train_on_g': train_on_g,
+                         # 'train_on_f': train_on_f, #no need for training sets - testing only
+                         # 'train_on_g': train_on_g,
                          'test_on_f': test_on_f,
                          'test_on_g': test_on_g
                          }
             json_dict = json.dumps(json_dict)
             arg_list = [json_dict]
             my_env = {'CUDA_VISIBLE_DEVICES': str(gpu_select)}
-            # same as run_trial() above here TODO: modify below here to call test_on_existing_model
-            command = [py_env, './run_json.py'] + arg_list
+            command = [py_env, './test_on_existing_model.py'] + arg_list
             print(command)
             print('\n *** \n')
             print(test_path + name_append_test)
             print('\n *** \n')
+            # TODO: modify below here
             response = subprocess.run(command, stderr=subprocess.PIPE, env=my_env)
             print(response.stderr)
             #            sys.stderr.write(response.stderr)
@@ -543,7 +546,10 @@ for params in param_list:
     except FileNotFoundError:
         py_env = '/Users/sarahburnejames/miniconda3/bin/python'
         run_trial(params)
-    # test_on_existing_model(model, params, [test_sets])
+    # run_additional_test(params, test_on_f=True, test_on_g=True) #TODO: check where this stores results to
+    # run_additional_test(params, test_on_f=True, test_on_g=False) #TODO: check where this stores results to
+    # run_additional_test(params, test_on_f=False, test_on_g=True) #TODO: check where this stores results to
+
 
 
 

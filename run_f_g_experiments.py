@@ -17,12 +17,14 @@ from time import gmtime, strftime
 # import shutil
 from random import randint
 
+# from test_on_existing_model import test_on_existing_model
+
 seq_length = 600
 no_subnets = False
 
 experiment_top_path = './f_and_g/'
-
 py_env = '/afs/inf.ed.ac.uk/user/s09/s0910315/miniconda3/bin/python'
+
 
 # %% Common settings for all experiments
 num_epochs = 1500
@@ -56,7 +58,9 @@ Acous_10ms_Ling_50ms_ftrain = { #TODO: add in f_train/g_train settings to all th
     'hidden_nodes_acous': 50,
     'hidden_nodes_visual': 50,
     'train_on_f': True,
-    'train_on_g': False
+    'train_on_g': False,
+    'test_on_f': True,
+    'test_on_g': False
 }
 
 Acous_10ms_Ling_50ms_gtrain = {
@@ -80,7 +84,9 @@ Acous_10ms_Ling_50ms_gtrain = {
     'hidden_nodes_acous': 50,
     'hidden_nodes_visual': 50,
     'train_on_f': False,
-    'train_on_g': True
+    'train_on_g': True,
+    'test_on_f': False,
+    'test_on_g': True
 }
 
 Acous_10ms_ftrain = {
@@ -104,7 +110,9 @@ Acous_10ms_ftrain = {
     'hidden_nodes_acous': 0,
     'hidden_nodes_visual': 0,
     'train_on_f': True,
-    'train_on_g': False
+    'train_on_g': False,
+    'test_on_f': True,
+    'test_on_g': False
     }
 
 Acous_10ms_gtrain = {
@@ -128,7 +136,9 @@ Acous_10ms_gtrain = {
     'hidden_nodes_acous': 0,
     'hidden_nodes_visual': 0,
     'train_on_f': False,
-    'train_on_g': True
+    'train_on_g': True,
+    'test_on_f': False,
+    'test_on_g': True
     }
 
 Ling_50ms_ftrain = {
@@ -152,7 +162,9 @@ Ling_50ms_ftrain = {
     'hidden_nodes_acous': 0,
     'hidden_nodes_visual': 0,
     'train_on_f': True,
-    'train_on_g': False
+    'train_on_g': False,
+    'test_on_f': True,
+    'test_on_g': False
     }
 
 Ling_50ms_gtrain = {
@@ -176,7 +188,9 @@ Ling_50ms_gtrain = {
     'hidden_nodes_acous': 0,
     'hidden_nodes_visual': 0,
     'train_on_f': False,
-    'train_on_g': True
+    'train_on_g': True,
+    'test_on_f': False,
+    'test_on_g': True
     }
 
 # %% Experiments list
@@ -359,6 +373,148 @@ def run_trial(parameters):
 
     json.dump(report_dict, open(trial_path + '/report_dict.json', 'w'), indent=4, sort_keys=True)
 
+def run_additional_test(parameters):
+    experiment_name, experiment_features_list, exp_settings = parameters
+
+    trial_path = experiment_top_path + experiment_name
+
+    test_path = trial_path + '/test/'
+
+    if not (os.path.exists(trial_path)):
+        os.mkdir(trial_path)
+
+    if not (os.path.exists(test_path)):
+        os.mkdir(test_path)
+
+    best_master_node_size = exp_settings['hidden_nodes_master']
+    best_acous_node_size = exp_settings['hidden_nodes_acous']
+    best_visual_node_size = exp_settings['hidden_nodes_visual']
+    l2_dict = exp_settings['l2_dict']
+    drp_dict = exp_settings['dropout_dict']
+    best_lr = exp_settings['lr']
+    train_on_f = exp_settings['train_on_f']
+    train_on_g = exp_settings['train_on_g']
+    test_on_f = exp_settings['test_on_f']
+    test_on_g = exp_settings['test_on_g']
+
+    #    best_l2 = l2_list[0]
+    # Run full test
+    # Run full test number_of_tests times
+    test_fold_list = []
+    for test_indx in test_indices:
+        name_append_test = str(test_indx) + '_' + experiment_name + \
+                           '_m_' + str(best_master_node_size) + \
+                           '_a_' + str(best_acous_node_size) + \
+                           '_v_' + str(best_visual_node_size) + \
+                           '_lr_' + str(best_lr)[2:] + \
+                           '_l2e_' + str(l2_dict['emb'])[2:] + \
+                           '_l2o_' + str(l2_dict['out'])[2:] + \
+                           '_l2m_' + str(l2_dict['master'])[2:] + \
+                           '_l2a_' + str(l2_dict['acous'])[2:] + \
+                           '_l2v_' + str(l2_dict['visual'])[2:] + \
+                           '_dmo_' + str(drp_dict['master_out'])[2:] + \
+                           '_dmi_' + str(drp_dict['master_in'])[2:] + \
+                           '_dao_' + str(drp_dict['acous_out'])[2:] + \
+                           '_dai_' + str(drp_dict['acous_in'])[2:] + \
+                           '_dvo_' + str(drp_dict['visual_out'])[2:] + \
+                           '_dvi_' + str(drp_dict['visual_in'])[2:] + \
+                           '_seq_' + str(seq_length)
+        test_fold_list.append(os.path.join(test_path, name_append_test))
+        if not (os.path.exists(os.path.join(test_path, name_append_test))) and not (
+        os.path.exists(os.path.join(test_path, name_append_test, 'results.p'))):
+            json_dict = {'feature_dict_list': experiment_features_list,
+                         'results_dir': test_path,
+                         'name_append': name_append_test,
+                         'no_subnets': no_subnets,
+                         'hidden_nodes_master': best_master_node_size,
+                         'hidden_nodes_acous': best_acous_node_size,
+                         'hidden_nodes_visual': best_visual_node_size,
+                         'learning_rate': best_lr,
+                         'sequence_length': seq_length,
+                         'num_epochs': num_epochs,
+                         'early_stopping': early_stopping,
+                         'patience': patience,
+                         'slow_test': slow_test,
+                         'train_list_path': train_list_path,
+                         'test_list_path': test_list_path,
+                         'use_date_str': False,
+                         'freeze_glove_embeddings': False,
+                         'grad_clip_bool': False,
+                         'l2_dict': l2_dict,
+                         'dropout_dict': drp_dict,
+                         'train_on_f': train_on_f,
+                         'train_on_g': train_on_g
+                         }
+            json_dict = json.dumps(json_dict)
+            arg_list = [json_dict]
+            my_env = {'CUDA_VISIBLE_DEVICES': str(gpu_select)}
+            #same as run_trial() above here
+            command = [py_env, './run_json.py'] + arg_list
+            print(command)
+            print('\n *** \n')
+            print(test_path + name_append_test)
+            print('\n *** \n')
+            response = subprocess.run(command, stderr=subprocess.PIPE, env=my_env)
+            print(response.stderr)
+            #            sys.stderr.write(response.stderr)
+            #                    sys.stdout.write(line)
+            #                    sys.stdout.flush()
+            if not (response.returncode == 0):
+                raise (ValueError('error in test subprocess: ' + name_append_test))
+
+    best_vals_dict, best_vals_dict_array, last_vals_dict, best_fscore_array = {}, {}, {}, {}
+    for eval_metric in eval_metric_list:
+        best_vals_dict[eval_metric] = 0
+        last_vals_dict[eval_metric] = 0
+        best_vals_dict_array[eval_metric] = []
+        best_fscore_array[eval_metric] = []
+
+
+    for test_run_indx in test_indices:
+        test_run_folder = str(test_run_indx) + '_' + experiment_name + \
+                          '_m_' + str(best_master_node_size) + \
+                          '_a_' + str(best_acous_node_size) + \
+                          '_v_' + str(best_visual_node_size) + \
+                          '_lr_' + str(best_lr)[2:] + \
+                          '_l2e_' + str(l2_dict['emb'])[2:] + \
+                          '_l2o_' + str(l2_dict['out'])[2:] + \
+                          '_l2m_' + str(l2_dict['master'])[2:] + \
+                          '_l2a_' + str(l2_dict['acous'])[2:] + \
+                          '_l2v_' + str(l2_dict['visual'])[2:] + \
+                          '_dmo_' + str(drp_dict['master_out'])[2:] + \
+                          '_dmi_' + str(drp_dict['master_in'])[2:] + \
+                          '_dao_' + str(drp_dict['acous_out'])[2:] + \
+                          '_dai_' + str(drp_dict['acous_in'])[2:] + \
+                          '_dvo_' + str(drp_dict['visual_out'])[2:] + \
+                          '_dvi_' + str(drp_dict['visual_in'])[2:] + \
+                          '_seq_' + str(seq_length )
+
+        test_results = pickle.load(open(os.path.join(test_path, test_run_folder, 'results.p'), 'rb'))
+        total_num_epochs = len(test_results['test_losses'])
+        best_loss_indx = np.argmin(test_results['test_losses'])
+
+        # get average and lists
+        for eval_metric in eval_metric_list:
+            best_vals_dict[eval_metric] += float(test_results[eval_metric][best_loss_indx]) * (
+                        1.0 / float(len(test_indices)))
+            last_vals_dict[eval_metric] += float(test_results[eval_metric][-1]) * (1.0 / float(len(test_indices)))
+            best_vals_dict_array[eval_metric].append(float(test_results[eval_metric][best_loss_indx]))
+            best_fscore_array[eval_metric].append(float(np.amax(test_results[eval_metric])))
+
+    report_dict = {'experiment_name': experiment_name,
+                   'best_vals': best_vals_dict,
+                   'last_vals': last_vals_dict,
+                   'best_vals_array': best_vals_dict_array,
+                   'best_fscore_array': best_fscore_array,
+                   'best_fscore_500_average': np.mean(best_fscore_array['f_scores_500ms']),
+                   'best_test_loss_average': np.mean(best_vals_dict['test_losses']),
+                   'best_indx': int(best_loss_indx),
+                   'num_epochs_total': int(total_num_epochs),
+                   'selected_lr': best_lr,
+                   'selected_master_node_size': int(best_master_node_size)
+                   }
+
+    json.dump(report_dict, open(trial_path + '/report_dict.json', 'w'), indent=4, sort_keys=True)
 
 # create folder within loop number
 
@@ -372,8 +528,17 @@ for experiment_name, experiment_features_list, experiment_settings in zip(experi
 
 # if __name__=='__main__':
 #    p = multiprocessing.Pool(num_workers)
-#    p.map(run_trial,param_list)   
+#    p.map(run_trial,param_list)
+
+
 for params in param_list:
-    run_trial(params)
+    try:
+        run_trial(params)
+    except FileNotFoundError:
+        py_env = '/Users/sarahburnejames/miniconda3/bin/python'
+        run_trial(params)
+    # test_on_existing_model(model, params, [test_sets])
+
+
 
 

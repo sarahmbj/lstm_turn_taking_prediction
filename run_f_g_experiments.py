@@ -25,7 +25,7 @@ py_env = '/afs/inf.ed.ac.uk/user/s09/s0910315/miniconda3/bin/python'
 
 
 # %% Common settings for all experiments
-num_epochs = 1500
+num_epochs = 2 #TODO: change back to 1500!!!!!
 early_stopping = True
 patience = 10
 slow_test = True

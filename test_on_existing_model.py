@@ -54,7 +54,7 @@ onset_test_flag = True
 annotations_dir = './data/extracted_annotations/voice_activity/'
 
 proper_num_args = 2  # when called as subprocess, this consists of './run_json.py' and a dictionary of the other args
-print("********** Testing on existing model")
+print("******************************* Testing on existing model *******************************")
 print('Number of arguments is: ' + str(len(argv)))
 
 if not (len(argv) == proper_num_args):

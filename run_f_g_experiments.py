@@ -254,6 +254,8 @@ def run_trial(parameters):
     best_lr = exp_settings['lr']
     train_on_f = exp_settings['train_on_f']
     train_on_g = exp_settings['train_on_g']
+    test_on_f = exp_settings['test_on_f']
+    test_on_g = exp_settings['test_on_g']
 
     #    best_l2 = l2_list[0]
     # Run full test
@@ -301,7 +303,9 @@ def run_trial(parameters):
                          'l2_dict': l2_dict,
                          'dropout_dict': drp_dict,
                          'train_on_f': train_on_f,
-                         'train_on_g': train_on_g
+                         'train_on_g': train_on_g,
+                         'test_on_f': test_on_f,
+                         'test_on_g': test_on_g
                          }
             json_dict = json.dumps(json_dict)
             arg_list = [json_dict]
@@ -443,12 +447,14 @@ def run_additional_test(parameters):
                          'l2_dict': l2_dict,
                          'dropout_dict': drp_dict,
                          'train_on_f': train_on_f,
-                         'train_on_g': train_on_g
+                         'train_on_g': train_on_g,
+                         'test_on_f': test_on_f,
+                         'test_on_g': test_on_g
                          }
             json_dict = json.dumps(json_dict)
             arg_list = [json_dict]
             my_env = {'CUDA_VISIBLE_DEVICES': str(gpu_select)}
-            #same as run_trial() above here
+            # same as run_trial() above here TODO: modify below here to call test_on_existing_model
             command = [py_env, './run_json.py'] + arg_list
             print(command)
             print('\n *** \n')

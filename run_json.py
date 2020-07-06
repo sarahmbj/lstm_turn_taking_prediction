@@ -694,6 +694,7 @@ with open("model_location.txt", "a") as file:
     file.write(results_dir + '/' + result_dir_name + '/model.p')
 if len(argv) == proper_num_args:
     json.dump(argv[1], open(results_dir + '/' + result_dir_name + '/settings.json', 'w'), indent=4, sort_keys=True)
+quit()
 
 onsets.close()
 hold_shift.close()

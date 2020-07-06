@@ -25,7 +25,7 @@ py_env = '/afs/inf.ed.ac.uk/user/s09/s0910315/miniconda3/bin/python'
 
 
 # %% Common settings for all experiments
-num_epochs = 2 #TODO: change back to 1500!!!!!
+num_epochs = 1 #TODO: change back to 1500!!!!!
 early_stopping = True
 patience = 10
 slow_test = True
@@ -35,7 +35,7 @@ test_list_path = './data/splits/testing.txt'
 # %% Experiment settings
 
 # note: master is the one that needs to be changed in all cases for the no_subnet experiments
-Acous_10ms_Ling_50ms_ftrain = { #TODO: add in f_train/g_train settings to all these dicts
+Acous_10ms_Ling_50ms_ftrain = {
     'lr': 0.01,
     'l2_dict':
         {'emb': 0.0001,

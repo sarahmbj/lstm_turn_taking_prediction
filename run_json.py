@@ -689,8 +689,8 @@ pickle.dump(results_save, open(results_dir + '/' + result_dir_name + '/results.p
 
 torch.save(model.state_dict(), results_dir + '/' + result_dir_name + '/model.p')
 #  write model location to file so it can be recovered to use different test sets
-with open("\n./model_location.txt", "a") as file:
-    file.write(results_dir + '/' + result_dir_name + '/model.p')
+with open("./model_location.txt", "a") as file:
+    file.write('\n' + results_dir + '/' + result_dir_name + '/model.p')
 if len(argv) == proper_num_args:
     json.dump(argv[1], open(results_dir + '/' + result_dir_name + '/settings.json', 'w'), indent=4, sort_keys=True)
 

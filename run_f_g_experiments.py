@@ -546,7 +546,7 @@ for params in param_list:
     except FileNotFoundError:
         py_env = '/Users/sarahburnejames/miniconda3/bin/python'
         run_trial(params)
-    # run_additional_test(params, test_on_f=True, test_on_g=True) #TODO: check where this stores results to
+    run_additional_test(params, test_on_f=True, test_on_g=True) #TODO: check where this stores results to
     # run_additional_test(params, test_on_f=True, test_on_g=False) #TODO: check where this stores results to
     # run_additional_test(params, test_on_f=False, test_on_g=True) #TODO: check where this stores results to
 

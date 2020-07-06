@@ -58,7 +58,7 @@ Acous_10ms_Ling_50ms_ftrain = {
     'train_on_f': True, # TODO: set these all back to correct values after debugging
     'train_on_g': False,
     'test_on_f': True,
-    'test_on_g': True
+    'test_on_g': False
 }
 
 Acous_10ms_Ling_50ms_gtrain = {
@@ -546,7 +546,7 @@ for params in param_list:
     except FileNotFoundError:
         py_env = '/Users/sarahburnejames/miniconda3/bin/python'
         run_trial(params)
-    run_additional_test(params, test_on_f=True, test_on_g=True) #TODO: check where this stores results to
+    # run_additional_test(params, test_on_f=True, test_on_g=True) #TODO: check where this stores results to
     # run_additional_test(params, test_on_f=True, test_on_g=False) #TODO: check where this stores results to
     # run_additional_test(params, test_on_f=False, test_on_g=True) #TODO: check where this stores results to
 

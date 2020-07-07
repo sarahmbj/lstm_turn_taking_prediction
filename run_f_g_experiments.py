@@ -21,7 +21,7 @@ seq_length = 600
 no_subnets = False
 
 experiment_top_path = './f_and_g/'
-print(os.name)
+print(platform.system())
 quit()
 py_env = '/afs/inf.ed.ac.uk/user/s09/s0910315/miniconda3/bin/python'
 

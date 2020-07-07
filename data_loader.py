@@ -591,7 +591,7 @@ class TurnPredictionDataset(Dataset):
 #                        print('debug me')
                 else:
                     print("before", torch.FloatTensor(self.dataset[idx]['x'][mod]).size())
-                    if len(torch.FloatTensor(self.dataset[idx]['x'][mod]).size()) == 4 #if 4 dimensions
+                    if len(torch.FloatTensor(self.dataset[idx]['x'][mod]).size()) == 4: #if 4 dimensions
                         output_list.append(torch.squeeze(torch.FloatTensor(self.dataset[idx]['x'][mod]), dim=3))
                         print('AFTER TRY (squeeze dim 3): ', (torch.FloatTensor(self.dataset[idx]['x'][mod]).size()))
                     else:

@@ -21,7 +21,13 @@ seq_length = 600
 no_subnets = False
 
 experiment_top_path = './f_and_g/'
-py_env = '/afs/inf.ed.ac.uk/user/s09/s0910315/miniconda3/bin/python'
+
+if platform.system() == 'Linux':
+    print('Running on DICE')
+    py_env = '/afs/inf.ed.ac.uk/user/s09/s0910315/miniconda3/bin/python'
+else:
+    print('Running on local')
+    py_env = '/Users/sarahburnejames/miniconda3/bin/python'
 
 
 # %% Common settings for all experiments
@@ -541,11 +547,7 @@ for experiment_name, experiment_features_list, experiment_settings in zip(experi
 
 
 for params in param_list:
-    try:
-        run_trial(params)
-    except FileNotFoundError:
-        py_env = '/Users/sarahburnejames/miniconda3/bin/python'
-        run_trial(params)
+    run_trial(params)
     # run_additional_test(params, test_on_f=True, test_on_g=True) #TODO: check where this stores results to
     # run_additional_test(params, test_on_f=True, test_on_g=False) #TODO: check where this stores results to
     # run_additional_test(params, test_on_f=False, test_on_g=True) #TODO: check where this stores results to

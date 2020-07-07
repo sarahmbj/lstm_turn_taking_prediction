@@ -241,6 +241,7 @@ class LSTMPredictor(nn.Module):
 
         else:
             for emb_one, emb_two in zip(embeds_one, embeds_two):
+                print("IN DATA: ",in_data.size())
                 in_data = torch.cat((in_data, emb_one), 2)
                 in_data = torch.cat((in_data, emb_two), 2)
             embed_keep = list(set(list(range(in_data.shape[2]))).difference(set(self.embed_delete_index_list[modality])))

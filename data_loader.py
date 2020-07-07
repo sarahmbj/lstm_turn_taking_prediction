@@ -593,9 +593,9 @@ class TurnPredictionDataset(Dataset):
                     print(torch.FloatTensor(self.dataset[idx]['x'][mod]).size())
                     try:
                         output_list.append(torch.squeeze(torch.FloatTensor(self.dataset[idx]['x'][mod]), dim=3))
-                        print('IN TRY: ' + (torch.FloatTensor(self.dataset[idx]['x'][mod]).size()))
+                        print('IN TRY: ', (torch.FloatTensor(self.dataset[idx]['x'][mod]).size()))
                     except IndexError:
-                        print('IN EXCEPT: ' + (torch.FloatTensor(self.dataset[idx]['x'][mod]).size()))
+                        print('IN EXCEPT: ', (torch.FloatTensor(self.dataset[idx]['x'][mod]).size()))
             else:
                 output_list.append([])
 

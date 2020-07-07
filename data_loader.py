@@ -590,11 +590,12 @@ class TurnPredictionDataset(Dataset):
 #                    if self.set_type == 'test':
 #                        print('debug me')
                 else:
-                    # debug2 = torch.FloatTensor(self.dataset[idx]['x'][mod]).size()
-                    # print(debug2)
-                    output_list.append(torch.squeeze(torch.FloatTensor(self.dataset[idx]['x'][mod]), dim=3))
-                    # debug3 = output_list[-1].size()
-                    # print(debug3)
+                    print(torch.FloatTensor(self.dataset[idx]['x'][mod]).size())
+                    try:
+                        output_list.append(torch.squeeze(torch.FloatTensor(self.dataset[idx]['x'][mod]), dim=3))
+                        print('IN TRY: ' + (torch.FloatTensor(self.dataset[idx]['x'][mod]).size()))
+                    except IndexError:
+                        print('IN EXCEPT: ' + (torch.FloatTensor(self.dataset[idx]['x'][mod]).size()))
             else:
                 output_list.append([])
 

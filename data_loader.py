@@ -591,7 +591,11 @@ class TurnPredictionDataset(Dataset):
 #                        print('debug me')
                 else:
                     print("before", torch.FloatTensor(self.dataset[idx]['x'][mod]).size())
-                    output_list.append(torch.squeeze(torch.FloatTensor(self.dataset[idx]['x'][mod])))
+                    output_list.append(torch.squeeze(torch.FloatTensor(self.dataset[idx]['x'][mod]), dim=2))
+                    try:
+                        output_list.append(torch.squeeze(torch.FloatTensor(self.dataset[idx]['x'][mod]), dim=2))
+                    except IndexError:
+                        pass
                     print('AFTER squeeze: ', (output_list[-1]).size())
 
             else:

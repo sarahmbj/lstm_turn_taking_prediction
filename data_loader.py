@@ -590,11 +590,11 @@ class TurnPredictionDataset(Dataset):
 #                    if self.set_type == 'test':
 #                        print('debug me')
                 else:
-                    debug2 = torch.FloatTensor(self.dataset[idx]['x'][mod]).size()
-                    print(debug2)
+                    # debug2 = torch.FloatTensor(self.dataset[idx]['x'][mod]).size()
+                    # print(debug2)
                     output_list.append(torch.squeeze(torch.FloatTensor(self.dataset[idx]['x'][mod]), dim=3))
-                    debug3 = output_list[-1].size()
-                    print(debug3)
+                    # debug3 = output_list[-1].size()
+                    # print(debug3)
             else:
                 output_list.append([])
 

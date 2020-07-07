@@ -29,8 +29,6 @@ else:
     print('Running on local')
     py_env = '/Users/sarahburnejames/miniconda3/bin/python'
 
-quit()
-
 
 # %% Common settings for all experiments
 num_epochs = 1 #TODO: change back to 1500!!!!!

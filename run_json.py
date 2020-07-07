@@ -192,13 +192,13 @@ else:
 t1 = t.time()
 
 # training set data loader
-print('feature dict list:', feature_dict_list)
-train_dataset = TurnPredictionDataset(feature_dict_list, annotations_dir, train_list_path, sequence_length,
-                                      prediction_length, 'train', data_select=data_set_select, train_on_f=train_on_f,
-                                      train_on_g=train_on_g)
-train_dataloader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=shuffle, num_workers=0,
-                              drop_last=True, pin_memory=p_memory)
-feature_size_dict = train_dataset.get_feature_size_dict()
+# print('feature dict list:', feature_dict_list)
+# train_dataset = TurnPredictionDataset(feature_dict_list, annotations_dir, train_list_path, sequence_length,
+#                                       prediction_length, 'train', data_select=data_set_select, train_on_f=train_on_f,
+#                                       train_on_g=train_on_g)
+# train_dataloader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=shuffle, num_workers=0,
+#                               drop_last=True, pin_memory=p_memory)
+# feature_size_dict = train_dataset.get_feature_size_dict()
 
 if slow_test:
     # slow test loader
@@ -208,6 +208,10 @@ if slow_test:
 
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0, drop_last=False,
                                  pin_memory=p_memory)
+    for datapoint in enumerate(test_dataloader):
+        pass
+
+    raise SystemExit
 else:
     # quick test loader
     test_dataset = TurnPredictionDataset(feature_dict_list, annotations_dir, test_list_path, sequence_length,

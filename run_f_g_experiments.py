@@ -21,6 +21,8 @@ seq_length = 600
 no_subnets = False
 
 experiment_top_path = './f_and_g/'
+print(os.name)
+quit()
 py_env = '/afs/inf.ed.ac.uk/user/s09/s0910315/miniconda3/bin/python'
 
 
@@ -55,7 +57,7 @@ Acous_10ms_Ling_50ms_ftrain = {
     'hidden_nodes_master': 50,
     'hidden_nodes_acous': 50,
     'hidden_nodes_visual': 50,
-    'train_on_f': True, # TODO: set these all back to correct values after debugging
+    'train_on_f': True,  # TODO: set these all back to correct values after debugging
     'train_on_g': False,
     'test_on_f': True,
     'test_on_g': False

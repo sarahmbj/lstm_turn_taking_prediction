@@ -592,7 +592,7 @@ class TurnPredictionDataset(Dataset):
                 else:
                     print("before", torch.FloatTensor(self.dataset[idx]['x'][mod]).size())
                     output_list.append(torch.squeeze(torch.FloatTensor(self.dataset[idx]['x'][mod])))
-                    print('AFTER squeeze: ', (output_list[-1]))
+                    print('AFTER squeeze: ', (output_list[-1]).size())
 
             else:
                 output_list.append([])

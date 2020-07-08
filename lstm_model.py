@@ -222,13 +222,13 @@ class LSTMPredictor(nn.Module):
             embeds_one_tmp = self.embeddings[modality][emb_func_indx](
                 Variable(in_data[:, :, self.embedding_indices[modality][emb_func_indx][0][0]:
                                        self.embedding_indices[modality][emb_func_indx][0][1]] \
-                         .data.type(self.embed_data_types[modality][emb_func_indx]).squeeze()))
+                         .data.type(self.embed_data_types[modality][emb_func_indx]).squeeze(dim=2)))
             debug2 = self.embed_data_types[modality][emb_func_indx]
             print(type(embeds_one_tmp))
             embeds_two_tmp = self.embeddings[modality][emb_func_indx](
                 Variable(in_data[:, :, self.embedding_indices[modality][emb_func_indx][1][0]:
                                        self.embedding_indices[modality][emb_func_indx][1][1]] \
-                         .data.type(self.embed_data_types[modality][emb_func_indx]).squeeze()))
+                         .data.type(self.embed_data_types[modality][emb_func_indx]).squeeze(dim=2)))
 
             if not (self.lstm_settings_dict['uses_master_time_rate'][modality]) and self.lstm_settings_dict['is_irregular'][modality]:
                 embeds_one_tmp = embeds_one_tmp.transpose(2,3)

@@ -209,6 +209,9 @@ if slow_test:
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0, drop_last=False,
                                  pin_memory=p_memory)
 
+    for datapoint in enumerate(test_dataloader):
+        print("in enumerate loop")
+
 else:
     # quick test loader
     test_dataset = TurnPredictionDataset(feature_dict_list, annotations_dir, test_list_path, sequence_length,

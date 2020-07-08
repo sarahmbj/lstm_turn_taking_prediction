@@ -587,13 +587,19 @@ class TurnPredictionDataset(Dataset):
                     out_shape = in_shape[:-2] + tuple([in_shape[-1]*in_shape[-2]])
 #                    output_list.append(torch.FloatTensor(self.dataset[idx]['x'][mod]).view([-1,in_shape[-1]*in_shape[-2]]))
                     output_list.append(torch.FloatTensor(self.dataset[idx]['x'][mod]).view(out_shape))
+#                    if self.set_type == 'test':
+#                        print('debug me')
                 else:
+                    debug1 = torch.FloatTensor(self.dataset[idx]['x'][mod]).size()
+                    print("before", torch.FloatTensor(self.dataset[idx]['x'][mod]).size())
                     squeezed = torch.squeeze(torch.FloatTensor(self.dataset[idx]['x'][mod]), dim=2)
                     try:
                         squeezed = torch.squeeze(torch.FloatTensor(self.dataset[idx]['x'][mod]), dim=3)
                     except IndexError:
                         pass
                     output_list.append(squeezed)
+                    debug2 = (output_list[-1]).size()
+                    print('AFTER squeeze: ', (output_list[-1]).size())
 
             else:
                 output_list.append([])
@@ -604,4 +610,5 @@ class TurnPredictionDataset(Dataset):
                 output_list.append(torch.FloatTensor(self.dataset[idx]['time_bools'][mod]).transpose(-2,-1))
             else:
                 output_list.append([])
+        debug5 = self.dataset[idx]['info']
         return output_list[0], output_list[1], output_list[2], output_list[3], torch.FloatTensor(self.dataset[idx]['y']).transpose(-2,-1), self.dataset[idx]['info']

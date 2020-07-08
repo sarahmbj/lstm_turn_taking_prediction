@@ -86,7 +86,7 @@ Acous_10ms = {
          },
     'hidden_nodes_master': 60,
     'hidden_nodes_acous': 0,
-    'hidden_nodes_visual': 0
+    'hidden_nodes_visual': 0,
     'train_on_f': True,
     'train_on_g': True,
     'test_on_f': True,
@@ -112,7 +112,7 @@ Ling_50ms = {
          },
     'hidden_nodes_master': 60,
     'hidden_nodes_acous': 0,
-    'hidden_nodes_visual': 0
+    'hidden_nodes_visual': 0,
     'train_on_f': True,
     'train_on_g': True,
     'test_on_f': True,

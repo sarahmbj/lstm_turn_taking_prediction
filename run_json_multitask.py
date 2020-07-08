@@ -301,7 +301,7 @@ def perf_plot(results_save, results_key):
 
 
 # %% Loss functions
-loss_func_L1 = nn.L1Loss()
+# loss_func_L1 = nn.L1Loss()
 loss_func_L1_no_reduce = nn.L1Loss(reduce=False)
 # loss_func_MSE = nn.MSELoss()
 # loss_func_MSE_no_reduce = nn.MSELoss(reduce=False)
@@ -368,7 +368,7 @@ def test():
         # Should be able to make other loss calculations faster
         # Too many calls to transpose as well. Should clean up loss pipeline
         y_test = y_test.permute(2, 0, 1)
-        loss_no_reduce = loss_func_L1_no_reduce(out_test, y_test.transpose(0, 1))
+        # loss_no_reduce = loss_func_L1_no_reduce(out_test, y_test.transpose(0, 1))
 
         for file_name, g_f_indx, time_indices, batch_indx in zip(file_name_list,
                                                                  gf_name_list,
@@ -377,8 +377,8 @@ def test():
 
             results_dict[file_name + '/' + g_f_indx][time_indices[0]:time_indices[1]] = out_test[
                 batch_indx].data.cpu().numpy()
-            losses_dict[file_name + '/' + g_f_indx][time_indices[0]:time_indices[1]] = loss_no_reduce[
-                batch_indx].data.cpu().numpy()
+            # losses_dict[file_name + '/' + g_f_indx][time_indices[0]:time_indices[1]] = loss_no_reduce[
+                # batch_indx].data.cpu().numpy()
 
         loss = loss_func_BCE(F.sigmoid(out_test), y_test.transpose(0, 1))
         # loss = loss_func_BCE_Logit(out_test,y_test.transpose(0,1))

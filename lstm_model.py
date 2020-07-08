@@ -214,13 +214,13 @@ class LSTMPredictor(nn.Module):
 
         for emb_func_indx in range(len(self.embeddings[modality])):
             debug1 = self.embed_data_types[modality][emb_func_indx]
-            print(debug1.size())
+            print(type(debug1))
             embeds_one_tmp = self.embeddings[modality][emb_func_indx](
                 Variable(in_data[:, :, self.embedding_indices[modality][emb_func_indx][0][0]:
                                        self.embedding_indices[modality][emb_func_indx][0][1]] \
                          .data.type(self.embed_data_types[modality][emb_func_indx]).squeeze()))
             debug2 = self.embed_data_types[modality][emb_func_indx].squeeze()
-            print(debug2.size())
+            print(type(debug2))
             embeds_two_tmp = self.embeddings[modality][emb_func_indx](
                 Variable(in_data[:, :, self.embedding_indices[modality][emb_func_indx][1][0]:
                                        self.embedding_indices[modality][emb_func_indx][1][1]] \

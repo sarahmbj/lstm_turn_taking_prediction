@@ -60,7 +60,11 @@ Acous_10ms_Ling_50ms = {
     },
     'hidden_nodes_master': 50,
     'hidden_nodes_acous': 50,
-    'hidden_nodes_visual': 50
+    'hidden_nodes_visual': 50,
+    'train_on_f': True,
+    'train_on_g': True,
+    'test_on_f': True,
+    'test_on_g': True
 }
 
 Acous_10ms = {
@@ -83,6 +87,10 @@ Acous_10ms = {
     'hidden_nodes_master': 60,
     'hidden_nodes_acous': 0,
     'hidden_nodes_visual': 0
+    'train_on_f': True,
+    'train_on_g': True,
+    'test_on_f': True,
+    'test_on_g': True
     }
 
 Ling_50ms = {
@@ -105,6 +113,10 @@ Ling_50ms = {
     'hidden_nodes_master': 60,
     'hidden_nodes_acous': 0,
     'hidden_nodes_visual': 0
+    'train_on_f': True,
+    'train_on_g': True,
+    'test_on_f': True,
+    'test_on_g': True
     }
 
 # %% Experiments list

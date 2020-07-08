@@ -203,30 +203,30 @@ gpu_select = 0
 test_indices = [0,1,2]
 
 experiment_name_list = [
-    '1_Acous_10ms_Ling_50ms_ftrain',
-    '2_Acous_10ms_Ling_50ms_gtrain',
     '3_Acous_10ms_ftrain',
     '4_Acous_10ms_gtrain',
     '5_Ling_50ms_ftrain',
     '6_Ling_50ms_gtrain',
+    '1_Acous_10ms_Ling_50ms_ftrain',
+    '2_Acous_10ms_Ling_50ms_gtrain',
 ]
 
 experiment_features_lists = [
-    feat_dicts.gemaps_10ms_dict_list + feat_dicts.word_reg_dict_list_visual,
-    feat_dicts.gemaps_10ms_dict_list + feat_dicts.word_reg_dict_list_visual,
     feat_dicts.gemaps_10ms_dict_list,
     feat_dicts.gemaps_10ms_dict_list,
     feat_dicts.word_reg_dict_list_acous,
-    feat_dicts.word_reg_dict_list_acous
+    feat_dicts.word_reg_dict_list_acous,
+    feat_dicts.gemaps_10ms_dict_list + feat_dicts.word_reg_dict_list_visual,
+    feat_dicts.gemaps_10ms_dict_list + feat_dicts.word_reg_dict_list_visual,
 ]
 
 experiment_settings_list = [
-    Acous_10ms_Ling_50ms_ftrain,
-    Acous_10ms_Ling_50ms_gtrain,
     Acous_10ms_ftrain,
     Acous_10ms_gtrain,
     Ling_50ms_ftrain,
-    Ling_50ms_gtrain
+    Ling_50ms_gtrain,
+    Acous_10ms_Ling_50ms_ftrain,
+    Acous_10ms_Ling_50ms_gtrain,
 ]
 
 eval_metric_list = ['f_scores_50ms', 'f_scores_250ms', 'f_scores_500ms', 'f_scores_overlap_hold_shift',

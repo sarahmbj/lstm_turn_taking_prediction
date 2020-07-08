@@ -203,6 +203,7 @@ def run_trial(parameters):
     #    best_master_node_size = master_node_size_list[0]
     best_lr = exp_settings['lr']
     #    best_l2 = l2_list[0]
+
     # Run full test
     # Run full test number_of_tests times
     test_fold_list = []
@@ -239,7 +240,11 @@ def run_trial(parameters):
                          'freeze_glove_embeddings': False,
                          'grad_clip_bool': False,
                          'l2_dict': l2_dict,
-                         'dropout_dict': drp_dict
+                         'dropout_dict': drp_dict,
+                         'train_on_f': exp_settings['train_on_f'],
+                         'train_on_g': exp_settings['train_on_g'],
+                         'test_on_f': exp_settings['test_on_f'],
+                         'test_on_g': exp_settings['test_on_g']
                          }
             json_dict = json.dumps(json_dict)
             arg_list = [json_dict]

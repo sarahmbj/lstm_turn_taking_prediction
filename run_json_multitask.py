@@ -385,8 +385,8 @@ def test():
         losses_test.append(loss.data.cpu().numpy())
         batch_sizes.append(batch_length)
 
-        loss_l1 = loss_func_L1(out_test, y_test.transpose(0, 1))
-        losses_l1.append(loss_l1.data.cpu().numpy())
+        # loss_l1 = loss_func_L1(out_test, y_test.transpose(0, 1))
+        # losses_l1.append(loss_l1.data.cpu().numpy())
 
     # get weighted mean
     loss_weighted_mean = np.sum(np.array(batch_sizes) * np.squeeze(np.array(losses_test))) / np.sum(batch_sizes)

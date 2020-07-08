@@ -208,6 +208,10 @@ if slow_test:
 
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0, drop_last=False,
                                  pin_memory=p_memory)
+
+    for datapoint in enumerate(test_dataloader):
+        print("in enumerate loop")
+
 else:
     # quick test loader
     test_dataset = TurnPredictionDataset(feature_dict_list, annotations_dir, test_list_path, sequence_length,
@@ -397,7 +401,7 @@ def test():
         results_dict[conv_key + '/' + data_select_dict[data_set_select][0]] = np.array(
             results_dict[conv_key + '/' + data_select_dict[data_set_select][0]]).reshape(-1, prediction_length)
 
-    # get hold-shift f-scores 
+    # get hold-shift f-scores
     for pause_str in pause_str_list:
         true_vals = list()
         predicted_class = list()
@@ -424,7 +428,7 @@ def test():
         results_save['tp_' + pause_str].append(tp)
         print('majority vote f-score(' + pause_str + '):' + str(
             f1_score(true_vals, np.zeros([len(predicted_class)]).tolist(), average='weighted')))
-    # get prediction at onset f-scores 
+    # get prediction at onset f-scores
     # first get best threshold from training data
     if onset_test_flag: # this is set to true at top of file
         onset_train_true_vals = list()

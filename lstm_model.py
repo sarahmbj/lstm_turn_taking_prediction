@@ -136,6 +136,7 @@ class LSTMPredictor(nn.Module):
                     else:
                         self.lstm_cell_visual = self.lstm_dict[lstm]
                 else:
+                    print("HERE")
                     self.lstm_dict[lstm] = nn.LSTM(self.feature_size_dict[lstm],
                                                    self.lstm_settings_dict['hidden_dims'][lstm]).type(dtype)
                     if lstm == 'acous':

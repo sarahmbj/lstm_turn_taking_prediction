@@ -20,7 +20,7 @@ from random import randint
 seq_length = 600
 no_subnets = False
 
-experiment_top_path = './f_and_g/'
+experiment_top_path = './f_and_g_two_subnets/'
 
 if platform.system() == 'Linux':
     print('Running on DICE')
@@ -93,138 +93,22 @@ Acous_10ms_Ling_50ms_gtrain = {
     'test_on_g': True
 }
 
-Acous_10ms_ftrain = {
-    'lr':0.01,
-    'l2_dict':
-        { 'emb':0.0,
-         'out': 0.00001,
-         'master': 0.00001,
-         'acous': 0,
-         'visual': 0
-          },
-    'dropout_dict': {
-        'master_out': 0.5,
-        'master_in': 0.5,
-        'acous_in': 0,
-        'acous_out': 0,
-        'visual_in': 0,
-        'visual_out': 0.
-         },
-    'hidden_nodes_master': 60,
-    'hidden_nodes_acous': 0,
-    'hidden_nodes_visual': 0,
-    'train_on_f': True,
-    'train_on_g': False,
-    'test_on_f': True,
-    'test_on_g': False
-    }
-
-Acous_10ms_gtrain = {
-    'lr':0.01,
-    'l2_dict':
-        { 'emb':0.0,
-         'out': 0.00001,
-         'master': 0.00001,
-         'acous': 0,
-         'visual': 0
-          },
-    'dropout_dict': {
-        'master_out': 0.5,
-        'master_in': 0.5,
-        'acous_in': 0,
-        'acous_out': 0,
-        'visual_in': 0,
-        'visual_out': 0.
-         },
-    'hidden_nodes_master': 60,
-    'hidden_nodes_acous': 0,
-    'hidden_nodes_visual': 0,
-    'train_on_f': False,
-    'train_on_g': True,
-    'test_on_f': False,
-    'test_on_g': True
-    }
-
-Ling_50ms_ftrain = {
-    'lr':0.001,
-    'l2_dict':
-        { 'emb':0.0001,
-         'out': 0.0001,
-         'master': 0.0001,
-         'acous': 0,
-         'visual': 0
-          },
-    'dropout_dict': {
-        'master_out': 0.5,
-        'master_in': 0.25,
-        'acous_in': 0,
-        'acous_out': 0,
-        'visual_in': 0,
-        'visual_out': 0.
-         },
-    'hidden_nodes_master': 60,
-    'hidden_nodes_acous': 0,
-    'hidden_nodes_visual': 0,
-    'train_on_f': True,
-    'train_on_g': False,
-    'test_on_f': True,
-    'test_on_g': False
-    }
-
-Ling_50ms_gtrain = {
-    'lr':0.001,
-    'l2_dict':
-        { 'emb':0.0001,
-         'out': 0.0001,
-         'master': 0.0001,
-         'acous': 0,
-         'visual': 0
-          },
-    'dropout_dict': {
-        'master_out': 0.5,
-        'master_in': 0.25,
-        'acous_in': 0,
-        'acous_out': 0,
-        'visual_in': 0,
-        'visual_out': 0.
-         },
-    'hidden_nodes_master': 60,
-    'hidden_nodes_acous': 0,
-    'hidden_nodes_visual': 0,
-    'train_on_f': False,
-    'train_on_g': True,
-    'test_on_f': False,
-    'test_on_g': True
-    }
-
 # %% Experiments list
 
 gpu_select = 0
 test_indices = [0,1,2]
 
 experiment_name_list = [
-    '3_Acous_10ms_ftrain',
-    '4_Acous_10ms_gtrain',
-    '5_Ling_50ms_ftrain',
-    '6_Ling_50ms_gtrain',
     '1_Acous_10ms_Ling_50ms_ftrain',
     '2_Acous_10ms_Ling_50ms_gtrain',
 ]
 
 experiment_features_lists = [
-    feat_dicts.gemaps_10ms_dict_list,
-    feat_dicts.gemaps_10ms_dict_list,
-    feat_dicts.word_reg_dict_list_acous,
-    feat_dicts.word_reg_dict_list_acous,
     feat_dicts.gemaps_10ms_dict_list + feat_dicts.word_reg_dict_list_visual,
     feat_dicts.gemaps_10ms_dict_list + feat_dicts.word_reg_dict_list_visual,
 ]
 
 experiment_settings_list = [
-    Acous_10ms_ftrain,
-    Acous_10ms_gtrain,
-    Ling_50ms_ftrain,
-    Ling_50ms_gtrain,
     Acous_10ms_Ling_50ms_ftrain,
     Acous_10ms_Ling_50ms_gtrain,
 ]

@@ -433,7 +433,7 @@ for experiment_name, experiment_features_list, experiment_settings in zip(experi
 for params in param_list:
     run_trial(params)
     print("finished run_trial")
-    # run_additional_test(params, test_on_f=True, test_on_g=True) #TODO: check where this stores results to
+    run_additional_test(params, test_on_f=True, test_on_g=True) #TODO: check where this stores results to
     # run_additional_test(params, test_on_f=True, test_on_g=False) #TODO: check where this stores results to
     # run_additional_test(params, test_on_f=False, test_on_g=True) #TODO: check where this stores results to
 

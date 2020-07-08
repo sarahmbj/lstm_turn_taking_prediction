@@ -50,6 +50,7 @@ shuffle = True
 num_layers = 1
 onset_test_flag = True
 annotations_dir = './data/extracted_annotations/voice_activity/'
+number_of_corpora = 2
 
 proper_num_args = 2  # when called as subprocess, this consists of './run_json.py' and a dictionary of the other args
 print('Number of arguments is: ' + str(len(argv)))
@@ -301,7 +302,7 @@ def perf_plot(results_save, results_key):
 
 
 # %% Loss functions
-# loss_func_L1 = nn.L1Loss()
+loss_func_L1 = nn.L1Loss()
 loss_func_L1_no_reduce = nn.L1Loss(reduce=False)
 # loss_func_MSE = nn.MSELoss()
 # loss_func_MSE_no_reduce = nn.MSELoss(reduce=False)
@@ -309,7 +310,10 @@ loss_func_BCE = nn.BCELoss()
 loss_func_BCE_Logit = nn.BCEWithLogitsLoss()
 
 # Corpus predict loss functions
-corpus_predict_loss = nn.BCELoss()
+if number_of_corpora == 2:
+    corpus_predict_loss = nn.BCELoss()
+elif number_of_corpora > 2:
+    corpus_predict_loss = nn.CrossEntropyLoss()
 
 
 # %% Test function
@@ -318,12 +322,11 @@ def test():
     results_dict = dict()
     losses_dict = dict()
     batch_sizes = list()
-    losses_mse, losses_l1 = [], []
+    losses_mse, losses_l1, corpus_predict_losses = [], [], []
     model.eval()
     # setup results_dict
     results_lengths = test_dataset.get_results_lengths()
     for file_name in test_file_list:
-        #        for g_f in ['g','f']:
         for g_f in data_select_dict[data_set_select]:
             # create new arrays for the results
             results_dict[file_name + '/' + g_f] = np.zeros([results_lengths[file_name], prediction_length])
@@ -368,7 +371,7 @@ def test():
         # Should be able to make other loss calculations faster
         # Too many calls to transpose as well. Should clean up loss pipeline
         y_test = y_test.permute(2, 0, 1)
-        # loss_no_reduce = loss_func_L1_no_reduce(out_test, y_test.transpose(0, 1))
+        loss_no_reduce = loss_func_L1_no_reduce(out_test, y_test.transpose(0, 1))
 
         for file_name, g_f_indx, time_indices, batch_indx in zip(file_name_list,
                                                                  gf_name_list,
@@ -377,16 +380,16 @@ def test():
 
             results_dict[file_name + '/' + g_f_indx][time_indices[0]:time_indices[1]] = out_test[
                 batch_indx].data.cpu().numpy()
-            # losses_dict[file_name + '/' + g_f_indx][time_indices[0]:time_indices[1]] = loss_no_reduce[
-                # batch_indx].data.cpu().numpy()
+            losses_dict[file_name + '/' + g_f_indx][time_indices[0]:time_indices[1]] = loss_no_reduce[
+                batch_indx].data.cpu().numpy()
 
         loss = loss_func_BCE(F.sigmoid(out_test), y_test.transpose(0, 1))
         # loss = loss_func_BCE_Logit(out_test,y_test.transpose(0,1))
         losses_test.append(loss.data.cpu().numpy())
         batch_sizes.append(batch_length)
 
-        # loss_l1 = loss_func_L1(out_test, y_test.transpose(0, 1))
-        # losses_l1.append(loss_l1.data.cpu().numpy())
+        loss_l1 = loss_func_L1(out_test, y_test.transpose(0, 1))
+        losses_l1.append(loss_l1.data.cpu().numpy())
 
     # get weighted mean
     loss_weighted_mean = np.sum(np.array(batch_sizes) * np.squeeze(np.array(losses_test))) / np.sum(batch_sizes)

@@ -293,6 +293,7 @@ def perf_plot(results_save, results_key):
     p_min = np.round(np.min(np.array(results_save[results_key])), 4)
     #    p_last = np.round(results_save[results_key][-1],4)
     plt.annotate(str(p_max), (np.argmax(np.array(results_save[results_key])), p_max))
+    plt.annotate(str(p_max), (np.argmax(np.array(results_save[results_key])), p_max))
     plt.annotate(str(p_min), (np.argmin(np.array(results_save[results_key])), p_min))
     #    plt.annotate(str(p_last), (len(results_save[results_key])-1,p_last))
     plt.title(results_key + name_append, fontsize=6)

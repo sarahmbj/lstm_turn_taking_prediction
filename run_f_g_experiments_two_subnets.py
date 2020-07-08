@@ -272,9 +272,9 @@ def run_additional_test(parameters, test_on_f=True, test_on_g=True):
 
     test_set = ""
     if test_on_g is True:
-        test_set.append("_on_g")
+        test_set = test_set + "_on_g"
     if test_on_f is True:
-        test_set.append("_on_f")
+        test_set = test_set + "_on_f"
     test_path = trial_path + f'/test{test_set}/'
 
     if not (os.path.exists(trial_path)):

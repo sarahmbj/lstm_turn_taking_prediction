@@ -218,14 +218,10 @@ class LSTMPredictor(nn.Module):
                 Variable(in_data[:, :, self.embedding_indices[modality][emb_func_indx][0][0]:
                                        self.embedding_indices[modality][emb_func_indx][0][1]] \
                          .data.type(self.embed_data_types[modality][emb_func_indx])))
-            print(type(debug1))
-            print(debug1.size())
             embeds_one_tmp = self.embeddings[modality][emb_func_indx](
                 Variable(in_data[:, :, self.embedding_indices[modality][emb_func_indx][0][0]:
                                        self.embedding_indices[modality][emb_func_indx][0][1]] \
                          .data.type(self.embed_data_types[modality][emb_func_indx]).squeeze(dim=2)))
-            debug2 = self.embed_data_types[modality][emb_func_indx]
-            print(type(embeds_one_tmp))
             embeds_two_tmp = self.embeddings[modality][emb_func_indx](
                 Variable(in_data[:, :, self.embedding_indices[modality][emb_func_indx][1][0]:
                                        self.embedding_indices[modality][emb_func_indx][1][1]] \
@@ -249,13 +245,8 @@ class LSTMPredictor(nn.Module):
 
         else:
             for emb_one, emb_two in zip(embeds_one, embeds_two):
-                print("IN DATA: ",in_data.size())
-                print("EMB ONE: ",emb_one.size())
                 in_data = torch.cat((in_data, emb_one), 2)
-                print("IN DATA: ",in_data.size())
-                print("EMB TWO: ",emb_two.size())
                 in_data = torch.cat((in_data, emb_two), 2)
-                print("IN DATA: ",in_data.size())
             embed_keep = list(set(list(range(in_data.shape[2]))).difference(set(self.embed_delete_index_list[modality])))
             in_data = in_data[:, :, embed_keep]
         return in_data

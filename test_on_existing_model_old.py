@@ -24,7 +24,10 @@ def create_results_directory(directory, test_set, experiment_path):
 def remove_results_directory(directory, test_set, experiment_path):
     """reverses create_results_directory - for use when testing """
     print(f"{directory}/{test_set}/{experiment_path}")
-    os.rmdir(f"{directory}/{test_set}/{experiment_path}")
+    try:
+        os.rmdir(f"{directory}/{test_set}/{experiment_path}")
+    except FileNotFoundError:
+        pass
 
 
 def load_args(args_path):
@@ -81,12 +84,15 @@ if __name__ == "__main__":
     trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
     test_path = f'{trial_path}/test'
     for directory in os.listdir(test_path):
-        remove_results_directory(trial_path, 'test_on_both', directory) # shouldn't need this in final script - used when testing functionality
+        # remove_results_directory(trial_path, 'test_on_both', directory) # shouldn't need this in final script - used when testing functionality
         model_path = f'{test_path}/{directory}/model.p'
         settings_path = f'{test_path}/{directory}/settings.json'
         results_path = f"{trial_path}/test_on_both/{directory}"
         print('*********', results_path)
-        os.rmdir(results_path)
+        try:
+            os.rmdir(results_path)
+        except FileNotFoundError:
+            pass
         args = load_args(settings_path)
         test_set, test_loader = load_test_set(args, test_on_g=True, test_on_f=True)
         model = load_model(model_path, args, test_set)

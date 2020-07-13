@@ -84,13 +84,10 @@ if __name__ == "__main__":
         remove_results_directory(trial_path, 'test_on_both', directory) # shouldn't need this in final script - used when testing functionality
         model_path = f'{test_path}/{directory}/model.p'
         settings_path = f'{test_path}/{directory}/settings.json'
-        results_path = f"{trial_path}/'test_on_both'/{directory}"
+        results_path = f"{trial_path}/test_on_both/{directory}"
         os.rmdir(results_path)
         args = load_args(settings_path)
         test_set, test_loader = load_test_set(args, test_on_g=True, test_on_f=True)
         model = load_model(model_path, args, test_set)
         os.makedirs(results_path)
-
-
-
 

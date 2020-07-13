@@ -46,7 +46,7 @@ def load_model(pickled_model, args_dict, test_data):
     # TODO check we can get feature_size_dict from test set (it comes from train set in run_json.py)
     model = LSTMPredictor(lstm_settings_dict=lstm_settings_dict, feature_size_dict=test_data.get_feature_size_dict(),
                           batch_size=train_batch_size, seq_length=args_dict['sequence_length'],
-                          prediction_length=prediction_length, embedding_info=args_dict['embedding_info'])
+                          prediction_length=prediction_length, embedding_info=test_data.get_embedding_info())
     with open(pickled_model, "rb") as model_file:
         if torch.cuda.is_available():
             model.load_state_dict(model_file)

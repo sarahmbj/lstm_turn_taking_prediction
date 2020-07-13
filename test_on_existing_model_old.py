@@ -85,6 +85,7 @@ if __name__ == "__main__":
         model_path = f'{test_path}/{directory}/model.p'
         settings_path = f'{test_path}/{directory}/settings.json'
         results_path = f"{trial_path}/test_on_both/{directory}"
+        print('*********', results_path)
         os.rmdir(results_path)
         args = load_args(settings_path)
         test_set, test_loader = load_test_set(args, test_on_g=True, test_on_f=True)

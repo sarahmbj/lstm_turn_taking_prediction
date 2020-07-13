@@ -4,10 +4,13 @@ from lstm_model import LSTMPredictor
 from data_loader import TurnPredictionDataset
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
+import torch.nn as nn
 import json
 import os
 import pandas as pd
 import numpy as np
+from copy import deepcopy
+
 
 
 num_layers = 1
@@ -18,16 +21,7 @@ data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
 p_memory = True
 train_batch_size = 128
 
-# Decide whether to use cuda or not
-use_cuda = torch.cuda.is_available()
-print('Use CUDA: ' + str(use_cuda))
-if use_cuda:
-    #    torch.cuda.device(randint(0,1))
-    dtype = torch.cuda.FloatTensor
-    dtype_long = torch.cuda.LongTensor
-else:
-    dtype = torch.FloatTensor
-    dtype_long = torch.LongTensor
+
 
 
 def create_results_directory(directory, test_set, experiment_path):
@@ -100,6 +94,24 @@ def test(model, test_dataset, test_dataloader):
     losses_dict = dict()
     batch_sizes = list()
     losses_mse, losses_l1 = [], []
+
+    # Decide whether to use cuda or not
+    use_cuda = torch.cuda.is_available()
+    print('Use CUDA: ' + str(use_cuda))
+    if use_cuda:
+        #    torch.cuda.device(randint(0,1))
+        dtype = torch.cuda.FloatTensor
+        dtype_long = torch.cuda.LongTensor
+    else:
+        dtype = torch.FloatTensor
+        dtype_long = torch.LongTensor
+
+    #initialise loss functions
+    # TODO: is it ok to initialise these inside test() ?
+    loss_func_L1 = nn.L1Loss()
+    loss_func_L1_no_reduce = nn.L1Loss(reduce=False)
+    loss_func_BCE = nn.BCELoss()
+
     model.eval()
     # setup results_dict
     results_lengths = test_dataset.get_results_lengths()
@@ -184,6 +196,7 @@ def test(model, test_dataset, test_dataloader):
             results_dict[conv_key + '/' + data_select_dict[data_set_select][0]]).reshape(-1, prediction_length)
 
     # get hold-shift f-scores
+    pause_str_list = ['50ms', '250ms', '500ms']
     for pause_str in pause_str_list:
         true_vals = list()
         predicted_class = list()
@@ -323,6 +336,8 @@ def test(model, test_dataset, test_dataloader):
 if __name__ == "__main__":
     trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
     test_path = f'{trial_path}/test'
+
+
     for directory in os.listdir(test_path):
         # paths to stored models, settings, and location for new results
         model_path = f'{test_path}/{directory}/model.p'

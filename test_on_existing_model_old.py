@@ -18,7 +18,7 @@ train_batch_size = 128
 
 def create_results_directory(directory, test_set, experiment_path):
     print(f"{directory}/{test_set}/{experiment_path}")
-    os.mkdir(f"{directory}/{test_set}/{experiment_path}")
+    os.makedirs(f"{directory}/{test_set}/{experiment_path}")
 
 
 def load_args(args_path):

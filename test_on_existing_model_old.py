@@ -21,13 +21,17 @@ def create_results_directory(directory, test_set, experiment_path):
     os.makedirs(f"{directory}/{test_set}/{experiment_path}")
 
 
+def remove_results_directory(directory, test_set, experiment_path):
+    """reverses create_results_directory - for use when testing """
+    print(f"{directory}/{test_set}/{experiment_path}")
+    os.rmdir(f"{directory}/{test_set}/{experiment_path}")
+
+
 def load_args(args_path):
     with open(args_path, "rb") as json_file:
         args_string = json.load(json_file)
 
     args_dict = json.loads(args_string)
-    print(type(args_dict))
-    pprint(args_dict)
     return args_dict
 
 def load_model(pickled_model, args_dict, test_data):
@@ -58,7 +62,6 @@ def load_model(pickled_model, args_dict, test_data):
             model.load_state_dict(torch.load(model_file))
         else:
             model.load_state_dict(torch.load(model_file, map_location=torch.device('cpu')))
-        print(type(model))
 
     return model
 
@@ -78,6 +81,7 @@ trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
 test_path = f'{trial_path}/test'
 
 for directory in os.listdir(test_path):
+    remove_results_directory(trial_path, 'test_on_both', directory) # shouldn't need this in final script - used when testing functionality
     model_path = f'{test_path}/{directory}/model.p'
     settings_path = f'{test_path}/{directory}/settings.json'
     args = load_args(settings_path)

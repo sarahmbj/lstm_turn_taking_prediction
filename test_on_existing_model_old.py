@@ -2,6 +2,7 @@ import torch
 from pprint import pprint
 from lstm_model import LSTMPredictor
 from data_loader import TurnPredictionDataset
+from torch.utils.data import DataLoader
 import json
 import os
 
@@ -23,12 +24,6 @@ def load_args(args_path):
     return args_dict
 
 def load_model(pickled_model, args_dict):
-    # with open(args, "rb") as json_file:
-    #     args_string = json.load(json_file)
-    #
-    # args_dict = json.loads(args_string)
-    # print(type(args_dict))
-    # pprint(args_dict)
 
     lstm_settings_dict = {  # this works because these variables are set in locals from json_dict
         'no_subnets': args_dict['no_subnets'],
@@ -80,7 +75,7 @@ for directory in os.listdir(test_path):
     settings_path = f'{test_path}/{directory}/settings.json'
     print(settings_path)
     args = load_args(settings_path)
-    test_set, test_loader = load_test_set()
+    # test_set, test_loader = load_test_set()
     model = load_model(model_save, args)
 
 

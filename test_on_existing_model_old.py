@@ -11,7 +11,7 @@ print("THIS FILE IS RUNNING")
 num_layers = 1
 annotations_dir = './data/extracted_annotations/voice_activity/'
 test_list_path = './data/splits/testing.txt'
-sequence_length = 600  # (10 seconds of TBPTT)
+# sequence_length = 600  # (10 seconds of TBPTT)
 prediction_length = 60  # (3 seconds of prediction)
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
 p_memory = True
@@ -46,7 +46,7 @@ def load_model(pickled_model, args_dict, test_data):
     # TODO check we can get feature_size_dict from test set (it comes from train set in run_json.py)
     model = LSTMPredictor(lstm_settings_dict=lstm_settings_dict, feature_size_dict=test_data.get_feature_size_dict(),
                           batch_size=train_batch_size, seq_length=args_dict['sequence_length'],
-                          prediction_length=args_dict['prediction_length'], embedding_info=args_dict['embedding_info'])
+                          prediction_length=prediction_length, embedding_info=args_dict['embedding_info'])
     with open(pickled_model, "rb") as model_file:
         if torch.cuda.is_available():
             model.load_state_dict(model_file)
@@ -57,8 +57,8 @@ def load_model(pickled_model, args_dict, test_data):
     return model
 
 
-def load_test_set(test_on_g=True, test_on_f=True):
-    test_dataset = TurnPredictionDataset(args['feature_dict_list'], annotations_dir, test_list_path, sequence_length,
+def load_test_set(args_dict, test_on_g=True, test_on_f=True):
+    test_dataset = TurnPredictionDataset(args['feature_dict_list'], annotations_dir, test_list_path, args_dict['sequence_length'],
                                          prediction_length, 'test', data_select=data_set_select, test_on_f=test_on_f,
                                          test_on_g=test_on_g)
 
@@ -80,7 +80,7 @@ for directory in os.listdir(test_path):
     settings_path = f'{test_path}/{directory}/settings.json'
     print(settings_path)
     args = load_args(settings_path)
-    test_set, test_loader = load_test_set()
+    test_set, test_loader = load_test_set(args)
     model = load_model(model_save, args, test_set)
 
 

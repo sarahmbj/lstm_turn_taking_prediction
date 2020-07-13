@@ -6,6 +6,8 @@ from torch.utils.data import DataLoader
 import json
 import os
 
+print("THIS FILE IS RUNNING")
+
 num_layers = 1
 annotations_dir = './data/extracted_annotations/voice_activity/'
 test_list_path = './data/splits/testing.txt'

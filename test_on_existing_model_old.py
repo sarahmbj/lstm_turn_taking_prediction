@@ -3,9 +3,11 @@ from pprint import pprint
 from lstm_model import LSTMPredictor
 from data_loader import TurnPredictionDataset
 from torch.utils.data import DataLoader
+from torch.autograd import Variable
 import json
 import os
 import pandas as pd
+import numpy as np
 
 
 num_layers = 1
@@ -15,6 +17,17 @@ prediction_length = 60  # (3 seconds of prediction)
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
 p_memory = True
 train_batch_size = 128
+
+# Decide whether to use cuda or not
+use_cuda = torch.cuda.is_available()
+print('Use CUDA: ' + str(use_cuda))
+if use_cuda:
+    #    torch.cuda.device(randint(0,1))
+    dtype = torch.cuda.FloatTensor
+    dtype_long = torch.cuda.LongTensor
+else:
+    dtype = torch.FloatTensor
+    dtype_long = torch.LongTensor
 
 
 def create_results_directory(directory, test_set, experiment_path):
@@ -80,7 +93,8 @@ def load_test_set(args_dict, test_on_g=True, test_on_f=True):
 
     return test_dataset, test_dataloader
 
-def test(model, test_dataset):
+
+def test(model, test_dataset, test_dataloader):
     losses_test = list()
     results_dict = dict()
     losses_dict = dict()
@@ -120,10 +134,7 @@ def test(model, test_dataset):
         if batch_indx == 0:
             model.change_batch_size_reset_states(batch_length)
         else:
-            if slow_test:
-                model.change_batch_size_no_reset(batch_length)
-            else:
-                model.change_batch_size_reset_states(batch_length)
+            model.change_batch_size_no_reset(batch_length)
 
         out_test = model(model_input)
         out_test = torch.transpose(out_test, 0, 1)
@@ -332,6 +343,6 @@ if __name__ == "__main__":
 
         # perform test on loaded model
         model.eval()
-        test(model, test_set)
+        test(model, test_set, test_loader)
 
 

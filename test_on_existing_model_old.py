@@ -66,8 +66,6 @@ def load_test_set(test_on_g=True, test_on_f=True):
 
     return test_dataset, test_dataloader
 
-feature_size_dict = test_set.get_feature_size_dict()
-
 
 trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
 test_path = f'{trial_path}/test'

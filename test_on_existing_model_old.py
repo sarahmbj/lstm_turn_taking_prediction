@@ -5,6 +5,7 @@ from data_loader import TurnPredictionDataset
 from torch.utils.data import DataLoader
 import json
 import os
+import pandas as pd
 
 
 num_layers = 1
@@ -88,6 +89,11 @@ def test(model, test_dataset):
     model.eval()
     # setup results_dict
     results_lengths = test_dataset.get_results_lengths()
+
+    test_file_list = list(pd.read_csv(test_list_path, header=None, dtype=str)[0])
+    data_select_dict = {0: ['f', 'g'],
+                        1: ['c1', 'c2'],
+                        2: ['A', 'B']}
     for file_name in test_file_list:
         #        for g_f in ['g','f']:
         for g_f in data_select_dict[data_set_select]:

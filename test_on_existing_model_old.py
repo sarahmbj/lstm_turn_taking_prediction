@@ -42,7 +42,7 @@ def load_model(pickled_model, args_dict, test_data):
         'dropout': args_dict['dropout_dict'],
         'freeze_glove': args_dict['freeze_glove_embeddings']
     }
-
+    # TODO check we can get feature_size_dict from test set (it comes from train set in run_json.py)
     model = LSTMPredictor(lstm_settings_dict=lstm_settings_dict, feature_size_dict=test_data.get_feature_size_dict(),
                           batch_size=args_dict['train_batch_size'], seq_length=args_dict['sequence_length'],
                           prediction_length=args_dict['prediction_length'], embedding_info=args_dict['embedding_info'])

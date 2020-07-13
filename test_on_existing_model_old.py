@@ -15,6 +15,7 @@ sequence_length = 600  # (10 seconds of TBPTT)
 prediction_length = 60  # (3 seconds of prediction)
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
 p_memory = True
+train_batch_size = 128
 
 
 def load_args(args_path):
@@ -44,7 +45,7 @@ def load_model(pickled_model, args_dict, test_data):
     }
     # TODO check we can get feature_size_dict from test set (it comes from train set in run_json.py)
     model = LSTMPredictor(lstm_settings_dict=lstm_settings_dict, feature_size_dict=test_data.get_feature_size_dict(),
-                          batch_size=args_dict['train_batch_size'], seq_length=args_dict['sequence_length'],
+                          batch_size=train_batch_size, seq_length=args_dict['sequence_length'],
                           prediction_length=args_dict['prediction_length'], embedding_info=args_dict['embedding_info'])
     with open(pickled_model, "rb") as model_file:
         if torch.cuda.is_available():

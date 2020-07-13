@@ -69,9 +69,10 @@ def load_test_set(test_on_g=True, test_on_f=True):
 trial_path = './two_subnets/1_Acous_50ms_Ling_50ms'
 test_path = f'{trial_path}/test'
 
-
+print(trial_path)
 
 for directory in os.listdir(test_path):
+    print("INSIDE FOR LOOP")
     model_save = f'{test_path}/{directory}/model.p'
     print(model_save)
     settings_path = f'{test_path}/{directory}/settings.json'

@@ -123,7 +123,19 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
     losses_dict = dict()
     batch_sizes = list()
     losses_mse, losses_l1 = [], []
+
+    pause_str_list = ['50ms', '250ms', '500ms']
+    overlap_str_list = ['overlap_hold_shift', 'overlap_hold_shift_exclusive']
+    onset_str_list = ['short_long']
     results_save = dict()
+    for pause_str in pause_str_list + overlap_str_list + onset_str_list:
+        results_save['f_scores_' + pause_str] = list()
+        results_save['tn_' + pause_str] = list()
+        results_save['fp_' + pause_str] = list()
+        results_save['fn_' + pause_str] = list()
+        results_save['tp_' + pause_str] = list()
+    results_save['train_losses'], results_save['test_losses'], results_save['indiv_perf'], results_save[
+        'test_losses_l1'] = [], [], [], []
 
     # Decide whether to use cuda or not
     use_cuda = torch.cuda.is_available()
@@ -227,7 +239,6 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
     hold_shift, onsets, overlaps = load_evaluation_data()
 
     # get hold-shift f-scores
-    pause_str_list = ['50ms', '250ms', '500ms']
     length_of_future_window = 20  # (1 second)
 
     for pause_str in pause_str_list:
@@ -258,7 +269,6 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
             f1_score(true_vals, np.zeros([len(predicted_class)]).tolist(), average='weighted')))
     # get prediction at onset f-scores
     # first get best threshold from training data
-    onset_str_list = ['short_long']
     train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
     # if onset_test_flag: #TODO: fix this
     #     onset_train_true_vals = list()
@@ -316,7 +326,6 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
     #     results_save['tp_' + onset_str_list[0]].append(tp)
 
     # get prediction at overlap f-scores
-    overlap_str_list = ['overlap_hold_shift', 'overlap_hold_shift_exclusive']
     short_class_length = 20
     overlap_min = 2
     eval_window_start_point = short_class_length - overlap_min

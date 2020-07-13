@@ -5,6 +5,7 @@ from data_loader import TurnPredictionDataset
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
 import torch.nn as nn
+import torch.nn.functional as F
 import json
 import os
 import pandas as pd

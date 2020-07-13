@@ -12,11 +12,13 @@ import numpy as np
 from copy import deepcopy
 import h5py
 from sklearn.metrics import f1_score, roc_curve, confusion_matrix
+from pprint import pprint
 
 
 num_layers = 1
 annotations_dir = './data/extracted_annotations/voice_activity/'
 test_list_path = './data/splits/testing.txt'
+train_list_path = './data/splits/training.txt' #only used for onsets evaluation
 prediction_length = 60  # (3 seconds of prediction)
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
 p_memory = True
@@ -121,6 +123,7 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
     losses_dict = dict()
     batch_sizes = list()
     losses_mse, losses_l1 = [], []
+    results_save = dict()
 
     # Decide whether to use cuda or not
     use_cuda = torch.cuda.is_available()
@@ -256,6 +259,7 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
     # get prediction at onset f-scores
     # first get best threshold from training data
     onset_str_list = ['short_long']
+    train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
     if onset_test_flag:
         onset_train_true_vals = list()
         onset_train_mean_vals = list()
@@ -268,14 +272,14 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
                     # make sure the index is not out of bounds
 
                     if (frame_indx < len(train_results_dict[conv_key + '/' + g_f_key])) and not (
-                    np.isnan(np.mean(train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]))):
+                            np.isnan(np.mean(train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]))):
                         onset_train_true_vals.append(true_val)
                         onset_train_mean_vals.append(
                             np.mean(train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]))
-        if not(len(onset_train_true_vals)==0):
+        if not(len(onset_train_true_vals) == 0):
             fpr, tpr, thresholds = roc_curve(np.array(onset_train_true_vals), np.array(onset_train_mean_vals))
         else:
-            fpr,tpr,thresholds = 0,0,[0]
+            fpr, tpr, thresholds = 0, 0, [0]
         thresh_indx = np.argmax(tpr - fpr)
         onset_thresh = thresholds[thresh_indx]
         onset_threshs.append(onset_thresh)
@@ -366,13 +370,13 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
     results_save['indiv_perf'].append(indiv_perf)
     # majority baseline:
     # f1_score(true_vals,np.zeros([len(true_vals),]).tolist(),average='weighted')
-
+    return(results_save)
 
 if __name__ == "__main__":
     trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
     test_path = f'{trial_path}/test'
 
-
+    #Loop through all the models trained with these parameters
     for directory in os.listdir(test_path):
         # paths to stored models, settings, and location for new results
         model_path = f'{test_path}/{directory}/model.p'
@@ -393,6 +397,11 @@ if __name__ == "__main__":
 
         # perform test on loaded model
         model.eval()
-        test(model, test_set, test_loader)
+        test_results = test(model, test_set, test_loader)
+        pprint(test_results)
+
+        # TODO: need to save the results to somewhere
+        # TODO: need to prepare graphs (only the f-score ones)
+        # TODO: need to do averaging across trials
 
 

@@ -52,9 +52,9 @@ def load_model(pickled_model, args_dict, test_data):
                           prediction_length=prediction_length, embedding_info=test_data.get_embedding_info())
     with open(pickled_model, "rb") as model_file:
         if torch.cuda.is_available():
-            model.load_state_dict(model_file)
+            model.load_state_dict(torch.load(model_file))
         else:
-            model.load_state_dict(model_file, map_location=torch.device('cpu'))
+            model.load_state_dict(torch.load(model_file, map_location=torch.device('cpu')))
         print(type(model))
 
     return model

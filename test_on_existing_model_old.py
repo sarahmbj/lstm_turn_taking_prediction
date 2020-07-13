@@ -78,7 +78,7 @@ for directory in os.listdir(test_path):
     settings_path = f'{test_path}/{directory}/settings.json'
     print(settings_path)
     args = load_args(settings_path)
-    # test_set, test_loader = load_test_set()
+    test_set, test_loader = load_test_set()
     model = load_model(model_save, args)
 
 

@@ -6,12 +6,10 @@ from torch.utils.data import DataLoader
 import json
 import os
 
-print("THIS FILE IS RUNNING")
 
 num_layers = 1
 annotations_dir = './data/extracted_annotations/voice_activity/'
 test_list_path = './data/splits/testing.txt'
-# sequence_length = 600  # (10 seconds of TBPTT)
 prediction_length = 60  # (3 seconds of prediction)
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
 p_memory = True
@@ -20,7 +18,7 @@ train_batch_size = 128
 
 def create_results_directory(directory, test_set, experiment_path):
     print(f"{directory}/{test_set}/{experiment_path}")
-    os.mkdirs(f"{directory}/{test_set}/{experiment_path}")
+    os.mkdir(f"{directory}/{test_set}/{experiment_path}")
 
 
 def load_args(args_path):

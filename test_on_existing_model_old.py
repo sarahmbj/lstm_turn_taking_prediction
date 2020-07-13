@@ -14,6 +14,7 @@ test_list_path = './data/splits/testing.txt'
 sequence_length = 600  # (10 seconds of TBPTT)
 prediction_length = 60  # (3 seconds of prediction)
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
+p_memory = True
 
 
 def load_args(args_path):

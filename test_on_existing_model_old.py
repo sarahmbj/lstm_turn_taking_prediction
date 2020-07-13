@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 from copy import deepcopy
 import h5py
+from sklearn.metrics import f1_score, roc_curve, confusion_matrix
 
 
 num_layers = 1
@@ -254,6 +255,7 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
             f1_score(true_vals, np.zeros([len(predicted_class)]).tolist(), average='weighted')))
     # get prediction at onset f-scores
     # first get best threshold from training data
+    onset_str_list = ['short_long']
     if onset_test_flag:
         onset_train_true_vals = list()
         onset_train_mean_vals = list()
@@ -310,7 +312,11 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
         results_save['tp_' + onset_str_list[0]].append(tp)
 
     # get prediction at overlap f-scores
-
+    overlap_str_list = ['overlap_hold_shift', 'overlap_hold_shift_exclusive']
+    short_class_length = 20
+    overlap_min = 2
+    eval_window_start_point = short_class_length - overlap_min
+    eval_window_length = 10
     for overlap_str in overlap_str_list:
         true_vals_overlap, predicted_class_overlap = [], []
 

@@ -1,5 +1,4 @@
 import torch
-from pprint import pprint
 from lstm_model import LSTMPredictor
 from data_loader import TurnPredictionDataset
 from torch.utils.data import DataLoader
@@ -11,7 +10,7 @@ import os
 import pandas as pd
 import numpy as np
 from copy import deepcopy
-
+import h5py
 
 
 num_layers = 1
@@ -21,8 +20,6 @@ prediction_length = 60  # (3 seconds of prediction)
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
 p_memory = True
 train_batch_size = 128
-
-
 
 
 def create_results_directory(directory, test_set, experiment_path):
@@ -45,6 +42,34 @@ def load_args(args_path):
 
     args_dict = json.loads(args_string)
     return args_dict
+
+
+def load_evaluation_data():
+    if 'hold_shift' in locals():
+        if isinstance(hold_shift, h5py.File):  # Just HDF5 files
+            try:
+                hold_shift.close()
+            except:
+                pass  # Was already closed
+    if 'onsets' in locals():
+        if isinstance(onsets, h5py.File):  # Just HDF5 files
+            try:
+                onsets.close()
+            except:
+                pass  # Was already closed
+    if 'overlaps' in locals():
+        if isinstance(overlaps, h5py.File):  # Just HDF5 files
+            try:
+                overlaps.close()
+            except:
+                pass  # Was already closed
+
+    hold_shift = h5py.File('./data/datasets/hold_shift.hdf5', 'r')
+    onsets = h5py.File('./data/datasets/onsets.hdf5', 'r')
+    overlaps = h5py.File('./data/datasets/overlaps.hdf5', 'r')
+
+    return hold_shift, onsets, overlaps
+
 
 def load_model(pickled_model, args_dict, test_data):
 
@@ -89,7 +114,7 @@ def load_test_set(args_dict, test_on_g=True, test_on_f=True):
     return test_dataset, test_dataloader
 
 
-def test(model, test_dataset, test_dataloader):
+def test(model, test_dataset, test_dataloader, onset_test_flag=True):
     losses_test = list()
     results_dict = dict()
     losses_dict = dict()
@@ -100,14 +125,13 @@ def test(model, test_dataset, test_dataloader):
     use_cuda = torch.cuda.is_available()
     print('Use CUDA: ' + str(use_cuda))
     if use_cuda:
-        #    torch.cuda.device(randint(0,1))
         dtype = torch.cuda.FloatTensor
         dtype_long = torch.cuda.LongTensor
     else:
         dtype = torch.FloatTensor
         dtype_long = torch.LongTensor
 
-    #initialise loss functions
+    # initialise loss functions
     # TODO: is it ok to initialise these inside test() ?
     loss_func_L1 = nn.L1Loss()
     loss_func_L1_no_reduce = nn.L1Loss(reduce=False)
@@ -196,8 +220,12 @@ def test(model, test_dataset, test_dataloader):
         results_dict[conv_key + '/' + data_select_dict[data_set_select][0]] = np.array(
             results_dict[conv_key + '/' + data_select_dict[data_set_select][0]]).reshape(-1, prediction_length)
 
+    hold_shift, onsets, overlaps = load_evaluation_data()
+
     # get hold-shift f-scores
     pause_str_list = ['50ms', '250ms', '500ms']
+    length_of_future_window = 20  # (1 second)
+
     for pause_str in pause_str_list:
         true_vals = list()
         predicted_class = list()
@@ -226,7 +254,7 @@ def test(model, test_dataset, test_dataloader):
             f1_score(true_vals, np.zeros([len(predicted_class)]).tolist(), average='weighted')))
     # get prediction at onset f-scores
     # first get best threshold from training data
-    if onset_test_flag: # this is set to true at top of file
+    if onset_test_flag:
         onset_train_true_vals = list()
         onset_train_mean_vals = list()
         onset_threshs = []

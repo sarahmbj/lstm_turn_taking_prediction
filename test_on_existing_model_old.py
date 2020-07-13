@@ -26,7 +26,7 @@ def load_args(args_path):
     pprint(args_dict)
     return args_dict
 
-def load_model(pickled_model, args_dict):
+def load_model(pickled_model, args_dict, test_data):
 
     lstm_settings_dict = {  # this works because these variables are set in locals from json_dict
         'no_subnets': args_dict['no_subnets'],
@@ -43,8 +43,7 @@ def load_model(pickled_model, args_dict):
         'freeze_glove': args_dict['freeze_glove_embeddings']
     }
 
-
-    model = LSTMPredictor(lstm_settings_dict=lstm_settings_dict, feature_size_dict=args_dict['feature_size_dict'],
+    model = LSTMPredictor(lstm_settings_dict=lstm_settings_dict, feature_size_dict=test_data.get_feature_size_dict(),
                           batch_size=args_dict['train_batch_size'], seq_length=args_dict['sequence_length'],
                           prediction_length=args_dict['prediction_length'], embedding_info=args_dict['embedding_info'])
     with open(pickled_model, "rb") as model_file:
@@ -67,6 +66,9 @@ def load_test_set(test_on_g=True, test_on_f=True):
 
     return test_dataset, test_dataloader
 
+feature_size_dict = test_set.get_feature_size_dict()
+
+
 trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
 test_path = f'{trial_path}/test'
 
@@ -80,7 +82,7 @@ for directory in os.listdir(test_path):
     print(settings_path)
     args = load_args(settings_path)
     test_set, test_loader = load_test_set()
-    model = load_model(model_save, args)
+    model = load_model(model_save, args, test_set)
 
 
 

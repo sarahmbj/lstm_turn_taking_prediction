@@ -148,7 +148,6 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
         dtype_long = torch.LongTensor
 
     # initialise loss functions
-    # TODO: is it ok to initialise these inside test() ?
     loss_func_L1 = nn.L1Loss()
     loss_func_L1_no_reduce = nn.L1Loss(reduce=False)
     loss_func_BCE = nn.BCELoss()
@@ -400,7 +399,7 @@ if __name__ == "__main__":
 
         # load settings, model, data and create directories for results
         args = load_args(settings_path)
-        test_set, test_loader = load_test_set(args, test_on_g=True, test_on_f=True)
+        test_set, test_loader = load_test_set(args, test_on_g=False, test_on_f=True)
         model = load_model(model_path, args, test_set)
         os.makedirs(results_path)
 
@@ -412,5 +411,6 @@ if __name__ == "__main__":
         # TODO: need to save the results to somewhere
         # TODO: need to prepare graphs (only the f-score ones)
         # TODO: need to do averaging across trials
+        # TODO: do for each training set (f,g,both)
 
 

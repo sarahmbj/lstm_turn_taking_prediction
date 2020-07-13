@@ -260,60 +260,60 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
     # first get best threshold from training data
     onset_str_list = ['short_long']
     train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
-    if onset_test_flag:
-        onset_train_true_vals = list()
-        onset_train_mean_vals = list()
-        onset_threshs = []
-        for conv_key in list(set(train_file_list).intersection(onsets['short_long'].keys())):
-            for g_f_key in list(onsets['short_long' + '/' + conv_key].keys()):
-                g_f_key_not = deepcopy(data_select_dict[data_set_select])
-                g_f_key_not.remove(g_f_key)
-                for frame_indx, true_val in onsets['short_long' + '/' + conv_key + '/' + g_f_key]:
-                    # make sure the index is not out of bounds
-
-                    if (frame_indx < len(train_results_dict[conv_key + '/' + g_f_key])) and not (
-                            np.isnan(np.mean(train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]))):
-                        onset_train_true_vals.append(true_val)
-                        onset_train_mean_vals.append(
-                            np.mean(train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]))
-        if not(len(onset_train_true_vals) == 0):
-            fpr, tpr, thresholds = roc_curve(np.array(onset_train_true_vals), np.array(onset_train_mean_vals))
-        else:
-            fpr, tpr, thresholds = 0, 0, [0]
-        thresh_indx = np.argmax(tpr - fpr)
-        onset_thresh = thresholds[thresh_indx]
-        onset_threshs.append(onset_thresh)
-
-        true_vals_onset, onset_test_mean_vals, predicted_class_onset = [], [], []
-        for conv_key in list(set(test_file_list).intersection(onsets['short_long'].keys())):
-            for g_f_key in list(onsets['short_long' + '/' + conv_key].keys()):
-                #                g_f_key_not = ['g','f']
-                g_f_key_not = deepcopy(data_select_dict[data_set_select])
-                g_f_key_not.remove(g_f_key)
-                for frame_indx, true_val in onsets['short_long' + '/' + conv_key + '/' + g_f_key]:
-                    # make sure the index is not out of bounds
-                    if (frame_indx < len(results_dict[conv_key + '/' + g_f_key])) and not (
-                    np.isnan(np.mean(results_dict[conv_key + '/' + g_f_key][frame_indx, :]))):
-                        true_vals_onset.append(true_val)
-                        onset_mean = np.mean(results_dict[conv_key + '/' + g_f_key][frame_indx, :])
-                        onset_test_mean_vals.append(onset_mean)
-                        if onset_mean > onset_thresh:
-                            predicted_class_onset.append(1)  # long
-                        else:
-                            predicted_class_onset.append(0)  # short
-        f_score = f1_score(true_vals_onset, predicted_class_onset, average='weighted')
-        print(onset_str_list[0] + ' f-score: ' + str(f_score))
-        print('majority vote f-score:' + str(
-            f1_score(true_vals_onset, np.zeros([len(true_vals_onset), ]).tolist(), average='weighted')))
-        results_save['f_scores_' + onset_str_list[0]].append(f_score)
-        if not(len(true_vals_onset) == 0):
-            tn, fp, fn, tp = confusion_matrix(true_vals_onset, predicted_class_onset).ravel()
-        else:
-            tn,fp,fn,tp, = 0,0,0,0
-        results_save['tn_' + onset_str_list[0]].append(tn)
-        results_save['fp_' + onset_str_list[0]].append(fp)
-        results_save['fn_' + onset_str_list[0]].append(fn)
-        results_save['tp_' + onset_str_list[0]].append(tp)
+    # if onset_test_flag: #TODO: fix this
+    #     onset_train_true_vals = list()
+    #     onset_train_mean_vals = list()
+    #     onset_threshs = []
+    #     for conv_key in list(set(train_file_list).intersection(onsets['short_long'].keys())):
+    #         for g_f_key in list(onsets['short_long' + '/' + conv_key].keys()):
+    #             g_f_key_not = deepcopy(data_select_dict[data_set_select])
+    #             g_f_key_not.remove(g_f_key)
+    #             for frame_indx, true_val in onsets['short_long' + '/' + conv_key + '/' + g_f_key]:
+    #                 # make sure the index is not out of bounds
+    #
+    #                 if (frame_indx < len(train_results_dict[conv_key + '/' + g_f_key])) and not (
+    #                         np.isnan(np.mean(train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]))):
+    #                     onset_train_true_vals.append(true_val)
+    #                     onset_train_mean_vals.append(
+    #                         np.mean(train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]))
+    #     if not(len(onset_train_true_vals) == 0):
+    #         fpr, tpr, thresholds = roc_curve(np.array(onset_train_true_vals), np.array(onset_train_mean_vals))
+    #     else:
+    #         fpr, tpr, thresholds = 0, 0, [0]
+    #     thresh_indx = np.argmax(tpr - fpr)
+    #     onset_thresh = thresholds[thresh_indx]
+    #     onset_threshs.append(onset_thresh)
+    #
+    #     true_vals_onset, onset_test_mean_vals, predicted_class_onset = [], [], []
+    #     for conv_key in list(set(test_file_list).intersection(onsets['short_long'].keys())):
+    #         for g_f_key in list(onsets['short_long' + '/' + conv_key].keys()):
+    #             #                g_f_key_not = ['g','f']
+    #             g_f_key_not = deepcopy(data_select_dict[data_set_select])
+    #             g_f_key_not.remove(g_f_key)
+    #             for frame_indx, true_val in onsets['short_long' + '/' + conv_key + '/' + g_f_key]:
+    #                 # make sure the index is not out of bounds
+    #                 if (frame_indx < len(results_dict[conv_key + '/' + g_f_key])) and not (
+    #                 np.isnan(np.mean(results_dict[conv_key + '/' + g_f_key][frame_indx, :]))):
+    #                     true_vals_onset.append(true_val)
+    #                     onset_mean = np.mean(results_dict[conv_key + '/' + g_f_key][frame_indx, :])
+    #                     onset_test_mean_vals.append(onset_mean)
+    #                     if onset_mean > onset_thresh:
+    #                         predicted_class_onset.append(1)  # long
+    #                     else:
+    #                         predicted_class_onset.append(0)  # short
+    #     f_score = f1_score(true_vals_onset, predicted_class_onset, average='weighted')
+    #     print(onset_str_list[0] + ' f-score: ' + str(f_score))
+    #     print('majority vote f-score:' + str(
+    #         f1_score(true_vals_onset, np.zeros([len(true_vals_onset), ]).tolist(), average='weighted')))
+    #     results_save['f_scores_' + onset_str_list[0]].append(f_score)
+    #     if not(len(true_vals_onset) == 0):
+    #         tn, fp, fn, tp = confusion_matrix(true_vals_onset, predicted_class_onset).ravel()
+    #     else:
+    #         tn,fp,fn,tp, = 0,0,0,0
+    #     results_save['tn_' + onset_str_list[0]].append(tn)
+    #     results_save['fp_' + onset_str_list[0]].append(fp)
+    #     results_save['fn_' + onset_str_list[0]].append(fn)
+    #     results_save['tp_' + onset_str_list[0]].append(tp)
 
     # get prediction at overlap f-scores
     overlap_str_list = ['overlap_hold_shift', 'overlap_hold_shift_exclusive']
@@ -397,7 +397,7 @@ if __name__ == "__main__":
 
         # perform test on loaded model
         model.eval()
-        test_results = test(model, test_set, test_loader)
+        test_results = test(model, test_set, test_loader) #TODO: fix onset evaluation (needs train_results_dict)
         pprint(test_results)
 
         # TODO: need to save the results to somewhere

@@ -13,6 +13,7 @@ from copy import deepcopy
 import h5py
 from sklearn.metrics import f1_score, roc_curve, confusion_matrix
 from pprint import pprint
+import pickle
 
 
 num_layers = 1
@@ -380,11 +381,12 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
     # f1_score(true_vals,np.zeros([len(true_vals),]).tolist(),average='weighted')
     return(results_save)
 
+
 if __name__ == "__main__":
     trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
     test_path = f'{trial_path}/test'
 
-    #Loop through all the models trained with these parameters
+    # Loop through all the trained models in this trial path
     for directory in os.listdir(test_path):
         # paths to stored models, settings, and location for new results
         model_path = f'{test_path}/{directory}/model.p'
@@ -407,10 +409,12 @@ if __name__ == "__main__":
         model.eval()
         test_results = test(model, test_set, test_loader) #TODO: fix onset evaluation (needs train_results_dict)
         pprint(test_results)
+        pickle.dump(test_results, open(results_path + '/results.p', 'wb'))
 
         # TODO: need to save the results to somewhere
         # TODO: need to prepare graphs (only the f-score ones)
         # TODO: need to do averaging across trials
         # TODO: do for each training set (f,g,both)
+        #TODO: fix evaluation metrics for f v. g
 
 

@@ -14,6 +14,7 @@ import h5py
 from sklearn.metrics import f1_score, roc_curve, confusion_matrix
 from pprint import pprint
 import pickle
+import shutil
 
 
 num_layers = 1
@@ -395,7 +396,7 @@ if __name__ == "__main__":
 
         # remove existing directories (only needed for debugging purposes)
         try:
-            os.rmdir(results_path)
+            shutil.rmtree(results_path)
         except FileNotFoundError:
             pass
 

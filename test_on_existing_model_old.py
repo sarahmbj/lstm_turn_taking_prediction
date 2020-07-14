@@ -120,7 +120,7 @@ def load_test_set(args_dict, test_on_g=True, test_on_f=True):
     return test_dataset, test_dataloader
 
 
-def plot_person_error(name_list, data, results_key='barchart', results_path):
+def plot_person_error(name_list, data, results_path, results_key='barchart'):
     y_pos = np.arange(len(name_list))
     plt.figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
     plt.barh(y_pos, data, align='center', alpha=0.5)
@@ -424,7 +424,8 @@ if __name__ == "__main__":
         pprint(test_results)
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))
         plot_person_error(test_results['indiv_perf'][-1]['bar_chart_labels'],
-                          test_results['indiv_perf'][-1]['bar_chart_vals'], 'person_error_barchart', results_path)
+                          test_results['indiv_perf'][-1]['bar_chart_vals'], results_path,
+                          results_key='person_error_barchart')
 
         # TODO: need to prepare graphs (only the f-score ones)
         # TODO: need to do averaging across trials

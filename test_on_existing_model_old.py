@@ -15,6 +15,7 @@ from sklearn.metrics import f1_score, roc_curve, confusion_matrix
 from pprint import pprint
 import pickle
 import shutil
+import matplotlib.pyplot as plt
 
 
 num_layers = 1

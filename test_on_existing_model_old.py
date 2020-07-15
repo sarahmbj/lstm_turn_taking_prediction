@@ -422,14 +422,42 @@ if __name__ == "__main__":
         model.eval()
         test_results = test(model, test_set, test_loader) #TODO: fix onset evaluation (needs train_results_dict)
         pprint(test_results)
+        json.dump(test_results, open(results_path + '/report_dict.json', 'w'), indent=4, sort_keys=True)
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))
         plot_person_error(test_results['indiv_perf'][-1]['bar_chart_labels'],
                           test_results['indiv_perf'][-1]['bar_chart_vals'], results_path,
                           results_key='person_error_barchart')
 
-        # TODO: need to prepare graphs (only the f-score ones)
+        # store metrics to average across trials
+        total_num_epochs = len(test_results['test_losses'])
+        best_loss_indx = np.argmin(test_results['test_losses'])
+        eval_metric_list = ['f_scores_50ms', 'f_scores_250ms', 'f_scores_500ms', 'f_scores_overlap_hold_shift',
+                            'f_scores_overlap_hold_shift_exclusive', 'f_scores_short_long', 'train_losses',
+                            'test_losses', 'test_losses_l1']
+    #     for eval_metric in eval_metric_list:
+    #         best_vals_dict[eval_metric] += float(test_results[eval_metric][best_loss_indx]) * (
+    #                     1.0 / float(len(test_indices)))
+    #         last_vals_dict[eval_metric] += float(test_results[eval_metric][-1]) * (1.0 / float(len(test_indices)))
+    #         best_vals_dict_array[eval_metric].append(float(test_results[eval_metric][best_loss_indx]))
+    #         best_fscore_array[eval_metric].append(float(np.amax(test_results[eval_metric])))
+    #
+    # combine metrics across trials
+    report_dict = {'experiment_name': experiment_name,
+                   'best_vals': best_vals_dict,
+                   'last_vals': last_vals_dict,
+                   'best_vals_array': best_vals_dict_array,
+                   'best_fscore_array': best_fscore_array,
+                   'best_fscore_500_average': np.mean(best_fscore_array['f_scores_500ms']),
+                   'best_test_loss_average': np.mean(best_vals_dict['test_losses']),
+                   'best_indx': int(best_loss_indx),
+                   'num_epochs_total': int(total_num_epochs),
+                   'selected_lr': best_lr,
+                   'selected_master_node_size': int(best_master_node_size)
+                   }
+
+    json.dump(report_dict, open(trial_path + '/report_dict.json', 'w'), indent=4, sort_keys=True)
         # TODO: need to do averaging across trials
         # TODO: do for each training set (f,g,both)
-        #TODO: fix evaluation metrics for f v. g
+        # TODO: fix evaluation metrics for f v. g (is this needed?)
 
 

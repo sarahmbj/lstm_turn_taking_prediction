@@ -424,6 +424,9 @@ if __name__ == "__main__":
         pprint(test_results)
         pprint(type(test_results))
         json_dump = json.dumps(test_results)
+        with open(results_path + '/report_dict.json', 'w') as file:
+            file.write(json_dump)
+
         # json.dump(test_results, open(results_path + '/report_dict.json', 'w'), indent=4, sort_keys=True)
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))
         plot_person_error(test_results['indiv_perf'][-1]['bar_chart_labels'],

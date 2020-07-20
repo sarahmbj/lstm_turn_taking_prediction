@@ -421,8 +421,9 @@ if __name__ == "__main__":
         # perform test on loaded model
         model.eval()
         test_results = test(model, test_set, test_loader) #TODO: fix onset evaluation (needs train_results_dict)
+        json_test_results = json.dumps(test_results)
         with open(results_path + '/results.txt', 'w') as file:
-            file.write(str(test_results))
+            file.write(str(json_test_results))
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))
         plot_person_error(test_results['indiv_perf'][-1]['bar_chart_labels'],
                           test_results['indiv_perf'][-1]['bar_chart_vals'], results_path,

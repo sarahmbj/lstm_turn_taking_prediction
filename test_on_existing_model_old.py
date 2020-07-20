@@ -421,7 +421,7 @@ if __name__ == "__main__":
         # perform test on loaded model
         model.eval()
         test_results = test(model, test_set, test_loader) #TODO: fix onset evaluation (needs train_results_dict)
-        print(isinstance(test_results))
+        print(type(test_results))
         json_test_results = json.dumps(test_results)
         with open(results_path + '/results.txt', 'w') as file:
             file.write(json_test_results)

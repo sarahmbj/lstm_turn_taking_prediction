@@ -8,6 +8,7 @@ def get_f_g_stats(pickled_results):
     (instruction givers) and for all speakers."""
     with open(pickled_results, "rb") as results_file:
         results = pickle.load(results_file)
+        pprint(results)
 
     all_errors = results['indiv_perf'][0]['bar_chart_vals']
     f_errors = []  # 0,2,4,6 etc.

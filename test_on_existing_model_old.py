@@ -422,7 +422,9 @@ if __name__ == "__main__":
         model.eval()
         test_results = test(model, test_set, test_loader) #TODO: fix onset evaluation (needs train_results_dict)
         pprint(test_results)
-        json.dump(test_results, open(results_path + '/report_dict.json', 'w'), indent=4, sort_keys=True)
+        pprint(type(test_results))
+        quit()
+        # json.dump(test_results, open(results_path + '/report_dict.json', 'w'), indent=4, sort_keys=True)
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))
         plot_person_error(test_results['indiv_perf'][-1]['bar_chart_labels'],
                           test_results['indiv_perf'][-1]['bar_chart_vals'], results_path,

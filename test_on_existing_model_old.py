@@ -430,8 +430,8 @@ if __name__ == "__main__":
 
         # use training set to get threshold for onset evaluation
         train_set, train_loader = load_training_set(args, train_on_g=True, train_on_f=True) #TODO: needs to be what the original test set was
-        print(type(train_set))
-        quit()
+        train_results = model(train_set)
+        pprint(train_results)
 
         # perform test on loaded model
         model.eval()

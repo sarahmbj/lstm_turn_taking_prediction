@@ -110,7 +110,7 @@ def load_model(pickled_model, args_dict, test_data):
 
 
 def load_test_set(args_dict, test_on_g=True, test_on_f=True):
-    test_dataset = TurnPredictionDataset(args['feature_dict_list'], annotations_dir, test_list_path, args_dict['sequence_length'],
+    test_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir, test_list_path, args_dict['sequence_length'],
                                          prediction_length, 'test', data_select=data_set_select, test_on_f=test_on_f,
                                          test_on_g=test_on_g)
 

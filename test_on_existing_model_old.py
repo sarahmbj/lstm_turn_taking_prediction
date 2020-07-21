@@ -110,14 +110,24 @@ def load_model(pickled_model, args_dict, test_data):
 
 
 def load_test_set(args_dict, test_on_g=True, test_on_f=True):
-    test_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir, test_list_path, args_dict['sequence_length'],
-                                         prediction_length, 'test', data_select=data_set_select, test_on_f=test_on_f,
-                                         test_on_g=test_on_g)
+    test_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir, test_list_path,
+                                         args_dict['sequence_length'], prediction_length, 'test',
+                                         data_select=data_set_select, test_on_f=test_on_f, test_on_g=test_on_g)
 
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0, drop_last=False,
                                  pin_memory=p_memory)
 
     return test_dataset, test_dataloader
+
+
+def load_training_set(args_dict, train_on_f=True, train_on_g=True):
+    """needed to get the threshold value for prediction at onsets"""
+    train_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir, train_list_path,
+                                          args_dict['sequence_length'], prediction_length, 'train',
+                                          data_select=data_set_select, train_on_f=train_on_f, train_on_g=train_on_g)
+    train_dataloader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=False, num_workers=0,
+                                  drop_last=True, pin_memory=p_memory)
+    return train_dataset, train_dataloader
 
 
 def plot_person_error(name_list, data, results_path, results_key='barchart'):
@@ -417,6 +427,11 @@ if __name__ == "__main__":
         test_set, test_loader = load_test_set(args, test_on_g=True, test_on_f=True)
         model = load_model(model_path, args, test_set)
         os.makedirs(results_path)
+
+        # use training set to get threshold for onset evaluation
+        train_set, train_loader = load_training_set(args, train_on_g=True, train_on_f=True) #TODO: needs to be what the original test set was
+        print(type(train_set))
+        quit()
 
         # perform test on loaded model
         model.eval()

@@ -33,7 +33,7 @@ def create_results_directory(directory, test_set, experiment_path):
     os.makedirs(f"{directory}/{test_set}/{experiment_path}")
 
 
-def get_train_results_dict(model, train_dataset, train_dataloader, train_file_list):
+def get_train_results_dict(model, train_dataset, train_dataloader, train_list_path):
     # Decide whether to use cuda or not
     use_cuda = torch.cuda.is_available()
     print('Use CUDA: ' + str(use_cuda))
@@ -466,7 +466,7 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True, prediction_
         results_save['indiv_perf'].append(indiv_perf)
     # majority baseline:
     # f1_score(true_vals,np.zeros([len(true_vals),]).tolist(),average='weighted')
-    return results_save, results_dict
+    return results_save
 
 
 if __name__ == "__main__":
@@ -500,7 +500,7 @@ if __name__ == "__main__":
 
         # perform test on loaded model
         model.eval()
-        test_results, _ = test(model, test_set, test_loader, train_results_dict) #TODO: fix onset evaluation (needs train_results_dict)
+        test_results = test(model, test_set, test_loader, train_results_dict) #TODO: fix onset evaluation (needs train_results_dict)
         with open(results_path + '/results.txt', 'w') as file:
             file.write(str(test_results))
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))

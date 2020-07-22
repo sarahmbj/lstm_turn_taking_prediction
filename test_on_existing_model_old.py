@@ -80,6 +80,8 @@ def get_train_results_dict(model, train_dataset, train_dataloader, train_file_li
             #     opt.step()
             file_name_list = info['file_names']
             gf_name_list = info['g_f']
+            print(gf_name_list)
+            quit()
             time_index_list = info['time_indices']
             train_batch_length = y.shape[1]
             #                model_output = torch.transpose(model_output,0,1)

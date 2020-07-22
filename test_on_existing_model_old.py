@@ -141,7 +141,7 @@ def plot_person_error(name_list, data, results_path, results_key='barchart'):
     plt.savefig(results_path + '/' + results_key + '.pdf')
 
 
-def test(model, test_dataset, test_dataloader, onset_test_flag=True, prediction_at_overlap_flag=True,
+def test(model, test_dataset, test_dataloader, test_list_path, onset_test_flag=True, prediction_at_overlap_flag=True,
          error_per_person_flag=True):
     losses_test = list()
     results_dict = dict()
@@ -434,13 +434,13 @@ if __name__ == "__main__":
         # use training set to get threshold for onset evaluation
         train_set, train_loader = load_training_set(args, train_on_g=True, train_on_f=True) #TODO: needs to be what the original test set was
 
-        # _, train_results = test(model, train_set, train_loader, onset_test_flag=False, prediction_at_overlap_flag=False,
-        #                         error_per_person_flag=False)
-        # pprint(train_results)
+        _, train_results = test(model, train_set, train_loader, train_list_path, onset_test_flag=False,
+                                prediction_at_overlap_flag=False, error_per_person_flag=False)
+        pprint(train_results)
 
         # perform test on loaded model
         model.eval()
-        test_results, _ = test(model, test_set, test_loader) #TODO: fix onset evaluation (needs train_results_dict)
+        test_results, _ = test(model, test_set, test_loader, test_list_path) #TODO: fix onset evaluation (needs train_results_dict)
         with open(results_path + '/results.txt', 'w') as file:
             file.write(str(test_results))
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))

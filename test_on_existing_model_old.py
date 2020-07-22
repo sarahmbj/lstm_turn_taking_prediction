@@ -49,7 +49,7 @@ def get_train_results_dict(model, train_dataset, train_dataloader, train_file_li
     train_results_dict = dict()
     train_results_lengths = train_dataset.get_results_lengths()
     for file_name in train_file_list:
-        for g_f in ['g','f']: #TODO: sometimes only use one or the other?
+        for g_f in ['f']: #TODO: sometimes only use one or the other?
             # create new arrays for the onset results (the continuous predictions)
             train_results_dict[file_name + '/' + g_f] = np.zeros(
                 [train_results_lengths[file_name], prediction_length])

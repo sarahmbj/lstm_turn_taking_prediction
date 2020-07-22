@@ -141,7 +141,8 @@ def plot_person_error(name_list, data, results_path, results_key='barchart'):
     plt.savefig(results_path + '/' + results_key + '.pdf')
 
 
-def test(model, test_dataset, test_dataloader, onset_test_flag=True):
+def test(model, test_dataset, test_dataloader, onset_test_flag=True, prediction_at_overlap_flag=True,
+         error_per_person_flag=True):
     losses_test = list()
     results_dict = dict()
     losses_dict = dict()
@@ -349,60 +350,62 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True):
     #     results_save['tp_' + onset_str_list[0]].append(tp)
 
     # get prediction at overlap f-scores
-    short_class_length = 20
-    overlap_min = 2
-    eval_window_start_point = short_class_length - overlap_min
-    eval_window_length = 10
-    for overlap_str in overlap_str_list:
-        true_vals_overlap, predicted_class_overlap = [], []
+    if prediction_at_overlap_flag:
+        short_class_length = 20
+        overlap_min = 2
+        eval_window_start_point = short_class_length - overlap_min
+        eval_window_length = 10
+        for overlap_str in overlap_str_list:
+            true_vals_overlap, predicted_class_overlap = [], []
 
-        for conv_key in list(set(list(overlaps[overlap_str].keys())).intersection(set(test_file_list))):
-            for g_f_key in list(overlaps[overlap_str + '/' + conv_key].keys()):
-                g_f_key_not = deepcopy(data_select_dict[data_set_select])
-                g_f_key_not.remove(g_f_key)
-                for eval_indx, true_val in overlaps[overlap_str + '/' + conv_key + '/' + g_f_key]:
-                    # make sure the index is not out of bounds
-                    if eval_indx < len(results_dict[conv_key + '/' + g_f_key]):
-                        true_vals_overlap.append(true_val)
-                        if np.sum(results_dict[conv_key + '/' + g_f_key][eval_indx,
-                                  eval_window_start_point: eval_window_start_point + eval_window_length]) \
-                                > np.sum(results_dict[conv_key + '/' + g_f_key_not[0]][eval_indx,
-                                         eval_window_start_point: eval_window_start_point + eval_window_length]):
-                            predicted_class_overlap.append(0)
-                        else:
-                            predicted_class_overlap.append(1)
-        f_score = f1_score(true_vals_overlap, predicted_class_overlap, average='weighted')
-        print(overlap_str + ' f-score: ' + str(f_score))
+            for conv_key in list(set(list(overlaps[overlap_str].keys())).intersection(set(test_file_list))):
+                for g_f_key in list(overlaps[overlap_str + '/' + conv_key].keys()):
+                    g_f_key_not = deepcopy(data_select_dict[data_set_select])
+                    g_f_key_not.remove(g_f_key)
+                    for eval_indx, true_val in overlaps[overlap_str + '/' + conv_key + '/' + g_f_key]:
+                        # make sure the index is not out of bounds
+                        if eval_indx < len(results_dict[conv_key + '/' + g_f_key]):
+                            true_vals_overlap.append(true_val)
+                            if np.sum(results_dict[conv_key + '/' + g_f_key][eval_indx,
+                                      eval_window_start_point: eval_window_start_point + eval_window_length]) \
+                                    > np.sum(results_dict[conv_key + '/' + g_f_key_not[0]][eval_indx,
+                                             eval_window_start_point: eval_window_start_point + eval_window_length]):
+                                predicted_class_overlap.append(0)
+                            else:
+                                predicted_class_overlap.append(1)
+            f_score = f1_score(true_vals_overlap, predicted_class_overlap, average='weighted')
+            print(overlap_str + ' f-score: ' + str(f_score))
 
-        print('majority vote f-score:' + str(
-            f1_score(true_vals_overlap, np.ones([len(true_vals_overlap), ]).tolist(), average='weighted')))
-        results_save['f_scores_' + overlap_str].append(f_score)
-        tn, fp, fn, tp = confusion_matrix(true_vals_overlap, predicted_class_overlap).ravel()
-        results_save['tn_' + overlap_str].append(tn)
-        results_save['fp_' + overlap_str].append(fp)
-        results_save['fn_' + overlap_str].append(fn)
-        results_save['tp_' + overlap_str].append(tp)
+            print('majority vote f-score:' + str(
+                f1_score(true_vals_overlap, np.ones([len(true_vals_overlap), ]).tolist(), average='weighted')))
+            results_save['f_scores_' + overlap_str].append(f_score)
+            tn, fp, fn, tp = confusion_matrix(true_vals_overlap, predicted_class_overlap).ravel()
+            results_save['tn_' + overlap_str].append(tn)
+            results_save['fp_' + overlap_str].append(fp)
+            results_save['fn_' + overlap_str].append(fn)
+            results_save['tp_' + overlap_str].append(tp)
     # get error per person (to use with plot_person_error())
-    bar_chart_labels = []
-    bar_chart_vals = []
-    for conv_key in test_file_list:
-        #        for g_f in ['g','f']:
-        for g_f in data_select_dict[data_set_select]:
-            losses_dict[conv_key + '/' + g_f] = np.array(losses_dict[conv_key + '/' + g_f]).reshape(-1,
-                                                                                                    prediction_length)
-            bar_chart_labels.append(conv_key + '_' + g_f)
-            bar_chart_vals.append(np.mean(losses_dict[conv_key + '/' + g_f]))
+    if error_per_person_flag:
+        bar_chart_labels = []
+        bar_chart_vals = []
+        for conv_key in test_file_list:
+            #        for g_f in ['g','f']:
+            for g_f in data_select_dict[data_set_select]:
+                losses_dict[conv_key + '/' + g_f] = np.array(losses_dict[conv_key + '/' + g_f]).reshape(-1,
+                                                                                                        prediction_length)
+                bar_chart_labels.append(conv_key + '_' + g_f)
+                bar_chart_vals.append(np.mean(losses_dict[conv_key + '/' + g_f]))
 
-    results_save['test_losses'].append(loss_weighted_mean)
-    results_save['test_losses_l1'].append(loss_weighted_mean_l1)
-    #    results_save['test_losses_mse'].append(loss_weighted_mean_mse)
+        results_save['test_losses'].append(loss_weighted_mean)
+        results_save['test_losses_l1'].append(loss_weighted_mean_l1)
+        #    results_save['test_losses_mse'].append(loss_weighted_mean_mse)
 
-    indiv_perf = {'bar_chart_labels': bar_chart_labels,
-                  'bar_chart_vals': bar_chart_vals}
-    results_save['indiv_perf'].append(indiv_perf)
+        indiv_perf = {'bar_chart_labels': bar_chart_labels,
+                      'bar_chart_vals': bar_chart_vals}
+        results_save['indiv_perf'].append(indiv_perf)
     # majority baseline:
     # f1_score(true_vals,np.zeros([len(true_vals),]).tolist(),average='weighted')
-    return(results_save)
+    return results_save, results_dict
 
 
 if __name__ == "__main__":
@@ -430,12 +433,14 @@ if __name__ == "__main__":
 
         # use training set to get threshold for onset evaluation
         train_set, train_loader = load_training_set(args, train_on_g=True, train_on_f=True) #TODO: needs to be what the original test set was
-        train_results = model(train_set)
+
+        _, train_results = test(model, train_set, train_loader, onset_test_flag=False, prediction_at_overlap_flag=False,
+                                error_per_person_flag=False)
         pprint(train_results)
 
         # perform test on loaded model
         model.eval()
-        test_results = test(model, test_set, test_loader) #TODO: fix onset evaluation (needs train_results_dict)
+        test_results, _ = test(model, test_set, test_loader) #TODO: fix onset evaluation (needs train_results_dict)
         with open(results_path + '/results.txt', 'w') as file:
             file.write(str(test_results))
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))

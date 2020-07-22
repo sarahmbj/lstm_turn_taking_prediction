@@ -33,6 +33,56 @@ def create_results_directory(directory, test_set, experiment_path):
     os.makedirs(f"{directory}/{test_set}/{experiment_path}")
 
 
+def get_train_results_dict(model, train_dataset, train_dataloader, train_file_list):
+    model.eval()
+    train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
+    train_results_dict = dict()
+    train_results_lengths = train_dataset.get_results_lengths()
+    for file_name in train_file_list:
+        for g_f in ['g','f']: #TODO: sometimes only use one or the other?
+            # create new arrays for the onset results (the continuous predictions)
+            train_results_dict[file_name + '/' + g_f] = np.zeros(
+                [train_results_lengths[file_name], prediction_length])
+            train_results_dict[file_name + '/' + g_f][:] = np.nan
+
+        for batch_indx, batch in enumerate(train_dataloader):
+            # b should be of form: (x,x_i,v,v_i,y,info)
+            model_input = []
+
+            for b_i, bat in enumerate(batch): #b_i is each item in the batch i.e. a frame
+                if len(bat) == 0:
+                    model_input.append(bat)
+                elif (b_i == 1) or (b_i == 3):
+                    model_input.append(bat.transpose(0, 2).transpose(1, 2).numpy())
+                elif (b_i == 0) or (b_i == 2):
+                    model_input.append(Variable(bat.type(dtype)).transpose(0, 2).transpose(1, 2))
+
+            y = Variable(batch[4].type(dtype).transpose(0, 2).transpose(1, 2))
+            info = batch[5]
+            model_output_logits = model(model_input)
+
+            # loss = loss_func_BCE_Logit(model_output_logits,y)
+            # loss_list.append(loss.cpu().data.numpy())
+            # loss.backward()
+            # if grad_clip_bool:
+            #     clip_grad_norm(model.parameters(), grad_clip)
+            # for opt in optimizer_list:
+            #     opt.step()
+            file_name_list = info['file_names']
+            gf_name_list = info['g_f']
+            time_index_list = info['time_indices']
+            train_batch_length = y.shape[1]
+            #                model_output = torch.transpose(model_output,0,1)
+            model_output = torch.transpose(model_output_logits, 0, 1)
+            for file_name, g_f_indx, time_indices, batch_indx in zip(file_name_list,
+                                                                     gf_name_list,
+                                                                     time_index_list,
+                                                                     range(train_batch_length)):
+                train_results_dict[file_name + '/' + g_f_indx][time_indices[0]:time_indices[1]] = model_output[
+                    batch_indx].data.cpu().numpy()
+    return train_results_dict
+
+
 def remove_results_directory(directory, test_set, experiment_path):
     """reverses create_results_directory - for use when testing """
     print(f"{directory}/{test_set}/{experiment_path}")
@@ -434,13 +484,12 @@ if __name__ == "__main__":
         # use training set to get threshold for onset evaluation
         train_set, train_loader = load_training_set(args, train_on_g=True, train_on_f=True) #TODO: needs to be what the original test set was
 
-        _, train_results = test(model, train_set, train_loader, onset_test_flag=False, prediction_at_overlap_flag=False,
-                                error_per_person_flag=False)
-        pprint(train_results)
+        train_results_dict = get_train_results_dict(model, train_set, train_loader, train_list_path)
+        pprint(train_results_dict)
 
         # perform test on loaded model
         model.eval()
-        test_results, _ = test(model, test_set, test_loader) #TODO: fix onset evaluation (needs train_results_dict)
+        test_results, _ = test(model, test_set, test_loader, train_results_dict) #TODO: fix onset evaluation (needs train_results_dict)
         with open(results_path + '/results.txt', 'w') as file:
             file.write(str(test_results))
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))

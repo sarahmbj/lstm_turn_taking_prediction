@@ -69,7 +69,6 @@ def get_train_results_dict(model, train_dataset, train_dataloader, train_list_pa
 
             y = Variable(batch[4].type(dtype).transpose(0, 2).transpose(1, 2))
             info = batch[5]
-            pprint(info)
             model_output_logits = model(model_input)
 
             # loss = loss_func_BCE_Logit(model_output_logits,y)
@@ -85,6 +84,7 @@ def get_train_results_dict(model, train_dataset, train_dataloader, train_list_pa
             train_batch_length = y.shape[1]
             #                model_output = torch.transpose(model_output,0,1)
             model_output = torch.transpose(model_output_logits, 0, 1)
+            pprint(train_results_dict.keys())
             for file_name, g_f_indx, time_indices, batch_indx in zip(file_name_list,
                                                                      gf_name_list,
                                                                      time_index_list,

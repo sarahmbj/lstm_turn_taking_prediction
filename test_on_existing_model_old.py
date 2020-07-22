@@ -34,6 +34,16 @@ def create_results_directory(directory, test_set, experiment_path):
 
 
 def get_train_results_dict(model, train_dataset, train_dataloader, train_file_list):
+    # Decide whether to use cuda or not
+    use_cuda = torch.cuda.is_available()
+    print('Use CUDA: ' + str(use_cuda))
+    if use_cuda:
+        dtype = torch.cuda.FloatTensor
+        dtype_long = torch.cuda.LongTensor
+    else:
+        dtype = torch.FloatTensor
+        dtype_long = torch.LongTensor
+        
     model.eval()
     train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
     train_results_dict = dict()

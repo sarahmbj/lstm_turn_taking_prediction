@@ -55,6 +55,7 @@ def get_train_results_dict(model, train_dataset, train_dataloader, train_list_pa
                 [train_results_lengths[file_name], prediction_length])
             train_results_dict[file_name + '/' + g_f][:] = np.nan
 
+    for file_name in train_file_list:
         for batch_indx, batch in enumerate(train_dataloader):
             # b should be of form: (x,x_i,v,v_i,y,info)
             model_input = []

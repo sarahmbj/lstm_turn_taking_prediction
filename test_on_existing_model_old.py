@@ -354,7 +354,7 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True, prediction_
     # get prediction at onset f-scores
     # first get best threshold from training data
     train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
-    if onset_test_flag: #TODO: fix this
+    if onset_test_flag:
         onset_train_true_vals = list()
         onset_train_mean_vals = list()
         onset_threshs = []
@@ -521,18 +521,18 @@ if __name__ == "__main__":
     #         best_fscore_array[eval_metric].append(float(np.amax(test_results[eval_metric])))
     #
     # combine metrics across trials
-    report_dict = {'experiment_name': experiment_name,
-                   'best_vals': best_vals_dict,
-                   'last_vals': last_vals_dict,
-                   'best_vals_array': best_vals_dict_array,
-                   'best_fscore_array': best_fscore_array,
-                   'best_fscore_500_average': np.mean(best_fscore_array['f_scores_500ms']),
-                   'best_test_loss_average': np.mean(best_vals_dict['test_losses']),
-                   'best_indx': int(best_loss_indx),
-                   'num_epochs_total': int(total_num_epochs),
-                   'selected_lr': best_lr,
-                   'selected_master_node_size': int(best_master_node_size)
-                   }
+    # report_dict = {'experiment_name': experiment_name,
+    #                'best_vals': best_vals_dict,
+    #                'last_vals': last_vals_dict,
+    #                'best_vals_array': best_vals_dict_array,
+    #                'best_fscore_array': best_fscore_array,
+    #                'best_fscore_500_average': np.mean(best_fscore_array['f_scores_500ms']),
+    #                'best_test_loss_average': np.mean(best_vals_dict['test_losses']),
+    #                'best_indx': int(best_loss_indx),
+    #                'num_epochs_total': int(total_num_epochs),
+    #                'selected_lr': best_lr,
+    #                'selected_master_node_size': int(best_master_node_size)
+    #                }
 
     json.dump(report_dict, open(trial_path + '/report_dict.json', 'w'), indent=4, sort_keys=True)
         # TODO: need to do averaging across trials

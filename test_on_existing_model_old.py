@@ -524,6 +524,6 @@ if __name__ == "__main__":
     pprint(combined_results)
 
 
-    json.dump(report_dict, open(trial_path + '/report_dict.json', 'w'), indent=4, sort_keys=True)
+    json.dump(combined_results, open(trial_path + '/report_dict.json', 'w'), indent=4, sort_keys=True)
         # TODO: need to do averaging across trials
         # TODO: do for each training set (f,g,both)

@@ -487,7 +487,7 @@ if __name__ == "__main__":
 
         # load settings, model, data and create directories for results
         args = load_args(settings_path)
-        test_set, test_loader = load_test_set(args, test_on_g=True, test_on_f=False)
+        test_set, test_loader = load_test_set(args, test_on_g=True, test_on_f=True)
         model = load_model(model_path, args, test_set)
         os.makedirs(results_path)
 

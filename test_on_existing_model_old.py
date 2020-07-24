@@ -487,7 +487,7 @@ if __name__ == "__main__":
 
         # load settings, model, data and create directories for results
         args = load_args(settings_path)
-        test_set, test_loader = load_test_set(args, test_on_g=True, test_on_f=True)
+        test_set, test_loader = load_test_set(args, test_on_g=True, test_on_f=False)
         model = load_model(model_path, args, test_set)
         os.makedirs(results_path)
 
@@ -499,7 +499,7 @@ if __name__ == "__main__":
 
         # perform test on loaded model
         model.eval()
-        test_results = test(model, test_set, test_loader, train_results_dict) #TODO: fix onset evaluation (needs train_results_dict)
+        test_results = test(model, test_set, test_loader, train_results_dict)
         with open(results_path + '/results.txt', 'w') as file:
             file.write(str(test_results))
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))

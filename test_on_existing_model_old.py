@@ -521,7 +521,13 @@ if __name__ == "__main__":
     for results_dict in results_dicts:
         for metric in eval_metric_list:
             combined_results[metric].append(results_dict[metric])
+    #get average across trials
+    averaged_results = {}
+    for metric in eval_metric_list:
+        averaged_results[metric] = np.mean(combined_results[metric])
+    combined_results['means'] = averaged_results
     pprint(combined_results)
+
 
 
     json.dump(combined_results, open(trial_path + '/report_dict.json', 'w'), indent=4, sort_keys=True)

@@ -688,11 +688,10 @@ plot_person_error(results_save['indiv_perf'][-1]['bar_chart_labels'],
 plt.close('all')
 print(f'should have done the pickle dump to {results_dir}/{result_dir_name}')
 pickle.dump(results_save, open(results_dir + '/' + result_dir_name + '/results.p', 'wb'))
+pickle.dump(train_results_dict, open(results_dir + '/' + result_dir_name + '/train_results_dict.p', 'wb'))
 
 torch.save(model.state_dict(), results_dir + '/' + result_dir_name + '/model.p')
-#  write model location to file so it can be recovered to use different test sets
-with open("./model_location.txt", "a") as file:
-    file.write('\n' + results_dir + '/' + result_dir_name + '/model.p')
+
 if len(argv) == proper_num_args:
     json.dump(argv[1], open(results_dir + '/' + result_dir_name + '/settings.json', 'w'), indent=4, sort_keys=True)
 

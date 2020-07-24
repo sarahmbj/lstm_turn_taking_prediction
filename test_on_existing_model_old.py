@@ -475,10 +475,11 @@ if __name__ == "__main__":
     # Loop through all the trained models in this trial path
     results_dicts = []
     for directory in os.listdir(test_path):
+        test_set_name = 'test_on_both'
         # paths to stored models, settings, and location for new results
         model_path = f'{test_path}/{directory}/model.p'
         settings_path = f'{test_path}/{directory}/settings.json'
-        results_path = f"{trial_path}/test_on_both/{directory}"
+        results_path = f"{trial_path}/{test_set_name}/{directory}"
 
         # remove existing directories (only needed for debugging purposes)
         try:
@@ -530,6 +531,6 @@ if __name__ == "__main__":
 
 
 
-    json.dump(combined_results, open(trial_path + '/report_dict.json', 'w'), indent=4, sort_keys=True)
+    json.dump(combined_results, open(trial_path + f'/report_dict{test_set_name}.json', 'w'), indent=4, sort_keys=True)
         # TODO: need to do averaging across trials
         # TODO: do for each training set (f,g,both)

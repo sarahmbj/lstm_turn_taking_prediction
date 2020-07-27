@@ -201,7 +201,7 @@ def plot_person_error(name_list, data, results_path, results_key='barchart'):
     plt.savefig(results_path + '/' + results_key + '.pdf')
 
 
-def test(model, test_dataset, test_dataloader, onset_test_flag=True, prediction_at_overlap_flag=True,
+def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_flag=True, prediction_at_overlap_flag=True,
          error_per_person_flag=True):
     losses_test = list()
     results_dict = dict()

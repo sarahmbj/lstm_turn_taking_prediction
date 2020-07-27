@@ -468,14 +468,21 @@ def test(model, test_dataset, test_dataloader, onset_test_flag=True, prediction_
     return results_save
 
 
-if __name__ == "__main__":
-    trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
-    test_path = f'{trial_path}/test'
+def get_test_set_name(f, g):
+    if f is True and g is True:
+        return 'test_on_both'
+    elif f is True:
+        return 'test_on_f'
+    else:
+        return 'test_on_g'
 
+
+def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_on_g=True, trained_on_f=True):
+    test_path = f'{trial_path}/test'
     # Loop through all the trained models in this trial path
     results_dicts = []
     for directory in os.listdir(test_path):
-        test_set_name = 'test_on_both'
+        test_set_name = get_test_set_name(test_on_f, test_on_g)
         # paths to stored models, settings, and location for new results
         model_path = f'{test_path}/{directory}/model.p'
         settings_path = f'{test_path}/{directory}/settings.json'
@@ -489,12 +496,13 @@ if __name__ == "__main__":
 
         # load settings, model, data and create directories for results
         args = load_args(settings_path)
-        test_set, test_loader = load_test_set(args, test_on_g=True, test_on_f=True)
+        test_set, test_loader = load_test_set(args, test_on_g=test_on_g, test_on_f=test_on_f)
         model = load_model(model_path, args, test_set)
         os.makedirs(results_path)
 
         # use training set to get threshold for onset evaluation
-        train_set, train_loader = load_training_set(args, train_on_g=True, train_on_f=True) #TODO: needs to be what the original test set was
+        train_set, train_loader = load_training_set(args, train_on_g=trained_on_g,
+                                                    train_on_f=trained_on_f)  # needs to be how model was originally trained
 
         train_results_dict = get_train_results_dict(model, train_set, train_loader, train_list_path)
         pprint(train_results_dict)
@@ -512,25 +520,92 @@ if __name__ == "__main__":
         # store metrics to average across trials
         results_dicts.append(test_results)
 
-    #combine metrics across trials
-    eval_metric_list = ['f_scores_50ms', 'f_scores_250ms', 'f_scores_500ms', 'f_scores_overlap_hold_shift',
-                        'f_scores_overlap_hold_shift_exclusive', 'f_scores_short_long', 'train_losses',
-                        'test_losses', 'test_losses_l1']
-    combined_results = {}
-    for metric in eval_metric_list:
-        combined_results[metric] = []
-    for results_dict in results_dicts:
+        # combine metrics across trials
+        eval_metric_list = ['f_scores_50ms', 'f_scores_250ms', 'f_scores_500ms', 'f_scores_overlap_hold_shift',
+                            'f_scores_overlap_hold_shift_exclusive', 'f_scores_short_long', 'train_losses',
+                            'test_losses', 'test_losses_l1']
+        combined_results = {}
         for metric in eval_metric_list:
-            combined_results[metric].append(results_dict[metric])
-    #get average across trials
-    averaged_results = {}
-    for metric in eval_metric_list:
-        averaged_results[metric] = np.mean(combined_results[metric])
-    combined_results['means'] = averaged_results
-    pprint(combined_results)
+            combined_results[metric] = []
+        for results_dict in results_dicts:
+            for metric in eval_metric_list:
+                combined_results[metric].append(results_dict[metric])
+        # get average across trials
+        averaged_results = {}
+        for metric in eval_metric_list:
+            averaged_results[metric] = np.mean(combined_results[metric])
+        combined_results['means'] = averaged_results
+        pprint(combined_results)
+
+        json.dump(combined_results, open(trial_path + f'/report_dict_{test_set_name}.json', 'w'), indent=4, sort_keys=True)
+
+if __name__ == "__main__":
+    trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
 
 
-
-    json.dump(combined_results, open(trial_path + f'/report_dict_{test_set_name}.json', 'w'), indent=4, sort_keys=True)
-        # TODO: need to do averaging across trials
-        # TODO: do for each training set (f,g,both)
+    # test_path = f'{trial_path}/test'
+    #
+    # # Loop through all the trained models in this trial path
+    # results_dicts = []
+    # for directory in os.listdir(test_path):
+    #     test_set_name = 'test_on_both'
+    #     # paths to stored models, settings, and location for new results
+    #     model_path = f'{test_path}/{directory}/model.p'
+    #     settings_path = f'{test_path}/{directory}/settings.json'
+    #     results_path = f"{trial_path}/{test_set_name}/{directory}"
+    #
+    #     # remove existing directories (only needed for debugging purposes)
+    #     try:
+    #         shutil.rmtree(results_path)
+    #     except FileNotFoundError:
+    #         pass
+    #
+    #     # load settings, model, data and create directories for results
+    #     args = load_args(settings_path)
+    #     test_set, test_loader = load_test_set(args, test_on_g=True, test_on_f=True)
+    #     model = load_model(model_path, args, test_set)
+    #     os.makedirs(results_path)
+    #
+    #     # use training set to get threshold for onset evaluation
+    #     train_set, train_loader = load_training_set(args, train_on_g=True, train_on_f=True) #TODO: needs to be what the original test set was
+    #
+    #     train_results_dict = get_train_results_dict(model, train_set, train_loader, train_list_path)
+    #     pprint(train_results_dict)
+    #
+    #     # perform test on loaded model
+    #     model.eval()
+    #     test_results = test(model, test_set, test_loader, train_results_dict)
+    #     with open(results_path + '/results.txt', 'w') as file:
+    #         file.write(str(test_results))
+    #     pickle.dump(test_results, open(results_path + '/results.p', 'wb'))
+    #     plot_person_error(test_results['indiv_perf'][-1]['bar_chart_labels'],
+    #                       test_results['indiv_perf'][-1]['bar_chart_vals'], results_path,
+    #                       results_key='person_error_barchart')
+    #
+    #     # store metrics to average across trials
+    #     results_dicts.append(test_results)
+    #
+    # #combine metrics across trials
+    # eval_metric_list = ['f_scores_50ms', 'f_scores_250ms', 'f_scores_500ms', 'f_scores_overlap_hold_shift',
+    #                     'f_scores_overlap_hold_shift_exclusive', 'f_scores_short_long', 'train_losses',
+    #                     'test_losses', 'test_losses_l1']
+    # combined_results = {}
+    # for metric in eval_metric_list:
+    #     combined_results[metric] = []
+    # for results_dict in results_dicts:
+    #     for metric in eval_metric_list:
+    #         combined_results[metric].append(results_dict[metric])
+    # #get average across trials
+    # averaged_results = {}
+    # for metric in eval_metric_list:
+    #     averaged_results[metric] = np.mean(combined_results[metric])
+    # combined_results['means'] = averaged_results
+    # pprint(combined_results)
+    #
+    #
+    #
+    # json.dump(combined_results, open(trial_path + f'/report_dict_{test_set_name}.json', 'w'), indent=4, sort_keys=True)
+    #     # TODO: do for each training set (f,g,both)

@@ -36,7 +36,7 @@ else:
 early_stopping = True
 patience = 10
 slow_test = True
-num_epochs = 1 #TODO: change back to 1500!!!!!
+num_epochs = 1500
 train_list_path = './data/splits/training.txt'
 test_list_path = './data/splits/testing.txt'
 # train_list_path = './data/splits/training_dev_small.txt'

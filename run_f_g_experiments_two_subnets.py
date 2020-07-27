@@ -31,7 +31,7 @@ else:
 
 
 # %% Common settings for all experiments
-num_epochs = 1 #TODO: change back to 1500!!!!!
+num_epochs = 1500
 early_stopping = True
 patience = 10
 slow_test = True
@@ -282,4 +282,3 @@ for experiment_name, experiment_features_list, experiment_settings in zip(experi
 
 for params in param_list:
     run_trial(params)
-    print("finished run_trial")

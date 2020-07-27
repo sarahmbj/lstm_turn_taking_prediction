@@ -334,5 +334,3 @@ for experiment_name, experiment_features_list, experiment_settings in zip(experi
 
 for params in param_list:
     run_trial(params)
-
-

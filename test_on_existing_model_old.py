@@ -539,15 +539,15 @@ def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_
         json.dump(combined_results, open(trial_path + f'/report_dict_{test_set_name}.json', 'w'), indent=4, sort_keys=True)
 
 if __name__ == "__main__":
-    trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
+    # trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
     # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
 
-    trial_path = './two_subnets_complete/2_Acous_10ms_Ling_50ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
+    # trial_path = './two_subnets_complete/2_Acous_10ms_Ling_50ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
 
     trial_path = './no_subnets_complete/2_Acous_10ms'
     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)

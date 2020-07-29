@@ -379,6 +379,7 @@ def test():
             losses_dict[file_name + '/' + g_f_indx][time_indices[0]:time_indices[1]] = loss_no_reduce[
                 batch_indx].data.cpu().numpy()
         print(out_test.shape, y_test.transpose(0, 1).shape)
+        quit()
         loss = loss_func_BCE(F.sigmoid(out_test), y_test.transpose(0, 1))
         # loss = loss_func_BCE_Logit(out_test,y_test.transpose(0,1))
         losses_test.append(loss.data.cpu().numpy())

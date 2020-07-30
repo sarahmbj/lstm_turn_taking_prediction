@@ -573,8 +573,11 @@ results_save['train_losses'], results_save['test_losses'], results_save['indiv_p
 
 
 # %% Training
+best_loss = None
+best_model = None
+best_epoch = None
 for epoch in range(0, num_epochs):
-    model.train() #tells model you are in training mode, so e.g. apply dropout
+    model.train() # tells model you are in training mode, so e.g. apply dropout
     t_epoch_strt = t.time()
     loss_list = []
     model.change_batch_size_reset_states(train_batch_size)
@@ -638,6 +641,10 @@ for epoch in range(0, num_epochs):
     test()
     model.train()
     t_total_end = t.time()
+    if results_save['test_losses'][-1] < best_loss:
+        best_loss = results_save['test_losses'][-1]
+        best_model = deepcopy(model.state_dict())
+        best_epoch = epoch
     #        torch.save(model,)
     print(
         '{0} \t Test_loss: {1}\t Train_Loss: {2} \t FScore: {3}  \t Train_time: {4} \t Test_time: {5} \t Total_time: {6}'.format(
@@ -690,7 +697,10 @@ print(f'should have done the pickle dump to {results_dir}/{result_dir_name}')
 pickle.dump(results_save, open(results_dir + '/' + result_dir_name + '/results.p', 'wb'))
 pickle.dump(train_results_dict, open(results_dir + '/' + result_dir_name + '/train_results_dict.p', 'wb'))
 
-torch.save(model.state_dict(), results_dir + '/' + result_dir_name + '/model.p')
+print(f"last model saved at epoch {epoch}, with a training loss of {np.round(results_save['test_losses'][-1], 4)}")
+torch.save(model.state_dict(), results_dir + '/' + result_dir_name + '/last_model.p')
+print(f"best model saved at epoch {best_epoch}, with a training loss of {best_loss}")
+torch.save(best_model, results_dir + '/' + result_dir_name + '/best_model.p')
 
 if len(argv) == proper_num_args:
     json.dump(argv[1], open(results_dir + '/' + result_dir_name + '/settings.json', 'w'), indent=4, sort_keys=True)

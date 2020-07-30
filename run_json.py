@@ -62,7 +62,7 @@ if not (len(argv) == proper_num_args):
     train_on_f = True
     train_on_g = True
     test_on_f = True
-    test_on_g = False  # TODO: check different test sets are actually giving different results
+    test_on_g = True
 
     hidden_nodes_master = 50
     hidden_nodes_acous = 50
@@ -573,7 +573,7 @@ results_save['train_losses'], results_save['test_losses'], results_save['indiv_p
 
 
 # %% Training
-best_loss = None
+best_loss = float("inf")
 best_model = None
 best_epoch = None
 for epoch in range(0, num_epochs):

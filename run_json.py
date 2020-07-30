@@ -74,7 +74,7 @@ if not (len(argv) == proper_num_args):
     grad_clip = 1.0 # try values between 0 and 1
     init_std = 0.5
 
-    num_epochs = 5 #TODO: change back to 1500
+    num_epochs = 1500
     slow_test = True
     early_stopping = True
     patience = 10

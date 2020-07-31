@@ -292,7 +292,9 @@ def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_fl
         loss_no_reduce = loss_func_L1_no_reduce(out_test, y_test.transpose(0, 1))
 
         print(len(out_test), len(out_test_list))
+        print(out_test)
         print(len(y_test), len(y_test_list))
+        print(y_test)
         quit() #TODO: remove this
 
         out_test_list.extend(out_test)

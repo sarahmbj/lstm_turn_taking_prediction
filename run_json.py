@@ -641,6 +641,8 @@ for epoch in range(0, num_epochs):
     test()
     model.train()
     t_total_end = t.time()
+    print(f'\t Epoch: {epoch} \t New Loss: {results_save["test_losses"][-1]}')
+    print(f'\t Best Epoch: {best_epoch} \t Best Loss: {best_loss}')
     if results_save['test_losses'][-1] < best_loss:
         best_loss = results_save['test_losses'][-1]
         best_model = deepcopy(model.state_dict())

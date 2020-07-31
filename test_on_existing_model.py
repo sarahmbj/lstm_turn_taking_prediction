@@ -548,8 +548,8 @@ def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_
         json.dump(combined_results, open(trial_path + f'/report_dict_{test_set_name}.json', 'w'), indent=4, sort_keys=True)
 
 if __name__ == "__main__":
-    # trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+    trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
     # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
 
@@ -597,6 +597,3 @@ if __name__ == "__main__":
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
     # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
-    #
-    trial_path = './results/00731124918_gmaps50_no_subnet__m_50_a_50_v_0_lr_01_l2e_0001_l2o_-06_l2m_-05_l2a_-05_l2v_0_dmo_0_dmi__dao_25_dai_25_dvo_0_dvi__seq_600_frg_0_loss_5485/'
-    test_on_existing_models(trial_path)

@@ -483,7 +483,7 @@ def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_
     for directory in os.listdir(test_path):
         test_set_name = get_test_set_name(test_on_f, test_on_g)
         # paths to stored models, settings, and location for new results
-        model_path = f'{test_path}/{directory}/model.p'
+        model_path = f'{test_path}/{directory}/best_model.p'
         settings_path = f'{test_path}/{directory}/settings.json'
         results_path = f"{trial_path}/{test_set_name}/{directory}"
 
@@ -578,12 +578,15 @@ if __name__ == "__main__":
     # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
 
-    trial_path = './f_and_g_two_subnets/1_Acous_10ms_Ling_50ms_ftrain'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
-
-    trial_path = './f_and_g_two_subnets/2_Acous_10ms_Ling_50ms_gtrain'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
+    # trial_path = './f_and_g_two_subnets/1_Acous_10ms_Ling_50ms_ftrain'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
+    #
+    # trial_path = './f_and_g_two_subnets/2_Acous_10ms_Ling_50ms_gtrain'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
+    #
+    trial_path = './results/00731124918_gmaps50_no_subnet__m_50_a_50_v_0_lr_01_l2e_0001_l2o_-06_l2m_-05_l2a_-05_l2v_0_dmo_0_dmi__dao_25_dai_25_dvo_0_dvi__seq_600_frg_0_loss_5485/'
+    test_on_existing_models(trial_path)

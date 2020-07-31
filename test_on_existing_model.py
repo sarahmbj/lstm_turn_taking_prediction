@@ -493,7 +493,7 @@ def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_
     for directory in os.listdir(test_path):
         test_set_name = get_test_set_name(test_on_f, test_on_g)
         # paths to stored models, settings, and location for new results
-        model_path = f'{test_path}/{directory}/best_model.p'
+        model_path = f'{test_path}/{directory}/model.p' #TODO change back to best_model.p
         settings_path = f'{test_path}/{directory}/settings.json'
         results_path = f"{trial_path}/{test_set_name}/{directory}"
 

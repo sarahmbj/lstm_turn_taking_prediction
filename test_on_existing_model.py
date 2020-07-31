@@ -1,282 +1,195 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-import sys
-
-import h5py
-# import warnings
-# with warnings.catch_warnings():
-#    warnings.filterwarnings("ignore",category=FutureWarning)
-#    import h5py
-from data_loader import TurnPredictionDataset
-from lstm_model import LSTMPredictor
-from torch.nn.utils import clip_grad_norm
 import torch
-from torch.autograd import Variable
+from lstm_model import LSTMPredictor
+from data_loader import TurnPredictionDataset
 from torch.utils.data import DataLoader
+from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-import torch.multiprocessing as mp
-from copy import deepcopy
-
-from os import mkdir
-from os.path import exists
-import numpy as np
-import matplotlib as mpl
-
-# modified version of run_json.py that loads in an existing model, and tests against it
-
-mpl.use('Agg')
-import matplotlib.pyplot as plt
-import pandas as pd
-from sklearn.metrics import f1_score, roc_curve, confusion_matrix
-import time as t
-import pickle
-from sys import argv
 import json
 import os
+import pandas as pd
+import numpy as np
+from copy import deepcopy
+import h5py
+from sklearn.metrics import f1_score, roc_curve, confusion_matrix
 from pprint import pprint
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-import feature_vars as feat_dicts
+import pickle
+import shutil
+import matplotlib.pyplot as plt
 
-# %% data set select
-data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
 
-# %% Batch settings
-init_std = 0.5
-train_batch_size = 128
-test_batch_size = 1  # should stay fixed at 1 when using slow test because batches are already set in the data loader
-
-prediction_length = 60  # (3 seconds of prediction)
-shuffle = True
 num_layers = 1
-onset_test_flag = True
 annotations_dir = './data/extracted_annotations/voice_activity/'
+test_list_path = './data/splits/testing.txt'
+train_list_path = './data/splits/training.txt' #only used for onsets evaluation
+prediction_length = 60  # (3 seconds of prediction)
+data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
+p_memory = True
+train_batch_size = 128
 
-proper_num_args = 2  # when called as subprocess, this consists of './run_json.py' and a dictionary of the other args
-print("******************************* Testing on existing model *******************************")
-print('Number of arguments is: ' + str(len(argv)))
 
-if not (len(argv) == proper_num_args):
-    # %% Single run settings (settings when not being called as a subprocess)
-    no_subnets = True
-    feature_dict_list = feat_dicts.gemaps_50ms_dict_list
+def create_results_directory(directory, test_set, experiment_path):
+    print(f"{directory}/{test_set}/{experiment_path}")
+    os.makedirs(f"{directory}/{test_set}/{experiment_path}")
 
-    train_on_f = True
-    train_on_g = True
-    test_on_f = True
-    test_on_g = False  # TODO: check different test sets are actually giving different results
 
-    hidden_nodes_master = 50
-    hidden_nodes_acous = 50
-    hidden_nodes_visual = 0
-    sequence_length = 600  # (10 seconds of TBPTT)
-    learning_rate = 0.01
-    freeze_glove_embeddings = False
-    grad_clip_bool = False # turn gradient clipping on or off
-    grad_clip = 1.0 # try values between 0 and 1
-    init_std = 0.5
+def get_train_results_dict(model, train_dataset, train_dataloader, train_list_path):
+    # Decide whether to use cuda or not
+    use_cuda = torch.cuda.is_available()
+    print('Use CUDA: ' + str(use_cuda))
+    if use_cuda:
+        dtype = torch.cuda.FloatTensor
+        dtype_long = torch.cuda.LongTensor
+    else:
+        dtype = torch.FloatTensor
+        dtype_long = torch.LongTensor
 
-    num_epochs = 1500
-    slow_test = True
-    early_stopping = True
-    patience = 10
+    model.eval()
+    train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
+    train_results_dict = dict()
+    train_results_lengths = train_dataset.get_results_lengths()
+    for file_name in train_file_list:
+        for g_f in ['g','f']: #TODO: sometimes only use one or the other?
+            # create new arrays for the onset results (the continuous predictions)
+            train_results_dict[file_name + '/' + g_f] = np.zeros(
+                [train_results_lengths[file_name], prediction_length])
+            train_results_dict[file_name + '/' + g_f][:] = np.nan
 
-    l2_dict = {
-        'emb': 0.0001,
-        'out': 0.000001,
-        'master': 0.00001,
-        'acous': 0.00001,
-        'visual': 0.}
+    for batch_indx, batch in enumerate(train_dataloader):
+        # b should be of form: (x,x_i,v,v_i,y,info)
+        model_input = []
 
-    """note: for applying dropout on models with subnets the 'master_in' dropout probability is not used 
-    and the dropout for the output of the appropriate modality is used."""
+        for b_i, bat in enumerate(batch): #b_i is each item in the batch i.e. a frame
+            if len(bat) == 0:
+                model_input.append(bat)
+            elif (b_i == 1) or (b_i == 3):
+                model_input.append(bat.transpose(0, 2).transpose(1, 2).numpy())
+            elif (b_i == 0) or (b_i == 2):
+                model_input.append(Variable(bat.type(dtype)).transpose(0, 2).transpose(1, 2))
 
-    dropout_dict = {
-        'master_out': 0.,
-        'master_in': 0, # <- this doesn't affect anything when there are subnets
-        'acous_in': 0.25,
-        'acous_out': 0.25,
-        'visual_in': 0,
-        'visual_out': 0.
+        y = Variable(batch[4].type(dtype).transpose(0, 2).transpose(1, 2))
+        info = batch[5]
+        model_output_logits = model(model_input)
+
+        # loss = loss_func_BCE_Logit(model_output_logits,y)
+        # loss_list.append(loss.cpu().data.numpy())
+        # loss.backward()
+        # if grad_clip_bool:
+        #     clip_grad_norm(model.parameters(), grad_clip)
+        # for opt in optimizer_list:
+        #     opt.step()
+        file_name_list = info['file_names']
+        gf_name_list = info['g_f']
+        time_index_list = info['time_indices']
+        train_batch_length = y.shape[1]
+        #                model_output = torch.transpose(model_output,0,1)
+        model_output = torch.transpose(model_output_logits, 0, 1)
+        for file_name, g_f_indx, time_indices, batch_indx in zip(file_name_list,
+                                                                 gf_name_list,
+                                                                 time_index_list,
+                                                                 range(train_batch_length)):
+            train_results_dict[file_name + '/' + g_f_indx][time_indices[0]:time_indices[1]] = model_output[
+                batch_indx].data.cpu().numpy()
+    return train_results_dict
+
+
+def remove_results_directory(directory, test_set, experiment_path):
+    """reverses create_results_directory - for use when testing """
+    print(f"{directory}/{test_set}/{experiment_path}")
+    try:
+        os.rmdir(f"{directory}/{test_set}/{experiment_path}")
+    except FileNotFoundError:
+        pass
+
+
+def load_args(args_path):
+    with open(args_path, "rb") as json_file:
+        args_string = json.load(json_file)
+
+    args_dict = json.loads(args_string)
+    return args_dict
+
+
+def load_evaluation_data():
+    if 'hold_shift' in locals():
+        if isinstance(hold_shift, h5py.File):  # Just HDF5 files
+            try:
+                hold_shift.close()
+            except:
+                pass  # Was already closed
+    if 'onsets' in locals():
+        if isinstance(onsets, h5py.File):  # Just HDF5 files
+            try:
+                onsets.close()
+            except:
+                pass  # Was already closed
+    if 'overlaps' in locals():
+        if isinstance(overlaps, h5py.File):  # Just HDF5 files
+            try:
+                overlaps.close()
+            except:
+                pass  # Was already closed
+
+    hold_shift = h5py.File('./data/datasets/hold_shift.hdf5', 'r')
+    onsets = h5py.File('./data/datasets/onsets.hdf5', 'r')
+    overlaps = h5py.File('./data/datasets/overlaps.hdf5', 'r')
+
+    return hold_shift, onsets, overlaps
+
+
+def load_model(pickled_model, args_dict, test_data):
+
+    lstm_settings_dict = {  # this works because these variables are set in locals from json_dict
+        'no_subnets': args_dict['no_subnets'],
+        'hidden_dims': {
+            'master': args_dict['hidden_nodes_master'],
+            'acous': args_dict['hidden_nodes_acous'],
+            'visual': args_dict['hidden_nodes_visual'],
+        },
+        'uses_master_time_rate': {},
+        'time_step_size': {},
+        'is_irregular': {},
+        'layers': num_layers,
+        'dropout': args_dict['dropout_dict'],
+        'freeze_glove': args_dict['freeze_glove_embeddings']
     }
+    lstm_settings_dict = test_data.get_lstm_settings_dict(
+        lstm_settings_dict)  # add some extra items to the lstm settings related to the dataset
 
-    results_dir = './results'
-    if not(os.path.exists(results_dir)):
-        os.mkdir(results_dir)
-    train_list_path = './data/splits/training.txt'
-    test_list_path = './data/splits/testing.txt'
-    # train_list_path = './data/splits/training_dev_small.txt'
-    # test_list_path = './data/splits/testing_dev_small.txt'
+    model = LSTMPredictor(lstm_settings_dict=lstm_settings_dict, feature_size_dict=test_data.get_feature_size_dict(),
+                          batch_size=train_batch_size, seq_length=args_dict['sequence_length'],
+                          prediction_length=prediction_length, embedding_info=test_data.get_embedding_info())
+    with open(pickled_model, "rb") as model_file:
+        if torch.cuda.is_available():
+            model.load_state_dict(torch.load(model_file))
+        else:
+            model.load_state_dict(torch.load(model_file, map_location=torch.device('cpu')))
 
-    use_date_str = True
-    detail = '_'
-    if 'dev' in train_list_path:
-        detail = 'dev' + detail
-    # import feature_vars as feat_dicts
-
-    # %% Settings
-
-    for feat_dict in feature_dict_list:
-        detail += feat_dict['short_name'] + '_'
-    if no_subnets:
-        detail += 'no_subnet_'
-
-    name_append = detail + \
-                  '_m_' + str(hidden_nodes_master) + \
-                  '_a_' + str(hidden_nodes_acous) + \
-                  '_v_' + str(hidden_nodes_visual) + \
-                  '_lr_' + str(learning_rate)[2:] + \
-                  '_l2e_' + str(l2_dict['emb'])[2:] + \
-                  '_l2o_' + str(l2_dict['out'])[2:] + \
-                  '_l2m_' + str(l2_dict['master'])[2:] + \
-                  '_l2a_' + str(l2_dict['acous'])[2:] + \
-                  '_l2v_' + str(l2_dict['visual'])[2:] + \
-                  '_dmo_'+str(dropout_dict['master_out'])[2:] + \
-                  '_dmi_'+str(dropout_dict['master_in'])[2:] + \
-                  '_dao_'+str(dropout_dict['acous_out'])[2:] + \
-                  '_dai_'+str(dropout_dict['acous_in'])[2:] + \
-                  '_dvo_' + str(dropout_dict['visual_out'])[2:] + \
-                  '_dvi_' + str(dropout_dict['visual_in'])[2:] + \
-                  '_seq_' + str(sequence_length) + \
-                  '_frg_' + str(str(int(freeze_glove_embeddings)))[0]
-                  # '_grc_' + str(grad_clip)[2:]
-    print(name_append)
-
-else:
-
-    json_dict = json.loads(argv[1]) # this argument is a dictionary of the settings for this experiment
-    train_on_f = True  # these get overwritten if they are found in json_dict
-    train_on_g = True
-    test_on_f = True
-    test_on_g = True
-    locals().update(json_dict)  # every key-value in the dictionary become objects in the local namespace
+    return model
 
 
-    # print features:
-    feature_print_list = list()
-    for feat_dict in feature_dict_list:
-        for feature in feat_dict['features']:
-            feature_print_list.append(feature)
-    print_list = ' '.join(feature_print_list)
-    print('Features being used: ' + print_list)
-    print('Early stopping: ' + str(early_stopping))
-
-lstm_settings_dict = {  #this works because these variables are set in locals from json_dict
-    'no_subnets': no_subnets,
-    'hidden_dims': {
-        'master': hidden_nodes_master,
-        'acous': hidden_nodes_acous,
-        'visual': hidden_nodes_visual,
-    },
-    'uses_master_time_rate': {},
-    'time_step_size': {},
-    'is_irregular': {},
-    'layers': num_layers,
-    'dropout': dropout_dict,
-    'freeze_glove':freeze_glove_embeddings
-}
-
-# Decide whether to use cuda or not
-use_cuda = torch.cuda.is_available()
-print('Use CUDA: ' + str(use_cuda))
-
-if use_cuda:
-    #    torch.cuda.device(randint(0,1))
-    dtype = torch.cuda.FloatTensor
-    dtype_long = torch.cuda.LongTensor
-    p_memory = True
-else:
-    dtype = torch.FloatTensor
-    dtype_long = torch.LongTensor
-    p_memory = True
-
-# %% Data loaders
-t1 = t.time()
-
-# # training set data loader # Don't need training data - test only - but embedding info dependency
-print('feature dict list:', feature_dict_list)
-train_dataset = TurnPredictionDataset(feature_dict_list, annotations_dir, train_list_path, sequence_length,
-                                      prediction_length, 'train', data_select=data_set_select, train_on_f=train_on_f,
-                                      train_on_g=train_on_g)
-train_dataloader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=shuffle, num_workers=0,
-                              drop_last=True, pin_memory=p_memory)
-feature_size_dict = train_dataset.get_feature_size_dict()
-
-if slow_test:
-    # slow test loader
-    test_dataset = TurnPredictionDataset(feature_dict_list, annotations_dir, test_list_path, sequence_length,
-                                         prediction_length, 'test', data_select=data_set_select, test_on_f=test_on_f,
-                                         test_on_g=test_on_g)
+def load_test_set(args_dict, test_on_g=True, test_on_f=True):
+    test_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir, test_list_path,
+                                         args_dict['sequence_length'], prediction_length, 'test',
+                                         data_select=data_set_select, test_on_f=test_on_f, test_on_g=test_on_g)
 
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0, drop_last=False,
                                  pin_memory=p_memory)
-else:
-    # quick test loader
-    test_dataset = TurnPredictionDataset(feature_dict_list, annotations_dir, test_list_path, sequence_length,
-                                         prediction_length, 'train', data_select=data_set_select, test_on_f=test_on_f,
-                                         test_on_g=test_on_g)
-    test_dataloader = DataLoader(test_dataset, batch_size=test_batch_size, shuffle=True, num_workers=0, drop_last=False)
 
-lstm_settings_dict = train_dataset.get_lstm_settings_dict(lstm_settings_dict) #add some extra items to the lstm settings related to the dataset
-print('time taken to load data: ' + str(t.time() - t1))
-
-# %% Load list of test files
-test_file_list = list(pd.read_csv(test_list_path, header=None, dtype=str)[0])
-train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
-# %% load evaluation data: hold_shift, onsets, overlaps
-# structure: hold_shift.hdf5/50ms-250ms-500ms/hold_shift-stats/seq_num/g_f_predict/[index,i]
-if 'hold_shift' in locals():
-    if isinstance(hold_shift, h5py.File):  # Just HDF5 files
-        try:
-            hold_shift.close()
-        except:
-            pass  # Was already closed
-if 'onsets' in locals():
-    if isinstance(onsets, h5py.File):  # Just HDF5 files
-        try:
-            onsets.close()
-        except:
-            pass  # Was already closed
-if 'overlaps' in locals():
-    if isinstance(overlaps, h5py.File):  # Just HDF5 files
-        try:
-            overlaps.close()
-        except:
-            pass  # Was already closed
-
-# Prediction at pauses
-# structure: hold_shift.hdf5/50ms-250ms-500ms/hold_shift-stats/seq_num/g_f_predict/[index,i]
-hold_shift = h5py.File('./data/datasets/hold_shift.hdf5', 'r')
-pause_str_list = ['50ms', '250ms', '500ms']
-length_of_future_window = 20  # (1 second)
-
-# Prediction at onsets
-# structure: onsets.hdf5/short_long/seq/g_f/[point_of_prediction,0(short) 1(long)]
-onsets = h5py.File('./data/datasets/onsets.hdf5', 'r')
-onset_str_list = ['short_long']
-# To evaluate, average all 60 of the output nodes for each speaker. Find the threshold that separates the two classes
-# best on the training set. Then use this threshold for binary prediction on test set.
-
-# Prediction at overlaps
-# structure: overlaps.hdf5/overlap_hold_shift-overlap_hold_shift_exclusive/seq/g_f/[indx,0(hold) 1(shift)]
-overlaps = h5py.File('./data/datasets/overlaps.hdf5', 'r')
-overlap_str_list = ['overlap_hold_shift', 'overlap_hold_shift_exclusive']
-short_class_length = 20
-overlap_min = 2
-eval_window_start_point = short_class_length - overlap_min
-eval_window_length = 10
-# To evaluate, check which speaker has greater prob of speaking over 20:40 frames from eval_indx
-
-# %% helper funcs
-data_select_dict = {0: ['f', 'g'],
-                    1: ['c1', 'c2'],
-                    2: ['A', 'B']}
-time_label_select_dict = {0: 'frame_time',  # gemaps
-                          1: 'timestamp'}  # openface
+    return test_dataset, test_dataloader
 
 
-def plot_person_error(name_list, data, results_key='barchart'):
+def load_training_set(args_dict, train_on_f=True, train_on_g=True):
+    """needed to get the threshold value for prediction at onsets"""
+    train_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir, train_list_path,
+                                          args_dict['sequence_length'], prediction_length, 'train',
+                                          data_select=data_set_select, train_on_f=train_on_f, train_on_g=train_on_g)
+    train_dataloader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=False, num_workers=0,
+                                  drop_last=True, pin_memory=p_memory)
+    return train_dataset, train_dataloader
+
+
+def plot_person_error(name_list, data, results_path, results_key='barchart'):
     y_pos = np.arange(len(name_list))
     plt.figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
     plt.barh(y_pos, data, align='center', alpha=0.5)
@@ -284,44 +197,55 @@ def plot_person_error(name_list, data, results_key='barchart'):
     plt.xlabel('mean abs error per time frame', fontsize=7)
     plt.xticks(fontsize=7)
     plt.title('Individual Error')
-    plt.savefig(results_dir + '/' + result_dir_name + '/' + results_key + '.pdf')
+    plt.savefig(results_path + '/' + results_key + '.pdf')
 
 
-def perf_plot(results_save, results_key):
-    # results_dict, dict_key
-    plt.figure()
-    plt.plot(results_save[results_key])
-    p_max = np.round(np.max(np.array(results_save[results_key])), 4)
-    p_min = np.round(np.min(np.array(results_save[results_key])), 4)
-    #    p_last = np.round(results_save[results_key][-1],4)
-    plt.annotate(str(p_max), (np.argmax(np.array(results_save[results_key])), p_max))
-    plt.annotate(str(p_min), (np.argmin(np.array(results_save[results_key])), p_min))
-    #    plt.annotate(str(p_last), (len(results_save[results_key])-1,p_last))
-    plt.title(results_key + name_append, fontsize=6)
-    plt.xlabel('epoch')
-    plt.ylabel(results_key)
-    plt.savefig(results_dir + '/' + result_dir_name + '/' + results_key + '.pdf')
-
-
-# %% Loss functions
-loss_func_L1 = nn.L1Loss()
-loss_func_L1_no_reduce = nn.L1Loss(reduce=False)
-# loss_func_MSE = nn.MSELoss()
-# loss_func_MSE_no_reduce = nn.MSELoss(reduce=False)
-loss_func_BCE = nn.BCELoss()
-loss_func_BCE_Logit = nn.BCEWithLogitsLoss()
-
-
-# %% Test function
-def test():
+def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_flag=True, prediction_at_overlap_flag=True,
+         error_per_person_flag=True):
     losses_test = list()
     results_dict = dict()
     losses_dict = dict()
     batch_sizes = list()
     losses_mse, losses_l1 = [], []
+
+    pause_str_list = ['50ms', '250ms', '500ms']
+    overlap_str_list = ['overlap_hold_shift', 'overlap_hold_shift_exclusive']
+    onset_str_list = ['short_long']
+    results_save = dict()
+    for pause_str in pause_str_list + overlap_str_list + onset_str_list:
+        results_save['f_scores_' + pause_str] = list()
+        results_save['tn_' + pause_str] = list()
+        results_save['fp_' + pause_str] = list()
+        results_save['fn_' + pause_str] = list()
+        results_save['tp_' + pause_str] = list()
+    results_save['train_losses'], results_save['test_losses'], results_save['indiv_perf'], results_save[
+        'test_losses_l1'] = [], [], [], []
+
+    # Decide whether to use cuda or not
+    use_cuda = torch.cuda.is_available()
+    print('Use CUDA: ' + str(use_cuda))
+    if use_cuda:
+        dtype = torch.cuda.FloatTensor
+        dtype_long = torch.cuda.LongTensor
+    else:
+        dtype = torch.FloatTensor
+        dtype_long = torch.LongTensor
+
+    # initialise loss functions
+    loss_func_L1 = nn.L1Loss()
+    loss_func_L1_no_reduce = nn.L1Loss(reduce=False)
+    loss_func_BCE = nn.BCELoss()
+
     model.eval()
     # setup results_dict
     results_lengths = test_dataset.get_results_lengths()
+    out_test_list = []
+    y_test_list = []
+
+    test_file_list = list(pd.read_csv(test_list_path, header=None, dtype=str)[0])
+    data_select_dict = {0: ['f', 'g'],
+                        1: ['c1', 'c2'],
+                        2: ['A', 'B']}
     for file_name in test_file_list:
         #        for g_f in ['g','f']:
         for g_f in data_select_dict[data_set_select]:
@@ -348,10 +272,7 @@ def test():
         if batch_indx == 0:
             model.change_batch_size_reset_states(batch_length)
         else:
-            if slow_test:
-                model.change_batch_size_no_reset(batch_length)
-            else:
-                model.change_batch_size_reset_states(batch_length)
+            model.change_batch_size_no_reset(batch_length)
 
         out_test = model(model_input)
         out_test = torch.transpose(out_test, 0, 1)
@@ -369,6 +290,9 @@ def test():
         # Too many calls to transpose as well. Should clean up loss pipeline
         y_test = y_test.permute(2, 0, 1)
         loss_no_reduce = loss_func_L1_no_reduce(out_test, y_test.transpose(0, 1))
+
+        out_test_list.extend(out_test)
+        y_test_list.extend(y_test)
 
         for file_name, g_f_indx, time_indices, batch_indx in zip(file_name_list,
                                                                  gf_name_list,
@@ -400,7 +324,11 @@ def test():
         results_dict[conv_key + '/' + data_select_dict[data_set_select][0]] = np.array(
             results_dict[conv_key + '/' + data_select_dict[data_set_select][0]]).reshape(-1, prediction_length)
 
+    hold_shift, onsets, overlaps = load_evaluation_data()
+
     # get hold-shift f-scores
+    length_of_future_window = 20  # (1 second)
+
     for pause_str in pause_str_list:
         true_vals = list()
         predicted_class = list()
@@ -429,7 +357,8 @@ def test():
             f1_score(true_vals, np.zeros([len(predicted_class)]).tolist(), average='weighted')))
     # get prediction at onset f-scores
     # first get best threshold from training data
-    if onset_test_flag: # this is set to true at top of file
+    train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
+    if onset_test_flag:
         onset_train_true_vals = list()
         onset_train_mean_vals = list()
         onset_threshs = []
@@ -441,14 +370,14 @@ def test():
                     # make sure the index is not out of bounds
 
                     if (frame_indx < len(train_results_dict[conv_key + '/' + g_f_key])) and not (
-                    np.isnan(np.mean(train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]))):
+                            np.isnan(np.mean(train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]))):
                         onset_train_true_vals.append(true_val)
                         onset_train_mean_vals.append(
                             np.mean(train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]))
-        if not(len(onset_train_true_vals)==0):
+        if not(len(onset_train_true_vals) == 0):
             fpr, tpr, thresholds = roc_curve(np.array(onset_train_true_vals), np.array(onset_train_mean_vals))
         else:
-            fpr,tpr,thresholds = 0,0,[0]
+            fpr, tpr, thresholds = 0, 0, [0]
         thresh_indx = np.argmax(tpr - fpr)
         onset_thresh = thresholds[thresh_indx]
         onset_threshs.append(onset_thresh)
@@ -485,225 +414,189 @@ def test():
         results_save['tp_' + onset_str_list[0]].append(tp)
 
     # get prediction at overlap f-scores
+    if prediction_at_overlap_flag:
+        short_class_length = 20
+        overlap_min = 2
+        eval_window_start_point = short_class_length - overlap_min
+        eval_window_length = 10
+        for overlap_str in overlap_str_list:
+            true_vals_overlap, predicted_class_overlap = [], []
 
-    for overlap_str in overlap_str_list:
-        true_vals_overlap, predicted_class_overlap = [], []
+            for conv_key in list(set(list(overlaps[overlap_str].keys())).intersection(set(test_file_list))):
+                for g_f_key in list(overlaps[overlap_str + '/' + conv_key].keys()):
+                    g_f_key_not = deepcopy(data_select_dict[data_set_select])
+                    g_f_key_not.remove(g_f_key)
+                    for eval_indx, true_val in overlaps[overlap_str + '/' + conv_key + '/' + g_f_key]:
+                        # make sure the index is not out of bounds
+                        if eval_indx < len(results_dict[conv_key + '/' + g_f_key]):
+                            true_vals_overlap.append(true_val)
+                            if np.sum(results_dict[conv_key + '/' + g_f_key][eval_indx,
+                                      eval_window_start_point: eval_window_start_point + eval_window_length]) \
+                                    > np.sum(results_dict[conv_key + '/' + g_f_key_not[0]][eval_indx,
+                                             eval_window_start_point: eval_window_start_point + eval_window_length]):
+                                predicted_class_overlap.append(0)
+                            else:
+                                predicted_class_overlap.append(1)
+            f_score = f1_score(true_vals_overlap, predicted_class_overlap, average='weighted')
+            print(overlap_str + ' f-score: ' + str(f_score))
 
-        for conv_key in list(set(list(overlaps[overlap_str].keys())).intersection(set(test_file_list))):
-            for g_f_key in list(overlaps[overlap_str + '/' + conv_key].keys()):
-                g_f_key_not = deepcopy(data_select_dict[data_set_select])
-                g_f_key_not.remove(g_f_key)
-                for eval_indx, true_val in overlaps[overlap_str + '/' + conv_key + '/' + g_f_key]:
-                    # make sure the index is not out of bounds
-                    if eval_indx < len(results_dict[conv_key + '/' + g_f_key]):
-                        true_vals_overlap.append(true_val)
-                        if np.sum(results_dict[conv_key + '/' + g_f_key][eval_indx,
-                                  eval_window_start_point: eval_window_start_point + eval_window_length]) \
-                                > np.sum(results_dict[conv_key + '/' + g_f_key_not[0]][eval_indx,
-                                         eval_window_start_point: eval_window_start_point + eval_window_length]):
-                            predicted_class_overlap.append(0)
-                        else:
-                            predicted_class_overlap.append(1)
-        f_score = f1_score(true_vals_overlap, predicted_class_overlap, average='weighted')
-        print(overlap_str + ' f-score: ' + str(f_score))
+            print('majority vote f-score:' + str(
+                f1_score(true_vals_overlap, np.ones([len(true_vals_overlap), ]).tolist(), average='weighted')))
+            results_save['f_scores_' + overlap_str].append(f_score)
+            tn, fp, fn, tp = confusion_matrix(true_vals_overlap, predicted_class_overlap).ravel()
+            results_save['tn_' + overlap_str].append(tn)
+            results_save['fp_' + overlap_str].append(fp)
+            results_save['fn_' + overlap_str].append(fn)
+            results_save['tp_' + overlap_str].append(tp)
 
-        print('majority vote f-score:' + str(
-            f1_score(true_vals_overlap, np.ones([len(true_vals_overlap), ]).tolist(), average='weighted')))
-        results_save['f_scores_' + overlap_str].append(f_score)
-        tn, fp, fn, tp = confusion_matrix(true_vals_overlap, predicted_class_overlap).ravel()
-        results_save['tn_' + overlap_str].append(tn)
-        results_save['fp_' + overlap_str].append(fp)
-        results_save['fn_' + overlap_str].append(fn)
-        results_save['tp_' + overlap_str].append(tp)
+    #get voice activity f-score
+    f_score = f1_score(y_test_list, out_test_list)
+    print(f'voice activity f-score: {str(f_score)}')
+
     # get error per person (to use with plot_person_error())
-    bar_chart_labels = []
-    bar_chart_vals = []
-    for conv_key in test_file_list:
-        #        for g_f in ['g','f']:
-        for g_f in data_select_dict[data_set_select]:
-            losses_dict[conv_key + '/' + g_f] = np.array(losses_dict[conv_key + '/' + g_f]).reshape(-1,
-                                                                                                    prediction_length)
-            bar_chart_labels.append(conv_key + '_' + g_f)
-            bar_chart_vals.append(np.mean(losses_dict[conv_key + '/' + g_f]))
+    if error_per_person_flag:
+        bar_chart_labels = []
+        bar_chart_vals = []
+        for conv_key in test_file_list:
+            #        for g_f in ['g','f']:
+            for g_f in data_select_dict[data_set_select]:
+                losses_dict[conv_key + '/' + g_f] = np.array(losses_dict[conv_key + '/' + g_f]).reshape(-1,
+                                                                                                        prediction_length)
+                bar_chart_labels.append(conv_key + '_' + g_f)
+                bar_chart_vals.append(np.mean(losses_dict[conv_key + '/' + g_f]))
 
-    results_save['test_losses'].append(loss_weighted_mean)
-    results_save['test_losses_l1'].append(loss_weighted_mean_l1)
-    #    results_save['test_losses_mse'].append(loss_weighted_mean_mse)
+        results_save['test_losses'].append(loss_weighted_mean)
+        results_save['test_losses_l1'].append(loss_weighted_mean_l1)
+        #    results_save['test_losses_mse'].append(loss_weighted_mean_mse)
 
-    indiv_perf = {'bar_chart_labels': bar_chart_labels,
-                  'bar_chart_vals': bar_chart_vals}
-    results_save['indiv_perf'].append(indiv_perf)
+        indiv_perf = {'bar_chart_labels': bar_chart_labels,
+                      'bar_chart_vals': bar_chart_vals}
+        results_save['indiv_perf'].append(indiv_perf)
     # majority baseline:
     # f1_score(true_vals,np.zeros([len(true_vals),]).tolist(),average='weighted')
+    return results_save
 
 
-# %% Init model
-# TODO: replace from here to load model instead
-embedding_info = train_dataset.get_embedding_info()
-
-model = LSTMPredictor(lstm_settings_dict=lstm_settings_dict, feature_size_dict=feature_size_dict,
-                      batch_size=train_batch_size, seq_length=sequence_length, prediction_length=prediction_length,
-                      embedding_info=embedding_info)
-
-with open("model_location.txt", "r") as file:
-    pickled_model = file[-1]  # this only works if the most recent run_json was for this model
-with open(pickled_model, "rb") as model_file:
-    if torch.cuda.is_available():
-        model.load_state_dict(model_file)
+def get_test_set_name(f, g):
+    if f is True and g is True:
+        return 'test_on_both'
+    elif f is True:
+        return 'test_on_f'
     else:
-        model.load_state_dict(model_file, map_location=torch.device('cpu'))
-
-# optimizer_list = []
-#
-# optimizer_list.append( optim.Adam( model.out.parameters(), lr=learning_rate, weight_decay=l2_dict['out'] ) )
-# for embed_inf in embedding_info.keys():
-#     if embedding_info[embed_inf]:
-#         for embedder in embedding_info[embed_inf]:
-#             if embedder['embedding_use_func'] or (embedder['use_glove'] and not(lstm_settings_dict['freeze_glove'])):
-#                 optimizer_list.append(
-#                     optim.Adam( model.embedding_func.parameters(), lr=learning_rate, weight_decay=l2_dict['emb'] )
-#                                       )
-#
-# for lstm_key in model.lstm_dict.keys():
-#     optimizer_list.append(optim.Adam(model.lstm_dict[lstm_key].parameters(), lr=learning_rate, weight_decay=l2_dict[lstm_key]))
+        return 'test_on_g'
 
 
+def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_on_g=True, trained_on_f=True):
+    test_path = f'{trial_path}/test'
+    # Loop through all the trained models in this trial path
+    results_dicts = []
+    for directory in os.listdir(test_path):
+        test_set_name = get_test_set_name(test_on_f, test_on_g)
+        # paths to stored models, settings, and location for new results
+        model_path = f'{test_path}/{directory}/best_model.p'
+        settings_path = f'{test_path}/{directory}/settings.json'
+        results_path = f"{trial_path}/{test_set_name}/{directory}"
 
-results_save = dict()
-for pause_str in pause_str_list + overlap_str_list + onset_str_list:
-    results_save['f_scores_' + pause_str] = list()
-    results_save['tn_' + pause_str] = list()
-    results_save['fp_' + pause_str] = list()
-    results_save['fn_' + pause_str] = list()
-    results_save['tp_' + pause_str] = list()
-results_save['train_losses'], results_save['test_losses'], results_save['indiv_perf'], results_save[
-    'test_losses_l1'] = [], [], [], []
+        # remove existing directories (only needed for debugging purposes)
+        try:
+            shutil.rmtree(results_path)
+        except FileNotFoundError:
+            pass
 
+        # load settings, model, data and create directories for results
+        args = load_args(settings_path)
+        test_set, test_loader = load_test_set(args, test_on_g=test_on_g, test_on_f=test_on_f)
+        model = load_model(model_path, args, test_set)
+        os.makedirs(results_path)
 
-# %% Training
-# for epoch in range(0, num_epochs):
-#     model.train() #tells model you are in training mode, so e.g. apply dropout
-#     t_epoch_strt = t.time()
-#     loss_list = []
-#     model.change_batch_size_reset_states(train_batch_size)
-#
-#     if onset_test_flag: #this is set to true at top of file
-#         # setup results_dict
-#         train_results_dict = dict()
-#         #            losses_dict = dict()
-#         train_results_lengths = train_dataset.get_results_lengths()
-#         for file_name in train_file_list:
-#             for g_f in data_select_dict[data_set_select]:
-#                 # create new arrays for the onset results (the continuous predictions)
-#                 train_results_dict[file_name + '/' + g_f] = np.zeros(
-#                     [train_results_lengths[file_name], prediction_length])
-#                 train_results_dict[file_name + '/' + g_f][:] = np.nan
-#     for batch_indx, batch in enumerate(train_dataloader):
-#         # b should be of form: (x,x_i,v,v_i,y,info)
-#         model.init_hidden()
-#         model.zero_grad()
-#         model_input = []
-#
-#         model_input = []
-#
-#         for b_i, bat in enumerate(batch): #b_i is each item in the batch i.e. a frame
-#             if len(bat) == 0:
-#                 model_input.append(bat)
-#             elif (b_i == 1) or (b_i == 3):
-#                 model_input.append(bat.transpose(0, 2).transpose(1, 2).numpy())
-#             elif (b_i == 0) or (b_i == 2):
-#                 model_input.append(Variable(bat.type(dtype)).transpose(0, 2).transpose(1, 2))
-#
-#         y = Variable(batch[4].type(dtype).transpose(0, 2).transpose(1, 2))
-#         info = batch[5]
-#         model_output_logits = model(model_input)
-#
-#         loss = loss_func_BCE_Logit(model_output_logits,y)
-#         loss_list.append(loss.cpu().data.numpy())
-#         loss.backward()
-#         if grad_clip_bool:
-#             clip_grad_norm(model.parameters(), grad_clip)
-#         for opt in optimizer_list:
-#             opt.step()
-#         if onset_test_flag:
-#             file_name_list = info['file_names']
-#             gf_name_list = info['g_f']
-#             time_index_list = info['time_indices']
-#             train_batch_length = y.shape[1]
-#             #                model_output = torch.transpose(model_output,0,1)
-#             model_output = torch.transpose(model_output_logits, 0, 1)
-#             for file_name, g_f_indx, time_indices, batch_indx in zip(file_name_list,
-#                                                                      gf_name_list,
-#                                                                      time_index_list,
-#                                                                      range(train_batch_length)):
-#                 train_results_dict[file_name + '/' + g_f_indx][time_indices[0]:time_indices[1]] = model_output[
-#                     batch_indx].data.cpu().numpy()
-#
-# #     results_save['train_losses'].append(np.mean(loss_list))
-#     # %% Test model
-#     t_epoch_end = t.time()
-model.eval()
-test()
+        # use training set to get threshold for onset evaluation
+        train_set, train_loader = load_training_set(args, train_on_g=trained_on_g,
+                                                    train_on_f=trained_on_f)  # needs to be how model was originally trained
 
-    # t_total_end = t.time()
-    #        torch.save(model,)
-    # print(
-    #     '{0} \t Test_loss: {1}\t Train_Loss: {2} \t FScore: {3}  \t Train_time: {4} \t Test_time: {5} \t Total_time: {6}'.format(
-    #         epoch + 1,
-    #         np.round(results_save['test_losses'][-1], 4),
-    #         np.round(np.float64(np.array(loss_list).mean()), 4),
-    #         np.around(results_save['f_scores_500ms'][-1], 4),
-    #         np.round(t_epoch_end - t_epoch_strt, 2),
-    #         np.round(t_total_end - t_epoch_end, 2),
-    #         np.round(t_total_end - t_epoch_strt, 2)))
-    # if (epoch + 1 > patience) and \
-    #         (np.argmin(np.round(results_save['test_losses'], 4)) < (len(results_save['test_losses']) - patience)):
-    #     print('early stopping called at epoch: ' + str(epoch + 1))
-    #     break
+        train_results_dict = get_train_results_dict(model, train_set, train_loader, train_list_path)
 
-# %% Output plots and save results
-if use_date_str:
-    result_dir_name = t.strftime('%Y%m%d%H%M%S')[3:]
-    result_dir_name = result_dir_name + name_append+'_loss_'+str(results_save['test_losses'][np.argmin(np.round(results_save['test_losses'], 4))])[2:6]
-else:
-    result_dir_name = name_append
+        # perform test on loaded model
+        model.eval()
+        test_results = test(model, test_set, test_loader, train_results_dict)
+        with open(results_path + '/results.txt', 'w') as file:
+            file.write(str(test_results))
+        pickle.dump(test_results, open(results_path + '/results.p', 'wb'))
+        plot_person_error(test_results['indiv_perf'][-1]['bar_chart_labels'],
+                          test_results['indiv_perf'][-1]['bar_chart_vals'], results_path,
+                          results_key='person_error_barchart')
 
-if not (exists(results_dir)):
-    mkdir(results_dir)
+        # store metrics to average across trials
+        results_dicts.append(test_results)
 
-if not (exists(results_dir + '/' + result_dir_name)):
-    mkdir(results_dir + '/' + result_dir_name)
+        # combine metrics across trials
+        eval_metric_list = ['f_scores_50ms', 'f_scores_250ms', 'f_scores_500ms', 'f_scores_overlap_hold_shift',
+                            'f_scores_overlap_hold_shift_exclusive', 'f_scores_short_long', 'train_losses',
+                            'test_losses', 'test_losses_l1']
+        combined_results = {}
+        for metric in eval_metric_list:
+            combined_results[metric] = []
+        for results_dict in results_dicts:
+            for metric in eval_metric_list:
+                combined_results[metric].append(results_dict[metric])
+        # get average across trials
+        averaged_results = {}
+        for metric in eval_metric_list:
+            averaged_results[metric] = np.mean(combined_results[metric])
+        combined_results['means'] = averaged_results
+        pprint(combined_results)
 
-results_save['learning_rate'] = learning_rate
-# results_save['l2_reg'] = l2_reg
-results_save['l2_master'] = l2_dict['master']
-results_save['l2_acous'] = l2_dict['acous']
-results_save['l2_visual'] = l2_dict['visual']
+        json.dump(combined_results, open(trial_path + f'/report_dict_{test_set_name}.json', 'w'), indent=4, sort_keys=True)
 
-results_save['hidden_nodes_master'] = hidden_nodes_master
-results_save['hidden_nodes_visual'] = hidden_nodes_visual
-results_save['hidden_nodes_acous'] = hidden_nodes_acous
+if __name__ == "__main__":
+    # trial_path = './two_subnets_complete/1_Acous_50ms_Ling_50ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
 
-for plot_str in pause_str_list + overlap_str_list + onset_str_list:
-    perf_plot(results_save, 'f_scores_' + plot_str)
+    # trial_path = './two_subnets_complete/2_Acous_10ms_Ling_50ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
 
-perf_plot(results_save, 'train_losses')
-perf_plot(results_save, 'test_losses')
-perf_plot(results_save, 'test_losses_l1')
-plt.close('all')
-plot_person_error(results_save['indiv_perf'][-1]['bar_chart_labels'],
-                  results_save['indiv_perf'][-1]['bar_chart_vals'], 'barchart')
-plt.close('all')
-print(f'should have done the pickle dump to {results_dir}/{result_dir_name}')
-pickle.dump(results_save, open(results_dir + '/' + result_dir_name + '/results.p', 'wb'))
+    # trial_path = './no_subnets_complete/2_Acous_10ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
 
-torch.save(model.state_dict(), results_dir + '/' + result_dir_name + '/model.p')
-#  write model location to file so it can be recovered to use different test sets
-# with open("model_location.txt", "a") as file:
-#     file.write(results_dir + '/' + result_dir_name + '/model.p')
-# if len(argv) == proper_num_args:
-#     json.dump(argv[1], open(results_dir + '/' + result_dir_name + '/settings.json', 'w'), indent=4, sort_keys=True)
+    # trial_path = './no_subnets_complete/3_Ling_50ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
+    #
+    # trial_path = './f_and_g_no_subnets/3_Acous_10ms_ftrain'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
+    #
+    # trial_path = './f_and_g_no_subnets/5_Ling_50ms_ftrain'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
+    #
+    # trial_path = './f_and_g_no_subnets/4_Acous_10ms_gtrain'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
+    #
+    # trial_path = './f_and_g_no_subnets/6_Ling_50ms_gtrain'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
 
-onsets.close()
-hold_shift.close()
-overlaps.close()
+    # trial_path = './f_and_g_two_subnets/1_Acous_10ms_Ling_50ms_ftrain'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
+    #
+    # trial_path = './f_and_g_two_subnets/2_Acous_10ms_Ling_50ms_gtrain'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
+    #
+    trial_path = './results/00731124918_gmaps50_no_subnet__m_50_a_50_v_0_lr_01_l2e_0001_l2o_-06_l2m_-05_l2a_-05_l2v_0_dmo_0_dmi__dao_25_dai_25_dvo_0_dvi__seq_600_frg_0_loss_5485/'
+    test_on_existing_models(trial_path)

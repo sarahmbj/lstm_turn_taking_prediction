@@ -149,7 +149,7 @@ Acous_10ms_Ling_10ms = {
 
 # %% Experiments list
 
-gpu_select = 0
+gpu_select = 5
 test_indices = [0,1,2]
 
 experiment_name_list = [

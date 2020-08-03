@@ -291,11 +291,11 @@ def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_fl
         y_test = y_test.permute(2, 0, 1)
         loss_no_reduce = loss_func_L1_no_reduce(out_test, y_test.transpose(0, 1))
 
-        print(len(out_test), len(out_test_list))
-        # print(out_test)
-        print(len(y_test[0]), len(y_test_list))
-        # print(y_test[0])
-        # quit() #TODO: remove this
+        # print(len(out_test), len(out_test_list))
+        # # print(out_test)
+        # print(len(y_test[0]), len(y_test_list))
+        # # print(y_test[0])
+        # # quit() #TODO: remove this
 
         out_test_list.append(out_test)
         y_test_list.extend(y_test)
@@ -456,8 +456,8 @@ def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_fl
             results_save['tp_' + overlap_str].append(tp)
 
     #get voice activity f-score
-    f_score = f1_score(y_test_list, out_test_list)
-    print(f'voice activity f-score: {str(f_score)}')
+    # f_score = f1_score(y_test_list, out_test_list)
+    # print(f'voice activity f-score: {str(f_score)}')
 
     # get error per person (to use with plot_person_error())
     if error_per_person_flag:

@@ -339,6 +339,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_fl
         true_vals = list()
         predicted_class = list()
         for conv_key in test_file_list:
+            print(list(hold_shift[pause_str + '/hold_shift' + '/' + conv_key].keys()))
             for g_f_key in list(hold_shift[pause_str + '/hold_shift' + '/' + conv_key].keys()):
                 g_f_key_not = deepcopy(data_select_dict[data_set_select])
                 g_f_key_not.remove(g_f_key)

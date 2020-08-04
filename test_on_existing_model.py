@@ -339,7 +339,6 @@ def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_fl
         true_vals = list()
         predicted_class = list()
         for conv_key in test_file_list:
-            print(list(hold_shift[pause_str + '/hold_shift' + '/' + conv_key].keys()))
             for g_f_key in list(hold_shift[pause_str + '/hold_shift' + '/' + conv_key].keys()):
                 g_f_key_not = deepcopy(data_select_dict[data_set_select])
                 g_f_key_not.remove(g_f_key)
@@ -366,6 +365,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_fl
     g_f_keys = [] #only do this on the speaker role(s) that are in the test set
     if test_dataset.test_on_g == True: g_f_keys.append('g')
     if test_dataset.test_on_f == True: g_f_keys.append('f')
+    print(g_f_keys)
     # first get best threshold from training data
     train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
     if onset_test_flag:

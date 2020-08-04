@@ -200,7 +200,7 @@ def plot_person_error(name_list, data, results_path, results_key='barchart'):
     plt.savefig(results_path + '/' + results_key + '.pdf')
 
 
-def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_flag=True, prediction_at_overlap_flag=True,
+def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset, onset_test_flag=True, prediction_at_overlap_flag=True,
          error_per_person_flag=True):
     losses_test = list()
     results_dict = dict()
@@ -362,10 +362,10 @@ def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_fl
         print('majority vote f-score(' + pause_str + '):' + str(
             f1_score(true_vals, np.zeros([len(predicted_class)]).tolist(), average='weighted')))
     # get prediction at onset f-scores
-    g_f_keys = [] #only do this on the speaker role(s) that are in the test set
-    if test_dataset.test_on_g == True: g_f_keys.append('g')
-    if test_dataset.test_on_f == True: g_f_keys.append('f')
     # first get best threshold from training data
+    g_f_keys = [] #only do this on the speaker role(s) that are in the training set
+    if train_dataset.train_on_g: g_f_keys.append('g')
+    if test_dataset.train_on_f: g_f_keys.append('f')
     train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
     if onset_test_flag:
         onset_train_true_vals = list()
@@ -389,6 +389,9 @@ def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_fl
         onset_thresh = thresholds[thresh_indx]
         onset_threshs.append(onset_thresh)
 
+        g_f_keys = []  # only do this on the speaker role(s) that are in the test set
+        if test_dataset.test_on_g == True: g_f_keys.append('g')
+        if test_dataset.test_on_f == True: g_f_keys.append('f')
         true_vals_onset, onset_test_mean_vals, predicted_class_onset = [], [], []
         for conv_key in list(set(test_file_list).intersection(onsets['short_long'].keys())):
             for g_f_key in g_f_keys:
@@ -521,7 +524,7 @@ def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_
 
         # perform test on loaded model
         model.eval()
-        test_results = test(model, test_set, test_loader, train_results_dict)
+        test_results = test(model, test_set, test_loader, train_results_dict, train_set)
         with open(results_path + '/results.txt', 'w') as file:
             file.write(str(test_results))
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))

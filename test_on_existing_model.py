@@ -363,6 +363,9 @@ def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_fl
         print('majority vote f-score(' + pause_str + '):' + str(
             f1_score(true_vals, np.zeros([len(predicted_class)]).tolist(), average='weighted')))
     # get prediction at onset f-scores
+    g_f_keys = [] #only do this on the speaker role(s) that are in the test set
+    if test_dataset.test_on_g == True: g_f_keys.append('g')
+    if test_dataset.test_on_f == True: g_f_keys.append('f')
     # first get best threshold from training data
     train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
     if onset_test_flag:
@@ -370,7 +373,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_fl
         onset_train_mean_vals = list()
         onset_threshs = []
         for conv_key in list(set(train_file_list).intersection(onsets['short_long'].keys())):
-            for g_f_key in list(onsets['short_long' + '/' + conv_key].keys()):
+            for g_f_key in g_f_keys:
                 g_f_key_not = deepcopy(data_select_dict[data_set_select])
                 g_f_key_not.remove(g_f_key)
                 for frame_indx, true_val in onsets['short_long' + '/' + conv_key + '/' + g_f_key]:
@@ -391,7 +394,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, onset_test_fl
 
         true_vals_onset, onset_test_mean_vals, predicted_class_onset = [], [], []
         for conv_key in list(set(test_file_list).intersection(onsets['short_long'].keys())):
-            for g_f_key in list(onsets['short_long' + '/' + conv_key].keys()):
+            for g_f_key in g_f_keys:
                 #                g_f_key_not = ['g','f']
                 g_f_key_not = deepcopy(data_select_dict[data_set_select])
                 g_f_key_not.remove(g_f_key)

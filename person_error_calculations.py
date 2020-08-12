@@ -14,7 +14,7 @@ def plot_person_error(name_list, data, results_path, architecture, results_key='
     plt.yticks(y_pos, name_list, fontsize=5)
     plt.xlabel('mean abs error per time frame', fontsize=7)
     plt.xticks(fontsize=7)
-    plt.title(f'Individual Error - {architecture}')
+    plt.title(f'Individual Error - {architecture[2:]}')
     if f_mean:
         plt.axvline(x=f_mean, color='black', linestyle=":", label="f mean")
     if g_mean:

@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-def plot_person_error(name_list, data, results_path, results_key='barchart',f_mean=None, g_mean=None):
+def plot_person_error(name_list, data, results_path, architecture, results_key='barchart',f_mean=None, g_mean=None):
     y_pos = np.arange(len(name_list))
     plt.figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
     plt.xlim(0, 3)
@@ -14,7 +14,7 @@ def plot_person_error(name_list, data, results_path, results_key='barchart',f_me
     plt.yticks(y_pos, name_list, fontsize=5)
     plt.xlabel('mean abs error per time frame', fontsize=7)
     plt.xticks(fontsize=7)
-    plt.title('Individual Error')
+    plt.title(f'Individual Error - {architecture}')
     if f_mean:
         plt.axvline(x=f_mean, color='black', linestyle=":", label="f mean")
     if g_mean:
@@ -22,7 +22,7 @@ def plot_person_error(name_list, data, results_path, results_key='barchart',f_me
         plt.legend(["f_mean", "g_mean"])
     plt.savefig(results_path + '/' + results_key + '.pdf')
 
-def plot_mean_person_error(test_directory):
+def plot_mean_person_error(test_directory, architecture):
     results_directory = glob(f'{test_directory}/*')
     number_of_models = len(results_directory)
     print(f"number of models is {number_of_models}")
@@ -49,8 +49,6 @@ def plot_mean_person_error(test_directory):
     for speaker, results in individual_results_dict.items():
         mean_results_dict[speaker] = np.mean(results)
 
-    pprint(mean_results_dict)
-
     #get overall mean for f and g
     g_values = []
     f_values = []
@@ -67,16 +65,13 @@ def plot_mean_person_error(test_directory):
     g_mean = np.mean(g_values)
     f_mean = np.mean(f_values)
 
-    print(g_mean, f_mean)
-    print(type(g_results_list[0]), type(f_results_list[0]))
-
     mean_results_list = g_results_list + f_results_list
     # mean_results_list = sorted(mean_results_dict.items())
     bar_chart_labels, bar_chart_vals = map(list, zip(*mean_results_list))
     # bar_chart_labels.extend(["f mean", "g mean"])
     # bar_chart_vals.extend([f_mean, g_mean])
 
-    plot_person_error(bar_chart_labels, bar_chart_vals, test_directory, results_key='mean_person_error', f_mean=f_mean, g_mean=g_mean)
+    plot_person_error(bar_chart_labels, bar_chart_vals, test_directory, architecture, results_key='mean_person_error', f_mean=f_mean, g_mean=g_mean)
 
 
 if __name__ == '__main__':
@@ -87,7 +82,7 @@ if __name__ == '__main__':
             os.remove(f"{file_path}/mean_person_error.pdf")
         except FileNotFoundError:
             pass
-        plot_mean_person_error(file_path)
+        plot_mean_person_error(file_path, architecture)
 
     #train on both two subnets models
     for architecture in ["2_Acous_10ms_Ling_50ms"]:
@@ -96,7 +91,7 @@ if __name__ == '__main__':
             os.remove(f"{file_path}/mean_person_error.pdf")
         except FileNotFoundError:
             pass
-        plot_mean_person_error(file_path)
+        plot_mean_person_error(file_path, architecture)
 
     #f and g two subnets models
     for architecture in ["1_Acous_10ms_Ling_50ms_ftrain", "2_Acous_10ms_Ling_50ms_gtrain"]:
@@ -105,7 +100,7 @@ if __name__ == '__main__':
             os.remove(f"{file_path}/mean_person_error.pdf")
         except FileNotFoundError:
             pass
-        plot_mean_person_error(file_path)
+        plot_mean_person_error(file_path, architecture)
 
     # f and g no subnets models
     for architecture in ["3_Acous_10ms_ftrain", "4_Acous_10ms_gtrain", "5_Ling_50ms_ftrain", "6_Ling_50ms_gtrain"]:
@@ -114,7 +109,7 @@ if __name__ == '__main__':
             os.remove(f"{file_path}/mean_person_error.pdf")
         except FileNotFoundError:
             pass
-        plot_mean_person_error(file_path)
+        plot_mean_person_error(file_path, architecture)
 
 
 #TODO: different colours for f and g

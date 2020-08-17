@@ -565,11 +565,6 @@ if __name__ == "__main__":
     # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
     #
-    # trial_path = './no_subnets/2_Acous_10ms'
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
-    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
-    #
     # trial_path = './no_subnets/3_Ling_50ms'
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
     # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
@@ -606,18 +601,13 @@ if __name__ == "__main__":
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
 
 #to get results with different onset prediction times: TODO: alter code so results don't save over each other
-    onset_prediction_length = 20 # default is 60 - 3 seconds
+    onset_prediction_length = 40  # default is 60 (60 frames is 3 seconds)
     trial_path = './no_subnets/2_Acous_10ms'
     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length)
     test_on_existing_models(trial_path, test_on_f=False, test_on_g=True,onset_prediction_frames=onset_prediction_length)
     test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length)
 
     trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length)
-
-    trial_path = './no_subnets/2_Acous_10ms'
     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length)
     test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length)
     test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length)

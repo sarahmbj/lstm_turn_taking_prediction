@@ -22,7 +22,7 @@ num_layers = 1
 annotations_dir = './data/extracted_annotations/voice_activity/'
 test_list_path = './data/splits/testing.txt'
 train_list_path = './data/splits/training.txt' #only used for onsets evaluation
-prediction_length = 60  # (3 seconds of prediction)
+prediction_length = 60  # (60 is 3 seconds of prediction)
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
 p_memory = True
 train_batch_size = 128
@@ -49,7 +49,7 @@ def get_train_results_dict(model, train_dataset, train_dataloader, train_list_pa
     train_results_dict = dict()
     train_results_lengths = train_dataset.get_results_lengths()
     for file_name in train_file_list:
-        for g_f in ['g','f']: #TODO: sometimes only use one or the other?
+        for g_f in ['g','f']:
             # create new arrays for the onset results (the continuous predictions)
             train_results_dict[file_name + '/' + g_f] = np.zeros(
                 [train_results_lengths[file_name], prediction_length])
@@ -560,35 +560,35 @@ if __name__ == "__main__":
     # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
 
-    trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
-
-    trial_path = './no_subnets/2_Acous_10ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
-
-    trial_path = './no_subnets/3_Ling_50ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
+    # trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
+    #
+    # trial_path = './no_subnets/2_Acous_10ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
+    #
+    # trial_path = './no_subnets/3_Ling_50ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
     # #
-    # trial_path = './f_and_g_no_subnets/3_Acous_10ms_ftrain'
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
-    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
-    #
-    # trial_path = './f_and_g_no_subnets/5_Ling_50ms_ftrain'
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
-    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
-    #
-    # trial_path = './f_and_g_no_subnets/4_Acous_10ms_gtrain'
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
-    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
+    trial_path = './f_and_g_no_subnets/3_Acous_10ms_ftrain'
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
+
+    trial_path = './f_and_g_no_subnets/5_Ling_50ms_ftrain'
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
+
+    trial_path = './f_and_g_no_subnets/4_Acous_10ms_gtrain'
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
     #
     # trial_path = './f_and_g_no_subnets/6_Ling_50ms_gtrain'
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)

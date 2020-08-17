@@ -374,7 +374,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
                     if (frame_indx < len(train_results_dict[conv_key + '/' + g_f_key])) and not (
                             np.isnan(np.mean(train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]))):
                         onset_train_true_vals.append(true_val)
-                        vals_to_average_train = train_results_dict[conv_key + '/' + g_f_key][frame_indx, :] #TODO: use this
+                        vals_to_average_train = train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]
                         onset_train_mean_vals.append(
                             np.mean(vals_to_average_train[:onset_test_length]))
         if not(len(onset_train_true_vals) == 0):
@@ -396,7 +396,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
                     if (frame_indx < len(results_dict[conv_key + '/' + g_f_key])) and not (
                     np.isnan(np.mean(results_dict[conv_key + '/' + g_f_key][frame_indx, :]))):
                         true_vals_onset.append(true_val)
-                        vals_to_average_test = results_dict[conv_key + '/' + g_f_key][frame_indx, :] #TODO: use this!
+                        vals_to_average_test = results_dict[conv_key + '/' + g_f_key][frame_indx, :]
                         onset_mean = np.mean(vals_to_average_test[:onset_test_length])
                         onset_test_mean_vals.append(onset_mean)
                         if onset_mean > onset_thresh:

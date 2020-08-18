@@ -22,7 +22,7 @@ def find_nearest(array,value):
 
 t_1 = t.time()
 path_to_features = './data/signals/gemaps_features_50ms/'
-path_to_annotations = '/group/corpora/public/switchboard/xml/terminals/'
+path_to_annotations = '/group/corpora/public/switchboard/nxt/xml/terminals/'
 path_to_extracted_annotations = './data/extracted_annotations/voice_activity/'
 files_feature_list = os.listdir(path_to_features)
 print(files_feature_list)
@@ -42,7 +42,7 @@ for file in files_feature_list:
         speaker = 'A'
     elif base_name.split('.')[1] == 'f':
         speaker = 'B'
-    files_annotation_list.append('nxt/xml/terminals/sw{}.{}.terminals.xml'.format(num,speaker))
+    files_annotation_list.append(f'nxt/xml/terminals/sw{num}.{speaker}.terminals.xml')
     files_output_list.append('voice_activity/sw0{}.{}.csv'.format(num,base_name.split('.')[1]))
 
 

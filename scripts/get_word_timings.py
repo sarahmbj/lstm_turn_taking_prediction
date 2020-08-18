@@ -36,7 +36,8 @@ files_output_list = list()
 for file in files_feature_list:
     base_name = os.path.basename(file)
     num = base_name.split('.')[0][3:]
-    print(base_name.split('.')[1])
+    print(base_name)
+    print(base_name.split('.'))
     if base_name.split('.')[1] == 'g':
         speaker = 'A'
     elif base_name.split('.')[1] == 'f':

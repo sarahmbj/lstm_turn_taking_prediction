@@ -21,9 +21,9 @@ def find_nearest(array,value):
 # for file in file_list:
 
 t_1 = t.time()
-path_to_features = '../data/signals/gemaps_features_50ms/'
+path_to_features = './data/signals/gemaps_features_50ms/'
 path_to_annotations = '/group/corpora/public/switchboard/xml/terminals/'
-path_to_extracted_annotations = '../data/extracted_annotations/voice_activity/'
+path_to_extracted_annotations = './data/extracted_annotations/voice_activity/'
 files_feature_list = os.listdir(path_to_features)
 files_annotation_list = list()
 files_output_list = list()

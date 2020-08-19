@@ -7,10 +7,10 @@ import os
     # need to change annotations directory to point to the location of your switchboard nxt terminals folder in some of the files
         # /switchboard/nxt/xml/terminals/'
 
-# os.system('python scripts/extract_gemaps.py 0')
-# os.system('python scripts/extract_gemaps.py 1')
-# os.system('python scripts/prepare_gemaps.py 0')
-# os.system('python scripts/prepare_gemaps.py 1')
+os.system('python scripts/extract_gemaps.py 0')
+os.system('python scripts/extract_gemaps.py 1')
+os.system('python scripts/prepare_gemaps.py 0')
+os.system('python scripts/prepare_gemaps.py 1')
 os.system('python scripts/get_word_timings.py')
 os.system('python scripts/prepare_fast_data_acous.py')
 os.system('python scripts/get_vocab_switchboard.py')

@@ -42,7 +42,7 @@ for file in files_feature_list:
         speaker = 'A'
     elif base_name.split('.')[1] == 'f':
         speaker = 'B'
-    files_annotation_list.append(f'nxt/xml/terminals/sw{num}.{speaker}.terminals.xml')
+    files_annotation_list.append(f'/group/corpora/public/switchboard/nxt/xml/terminals/sw{num}.{speaker}.terminals.xml')
     files_output_list.append('voice_activity/sw0{}.{}.csv'.format(num,base_name.split('.')[1]))
 
 

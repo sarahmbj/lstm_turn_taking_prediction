@@ -201,7 +201,7 @@ def plot_person_error(name_list, data, results_path, results_key='barchart'):
 
 
 def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset, onset_test_flag=True,
-         onset_test_length=None, prediction_at_overlap_flag=True, error_per_person_flag=True):
+         onset_test_length=[0,60], prediction_at_overlap_flag=True, error_per_person_flag=True):
     losses_test = list()
     results_dict = dict()
     losses_dict = dict()
@@ -376,7 +376,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
                         onset_train_true_vals.append(true_val)
                         vals_to_average_train = train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]
                         onset_train_mean_vals.append(
-                            np.mean(vals_to_average_train[:onset_test_length]))
+                            np.mean(vals_to_average_train[onset_test_length[0]:onset_test_length[1]]))
         if not(len(onset_train_true_vals) == 0):
             fpr, tpr, thresholds = roc_curve(np.array(onset_train_true_vals), np.array(onset_train_mean_vals))
         else:
@@ -397,7 +397,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
                     np.isnan(np.mean(results_dict[conv_key + '/' + g_f_key][frame_indx, :]))):
                         true_vals_onset.append(true_val)
                         vals_to_average_test = results_dict[conv_key + '/' + g_f_key][frame_indx, :]
-                        onset_mean = np.mean(vals_to_average_test[:onset_test_length])
+                        onset_mean = np.mean(vals_to_average_test[onset_test_length[0]:onset_test_length[1]])
                         onset_test_mean_vals.append(onset_mean)
                         if onset_mean > onset_thresh:
                             predicted_class_onset.append(1)  # long
@@ -491,7 +491,7 @@ def get_test_set_name(f, g):
 
 
 def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_on_g=True, trained_on_f=True,
-                            onset_prediction_frames=None):
+                            onset_prediction_frames=[0,60]):
     test_path = f'{trial_path}/test'
     # Loop through all the trained models in this trial path
     results_dicts = []
@@ -601,7 +601,7 @@ if __name__ == "__main__":
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
 
 #to get results with different onset prediction times: TODO: alter code so results don't save over each other
-    onset_prediction_length = 10  # default is 60 (60 frames is 3 seconds)
+    onset_prediction_length = [0, 10]  # default is [0, 60] (60 frames is 3 seconds)
     trial_path = './no_subnets/2_Acous_10ms'
     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length)
     test_on_existing_models(trial_path, test_on_f=False, test_on_g=True,onset_prediction_frames=onset_prediction_length)

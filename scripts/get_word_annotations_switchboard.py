@@ -36,7 +36,7 @@ def find_nearest(array,value):
     return idx
 t_1 = t.time()
 
-path_to_annotations='../switchboard/nxt/xml/terminals/'
+path_to_annotations='/group/corpora/public/switchboard/nxt/xml/terminals/'
 word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p','rb'))
 
 if not(os.path.exists(path_to_extracted_annotations)):
@@ -52,7 +52,7 @@ for file in files_feature_list:
         speaker = 'A'
     elif base_name.split('.')[1] == 'f':
         speaker = 'B'
-    files_annotation_list.append('../switchboard/nxt/xml/terminals/sw{}.{}.terminals.xml'.format(num,speaker))
+    files_annotation_list.append('/group/corpora/public/switchboard/nxt/xml/terminals/sw{}.{}.terminals.xml'.format(num,speaker))
     files_output_list.append('sw{}.{}.csv'.format(num, speaker))
 
 #%% Create delayed frame annotations

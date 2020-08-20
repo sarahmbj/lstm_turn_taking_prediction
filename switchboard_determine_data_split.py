@@ -63,8 +63,8 @@ print(f"total dialogues: {total_dialogues}, max test: {max_test_dialogues}, max 
 # allocate dialogues randomly to each set
 all_dialogues = list(dialogue_dict.keys())
 random.shuffle(all_dialogues)
-test_set = all_dialogues[0:max_test_dialogues]
-train_set = all_dialogues[max_test_dialogues:]
+test_set = set(all_dialogues[0:max_test_dialogues])
+train_set = set(all_dialogues[max_test_dialogues:])
 print(test_set)
 print(train_set)
 print(len(test_set) + len(train_set))
@@ -92,7 +92,7 @@ while overlap_speakers:
     for dialogue in dialogues:
         if dialogue in test_set:
             test_set.remove(dialogue)
-            train_set.add(dialogue)
+            train_set.append(dialogue)
             swap = test_set.pop()
             train_set.add(swap)
         elif dialogue in train_set:

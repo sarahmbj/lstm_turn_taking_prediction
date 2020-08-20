@@ -100,6 +100,12 @@ for attempt in range(5):
     if overlap_dialogues < lowest_overlap_dialogues:
         best_test_set = test_set
         best_train_set = train_set
+    elif overlap_dialogues > lowest_overlap_dialogues:
+        pass
+    else:
+        if overlap_speakers < lowest_overlap_speakers:
+            best_test_set = test_set
+            best_train_set = train_set
 
 print("Best solution found:")
 check_speaker_overlaps(best_test_set, best_train_set)

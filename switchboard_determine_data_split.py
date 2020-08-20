@@ -106,13 +106,13 @@ def check_speaker_overlaps(test_dialogues, train_dialogues):
 # use all the speakers that appear more than once in the training set
 if args.method == "simple":
     all_dialogues = dialogue_dict.keys()
-    test_set = dialogues_with_overlap_speakers
-    print(test_set)
-    train_set = set()
-    for dialogue in all_dialogues:
-        if dialogue not in test_set:
-            train_set.add(dialogue)
+    train_set = dialogues_with_overlap_speakers
     print(train_set)
+    test_set = set()
+    for dialogue in all_dialogues:
+        if dialogue not in train_set:
+            test_set.add(dialogue)
+    print(test_set)
 
 
 # randomly allocate dialogues in a 25/75 split

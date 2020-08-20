@@ -453,10 +453,6 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
             results_save['fn_' + overlap_str].append(fn)
             results_save['tp_' + overlap_str].append(tp)
 
-    #get voice activity f-score
-    # f_score = f1_score(y_test_list, out_test_list)
-    # print(f'voice activity f-score: {str(f_score)}')
-
     # get error per person (to use with plot_person_error())
     if error_per_person_flag:
         bar_chart_labels = []

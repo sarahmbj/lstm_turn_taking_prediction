@@ -7,4 +7,4 @@ dialogue_root = dialogue_tree.getroot()
 
 for dialogue in dialogue_root:
     print(dialogue.tag, dialogue.attrib)
-    
+    print(dialogue.attrib[1])

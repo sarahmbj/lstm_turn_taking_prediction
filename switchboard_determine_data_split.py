@@ -110,6 +110,9 @@ if args.method == "simple":
     print(test_set)
     train_set = set(dialogues_with_overlap_speakers).difference(all_dialogues)
     print(train_set)
+    print(f"test set contains {len(test_set)} dialogues, train set containes {len(train_set)} dialogues.")
+    print(f"Total dialogues in both sets: {len(test_set) + len(train_set)} "
+          f"(sanity check, this should be {len(all_dialogues)}).")
 
 # randomly allocate dialogues in a 25/75 split
 if args.method == "random":

@@ -102,7 +102,10 @@ best_train_set = None
 lowest_overlap_dialogues = float('inf')
 lowest_overlap_speakers = float('inf')
 
-for attempt in range(args.epochs):
+epochs = 5
+if args.epochs:
+    epochs = int(args.epochs)
+for attempt in range(epochs):
     test_set, train_set = allocate_dialogues()
     overlap_speakers, overlap_dialogues = check_speaker_overlaps(test_set, train_set)
     if overlap_dialogues < lowest_overlap_dialogues:

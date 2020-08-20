@@ -61,13 +61,12 @@ max_train_dialogues = total_dialogues - max_test_dialogues
 print(f"total dialogues: {total_dialogues}, max test: {max_test_dialogues}, max train: {max_train_dialogues}")
 
 # allocate dialogues randomly to each set
+def allocate_dialogues():
 all_dialogues = list(dialogue_dict.keys())
 random.shuffle(all_dialogues)
 test_set = set(all_dialogues[0:max_test_dialogues])
 train_set = set(all_dialogues[max_test_dialogues:])
-print(test_set)
-print(train_set)
-print(len(test_set) + len(train_set))
+return test_set, train_set
 
 
 # check how many speakers appear in both sets
@@ -88,32 +87,26 @@ def check_speaker_overlaps(test_dialogues, train_dialogues):
             overlap_dialogues.add(dialogue)
     print(f'These speakers are in {len(overlap_dialogues)} dialogues.')
 
-    return overlap_speakers, overlap_dialogues
+    return len(overlap_speakers), len(overlap_dialogues)
 
-overlap_speakers, _ = check_speaker_overlaps(test_set, train_set)
+best_test_set = None
+best_train_set = None
+lowest_overlap_dialogues = float('inf')
+lowest_overlap_speakers = float('inf')
 
-# while overlap_speakers:
-#     speaker = overlap_speakers.pop()
-#     print(speaker)
-#     dialogues = speaker_dict[speaker]
-#     print(dialogues)
-#     for dialogue in dialogues[0]:
-#         if dialogue in test_set:
-#             test_set.remove(dialogue)
-#             train_set.add(dialogue)
-#             swap = test_set.pop()
-#             train_set.add(swap)
-#             print(f"swap in test_set loop: {swap}")
-#
-#         else:
-#             train_set.remove(dialogue)
-#             test_set.add(dialogue)
-#             swap = test_set.pop()
-#             test_set.add(swap)
-#             print(f"swap in train_set loop: {swap}")
-#
-#     overlap_speakers, _ = check_speaker_overlaps(test_set, train_set)
-#
+for attempt in range(5):
+    allocate_dialogues()
+    overlap_speakers, overlap_dialogues = check_speaker_overlaps(test_set, train_set)
+    if overlap_dialogues < lowest_overlap_dialogues:
+        best_test_set = test_set
+        best_train_set = train_set
+
+print("Best solution found:")
+check_speaker_overlaps(best_test_set, best_train_set)
+with open("suggested_train_set.txt", "w") as f:
+        f.writelines(best_train_set)
+with open("suggested_test_set.txt", "w") as f:
+    f.writelines(best_test_set)
 
 
 

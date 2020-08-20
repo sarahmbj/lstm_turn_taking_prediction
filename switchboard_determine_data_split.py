@@ -71,7 +71,7 @@ print(f"there are {len(dialogues_with_overlap_speakers)} dialogues with these sp
 # work out desired size of each split
 max_test_dialogues = int(total_dialogues * test_split)
 max_train_dialogues = total_dialogues - max_test_dialogues
-print(f"total dialogues: {total_dialogues}, max test: {max_test_dialogues}, max train: {max_train_dialogues}")
+print(f"total dialogues: {total_dialogues}, test target: {max_test_dialogues}, train target: {max_train_dialogues}")
 
 # allocate dialogues randomly to each set
 def allocate_dialogues():
@@ -107,7 +107,9 @@ def check_speaker_overlaps(test_dialogues, train_dialogues):
 if args.method == "simple":
     all_dialogues = dialogue_dict.keys()
     test_set = dialogues_with_overlap_speakers
+    print(test_set)
     train_set = set(all_dialogues).difference_update(dialogues_with_overlap_speakers)
+    print(train_set)
 
 # randomly allocate dialogues in a 25/75 split
 if args.method == "random":

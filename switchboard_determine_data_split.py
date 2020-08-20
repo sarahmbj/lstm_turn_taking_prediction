@@ -5,8 +5,13 @@ from pprint import pprint
 from collections import defaultdict
 import random
 from datetime import datetime
+import argparse
 
 startTime = datetime.now()
+
+parser = argparse.ArgumentParser()
+parser.add_argument("epochs")
+args = parser.parse_args()
 
 # set paths to metadata
 if platform.system() == 'Linux':
@@ -97,7 +102,7 @@ best_train_set = None
 lowest_overlap_dialogues = float('inf')
 lowest_overlap_speakers = float('inf')
 
-for attempt in range(5):
+for attempt in range(args.epochs):
     test_set, train_set = allocate_dialogues()
     overlap_speakers, overlap_dialogues = check_speaker_overlaps(test_set, train_set)
     if overlap_dialogues < lowest_overlap_dialogues:

@@ -54,20 +54,18 @@ for speaker in speaker_dict:
 print(f"there are {len(speaker_dict)} distinct speakers in the data set")
 print(f"there are {len(speakers_in_multiple_dialogues)} speakers in multiple dialogues: {speakers_in_multiple_dialogues}")
 
-#allocate all conversations for these speakers to either train or test sets
-
-#allocate remaining dialogues to train/test sets
+# work out desired size of each split
 max_test_dialogues = int(total_dialogues * test_split)
 max_train_dialogues = total_dialogues - max_test_dialogues
 print(f"total dialogues: {total_dialogues}, max test: {max_test_dialogues}, max train: {max_train_dialogues}")
-test_speaker_set = set()
-train_speaker_set = set()
-test_dialogues = set()
-train_dialogues = set()
-# for dialogue in dialogue_dict:
-#     speakers = dialogue_dict[dialogue]
-#     print( dialogue, speakers[0], speakers[1])
-#     if speakers[0] in test_speaker_set:
+
+#allocate dialogues randomly to each set (random because dict order is random_
+test_set = list(dialogue_dict.keys())[0:max_test_dialogues]
+train_set = list(dialogue_dict.keys())[max_test_dialogues:]
+print(test_set)
+print(train_set)
+print(len(test_set) + len(train_set))
+
 
 
 

@@ -108,7 +108,7 @@ if args.method == "simple":
     all_dialogues = dialogue_dict.keys()
     test_set = dialogues_with_overlap_speakers
     print(test_set)
-    train_set = set(dialogues_with_overlap_speakers).difference(all_dialogues)
+    train_set = dialogues_with_overlap_speakers.difference(set(all_dialogues))
     print(train_set)
 
 

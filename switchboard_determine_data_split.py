@@ -1,11 +1,7 @@
-import glob
 import os
-import wave
+import xml.etree.ElementTree as ET
 
-wav_directory = "./data/signals/dialogues_stereo"
-conversation_list = os.listdir(wav_directory)
-print(conversation_list)
+dialogue_tree = ET.parse("/group/corpora/public/switchboard/nxt/xml/corpus-resources/dialogues.xml")
+# /group/corpora/public/switchboard/nxt/xml/corpus-resources/speakers.xml
 
-for file in conversation_list:
-    wav_file = wave.open(f'{wav_directory}/{file}')
-    print(dir(wav_file))
+print(dialogue_tree)

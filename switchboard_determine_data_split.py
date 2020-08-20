@@ -92,7 +92,7 @@ while overlap_speakers:
     for dialogue in dialogues:
         if dialogue in test_set:
             test_set.remove(dialogue)
-            train_set.append(dialogue)
+            train_set.add(dialogue)
             swap = test_set.pop()
             train_set.add(swap)
         elif dialogue in train_set:

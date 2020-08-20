@@ -119,9 +119,11 @@ if args.method == "simple":
 if args.method == "random":
     test_set, train_set = allocate_dialogues()
 
-print(f"test set contains {len(test_set)} dialogues, train set containes {len(train_set)} dialogues.")
-print(f"Total dialogues in both sets: {len(test_set) + len(train_set)} "
-          f"(sanity check, this should be {len(total_dialogues)}).")
+test_set_size = len(test_set)
+train_set_size = len(train_set)
+print(f"test set contains {test_set_size} dialogues, train set contains {train_set_size} dialogues.")
+print(f"Total dialogues in both sets: {test_set_size +train_set_size} "
+          f"(sanity check, this should be {total_dialogues}).")
 check_speaker_overlaps(test_set, train_set)
 
 with open("suggested_train_set.txt", "w") as f:

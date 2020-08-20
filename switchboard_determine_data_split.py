@@ -86,34 +86,34 @@ def check_speaker_overlaps(test_dialogues, train_dialogues):
     for speaker in overlap_speakers:
         for dialogue in speaker_dict[speaker]:
             overlap_dialogues.add(dialogue)
-    print(f'These speakers are in {len(overlap_dialogues)}.')
+    print(f'These speakers are in {len(overlap_dialogues)} dialogues.')
 
     return overlap_speakers, overlap_dialogues
 
 overlap_speakers, _ = check_speaker_overlaps(test_set, train_set)
 
-while overlap_speakers:
-    speaker = overlap_speakers.pop()
-    print(speaker)
-    dialogues = speaker_dict[speaker]
-    print(dialogues)
-    for dialogue in dialogues[0]:
-        if dialogue in test_set:
-            test_set.remove(dialogue)
-            train_set.add(dialogue)
-            swap = test_set.pop()
-            train_set.add(swap)
-            print(f"swap in test_set loop: {swap}")
-
-        else:
-            train_set.remove(dialogue)
-            test_set.add(dialogue)
-            swap = test_set.pop()
-            test_set.add(swap)
-            print(f"swap in train_set loop: {swap}")
-
-    overlap_speakers, _ = check_speaker_overlaps(test_set, train_set)
-
+# while overlap_speakers:
+#     speaker = overlap_speakers.pop()
+#     print(speaker)
+#     dialogues = speaker_dict[speaker]
+#     print(dialogues)
+#     for dialogue in dialogues[0]:
+#         if dialogue in test_set:
+#             test_set.remove(dialogue)
+#             train_set.add(dialogue)
+#             swap = test_set.pop()
+#             train_set.add(swap)
+#             print(f"swap in test_set loop: {swap}")
+#
+#         else:
+#             train_set.remove(dialogue)
+#             test_set.add(dialogue)
+#             swap = test_set.pop()
+#             test_set.add(swap)
+#             print(f"swap in train_set loop: {swap}")
+#
+#     overlap_speakers, _ = check_speaker_overlaps(test_set, train_set)
+#
 
 
 

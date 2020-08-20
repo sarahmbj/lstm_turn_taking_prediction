@@ -88,7 +88,9 @@ overlap_speakers = check_speaker_overlaps(test_set, train_set)
 
 while overlap_speakers:
     speaker = overlap_speakers.pop()
+    print(speaker)
     dialogues = speaker_dict[speaker]
+    print(dialogues)
     for dialogue in dialogues[0]:
         if dialogue in test_set:
             test_set.remove(dialogue)
@@ -97,7 +99,7 @@ while overlap_speakers:
             train_set.add(swap)
             print(f"swap in test_set loop: {swap}")
 
-        elif dialogue in train_set:
+        else:
             train_set.remove(dialogue)
             test_set.add(dialogue)
             swap = test_set.pop()

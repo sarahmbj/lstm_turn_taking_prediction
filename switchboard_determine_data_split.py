@@ -108,7 +108,7 @@ if args.method == "simple":
     all_dialogues = dialogue_dict.keys()
     test_set = dialogues_with_overlap_speakers
     print(test_set)
-    train_set = set(all_dialogues).difference_update(dialogues_with_overlap_speakers)
+    train_set = set(dialogues_with_overlap_speakers).difference_update(all_dialogues)
     print(train_set)
 
 # randomly allocate dialogues in a 25/75 split

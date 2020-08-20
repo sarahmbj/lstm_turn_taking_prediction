@@ -10,7 +10,7 @@ import argparse
 startTime = datetime.now()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("epochs")
+parser.add_argument("method")
 args = parser.parse_args()
 
 # set paths to metadata
@@ -73,13 +73,13 @@ max_test_dialogues = int(total_dialogues * test_split)
 max_train_dialogues = total_dialogues - max_test_dialogues
 print(f"total dialogues: {total_dialogues}, max test: {max_test_dialogues}, max train: {max_train_dialogues}")
 
-# # allocate dialogues randomly to each set
-# def allocate_dialogues():
-#     all_dialogues = list(dialogue_dict.keys())
-#     random.shuffle(all_dialogues)
-#     test_set = set(all_dialogues[0:max_test_dialogues])
-#     train_set = set(all_dialogues[max_test_dialogues:])
-#     return test_set, train_set
+# allocate dialogues randomly to each set
+def allocate_dialogues():
+    all_dialogues = list(dialogue_dict.keys())
+    random.shuffle(all_dialogues)
+    test_set = set(all_dialogues[0:max_test_dialogues])
+    train_set = set(all_dialogues[max_test_dialogues:])
+    return test_set, train_set
 
 
 # check how many speakers appear in both sets
@@ -102,35 +102,24 @@ def check_speaker_overlaps(test_dialogues, train_dialogues):
 
     return len(overlap_speakers), len(overlap_dialogues)
 
-# best_test_set = None
-# best_train_set = None
-# lowest_overlap_dialogues = float('inf')
-# lowest_overlap_speakers = float('inf')
 
-# epochs = 5
-# if args.epochs:
-#     epochs = int(args.epochs)
-# for attempt in range(epochs):
-#     test_set, train_set = allocate_dialogues()
-#     overlap_speakers, overlap_dialogues = check_speaker_overlaps(test_set, train_set)
-#     if overlap_dialogues < lowest_overlap_dialogues:
-#         best_test_set = test_set
-#         best_train_set = train_set
-#     elif overlap_dialogues > lowest_overlap_dialogues:
-#         pass
-#     else:
-#         if overlap_speakers < lowest_overlap_speakers:
-#             best_test_set = test_set
-#             best_train_set = train_set
+# use all the speakers that appear more than once in the training set
+if args.method == "simple":
+    all_dialogues = dialogue_dict.keys()
+    test_set = dialogues_with_overlap_speakers
+    train_set = all_dialogues.remove(dialogues_with_overlap_speakers)
+
+# randomly allocate dialogues in a 25/75 split
+if args.method == "random":
+    test_set, train_set = allocate_dialogues()
 
 
-
-# with open("suggested_train_set.txt", "w") as f:
-#     for dialogue in best_train_set:
-#         f.writelines(f"{dialogue}\n")
-# with open("suggested_test_set.txt", "w") as f:
-#     for dialogue in best_test_set:
-#         f.writelines(f"{dialogue}\n")
+with open("suggested_train_set.txt", "w") as f:
+    for dialogue in train_set:
+        f.writelines(f"{dialogue}\n")
+with open("suggested_test_set.txt", "w") as f:
+    for dialogue in test_set:
+        f.writelines(f"{dialogue}\n")
 
 print(datetime.now() - startTime)
 

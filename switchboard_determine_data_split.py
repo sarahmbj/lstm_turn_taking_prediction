@@ -2,8 +2,10 @@ import glob
 import os
 import wave
 
-conversation_list = os.listdir("./data/signals/dialogues_stereo")
+wav_directory = "./data/signals/dialogues_stereo"
+conversation_list = os.listdir(wav_directory)
 print(conversation_list)
 
 for file in conversation_list:
-    pass
+    wav_file = wave.open(f'{wav_directory}/file')
+    print(dir(wav_file))

@@ -94,7 +94,7 @@ best_train_set = None
 lowest_overlap_dialogues = float('inf')
 lowest_overlap_speakers = float('inf')
 
-for attempt in range(10000):
+for attempt in range(5):
     test_set, train_set = allocate_dialogues()
     overlap_speakers, overlap_dialogues = check_speaker_overlaps(test_set, train_set)
     if overlap_dialogues < lowest_overlap_dialogues:
@@ -110,9 +110,9 @@ for attempt in range(10000):
 print("Best solution found:")
 check_speaker_overlaps(best_test_set, best_train_set)
 with open("suggested_train_set.txt", "w") as f:
-        f.writelines(best_train_set)
+    for dialogue in best_train_set:
+        f.writelines(f"{dialogue}\n")
 with open("suggested_test_set.txt", "w") as f:
-    f.writelines(best_test_set)
-
-
+    for dialogue in best_test_set:
+        f.writelines(f"{dialogue}\n")
 

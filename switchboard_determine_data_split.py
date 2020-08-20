@@ -107,7 +107,7 @@ def check_speaker_overlaps(test_dialogues, train_dialogues):
 if args.method == "simple":
     all_dialogues = dialogue_dict.keys()
     test_set = dialogues_with_overlap_speakers
-    train_set = all_dialogues.remove(dialogues_with_overlap_speakers)
+    train_set = set(all_dialogues).difference_update(dialogues_with_overlap_speakers)
 
 # randomly allocate dialogues in a 25/75 split
 if args.method == "random":

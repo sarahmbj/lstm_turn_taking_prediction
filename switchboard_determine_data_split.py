@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 import re
 from pprint import pprint
 from collections import defaultdict
+import random
 
 # set paths to metadata
 if platform.system() == 'Linux':
@@ -59,9 +60,10 @@ max_test_dialogues = int(total_dialogues * test_split)
 max_train_dialogues = total_dialogues - max_test_dialogues
 print(f"total dialogues: {total_dialogues}, max test: {max_test_dialogues}, max train: {max_train_dialogues}")
 
-#allocate dialogues randomly to each set (random because dict order is random_
-test_set = list(dialogue_dict.keys())[0:max_test_dialogues]
-train_set = list(dialogue_dict.keys())[max_test_dialogues:]
+# allocate dialogues randomly to each set
+all_dialogues = random.shuffle(list(dialogue_dict.keys()))
+test_set = all_dialogues[0:max_test_dialogues]
+train_set = all_dialogues[max_test_dialogues:]
 print(test_set)
 print(train_set)
 print(len(test_set) + len(train_set))

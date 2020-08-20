@@ -4,6 +4,9 @@ import re
 from pprint import pprint
 from collections import defaultdict
 import random
+from datetime import datetime
+
+startTime = datetime.now()
 
 # set paths to metadata
 if platform.system() == 'Linux':
@@ -94,7 +97,7 @@ best_train_set = None
 lowest_overlap_dialogues = float('inf')
 lowest_overlap_speakers = float('inf')
 
-for attempt in range(99999999999):
+for attempt in range(5):
     test_set, train_set = allocate_dialogues()
     overlap_speakers, overlap_dialogues = check_speaker_overlaps(test_set, train_set)
     if overlap_dialogues < lowest_overlap_dialogues:
@@ -115,4 +118,6 @@ with open("suggested_train_set.txt", "w") as f:
 with open("suggested_test_set.txt", "w") as f:
     for dialogue in best_test_set:
         f.writelines(f"{dialogue}\n")
+
+print(datetime.now() - startTime)
 

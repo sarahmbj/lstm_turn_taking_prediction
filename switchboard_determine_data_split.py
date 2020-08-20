@@ -118,7 +118,7 @@ if args.method == "random":
 
 print(f"test set contains {len(test_set)} dialogues, train set containes {len(train_set)} dialogues.")
 print(f"Total dialogues in both sets: {len(test_set) + len(train_set)} "
-          f"(sanity check, this should be {len(all_dialogues)}).")
+          f"(sanity check, this should be {len(total_dialogues)}).")
 check_speaker_overlaps(test_set, train_set)
 
 with open("suggested_train_set.txt", "w") as f:

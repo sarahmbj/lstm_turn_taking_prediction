@@ -61,7 +61,8 @@ max_train_dialogues = total_dialogues - max_test_dialogues
 print(f"total dialogues: {total_dialogues}, max test: {max_test_dialogues}, max train: {max_train_dialogues}")
 
 # allocate dialogues randomly to each set
-all_dialogues = random.shuffle(list(dialogue_dict.keys()))
+all_dialogues = list(dialogue_dict.keys())
+random.shuffle(all_dialogues)
 test_set = all_dialogues[0:max_test_dialogues]
 train_set = all_dialogues[max_test_dialogues:]
 print(test_set)

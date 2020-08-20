@@ -80,11 +80,17 @@ def check_speaker_overlaps(test_dialogues, train_dialogues):
     for dialogue in train_dialogues:
         train_speakers.add(dialogue_dict[dialogue][0])
         train_speakers.add(dialogue_dict[dialogue][1])
-    overlap = test_speakers.intersection(train_speakers)
-    print(f'There are {len(overlap)} speakers in both test sets.')
-    return overlap
+    overlap_speakers = test_speakers.intersection(train_speakers)
+    print(f'There are {len(overlap_speakers)} speakers in both test sets.')
+    overlap_dialogues = set()
+    for speaker in overlap_speakers:
+        for dialogue in speaker_dict[speaker]:
+            overlap_dialogues.add(dialogue)
+    print(f'These speakers are in {len(overlap_dialogues)}.')
 
-overlap_speakers = check_speaker_overlaps(test_set, train_set)
+    return overlap_speakers, overlap_dialogues
+
+overlap_speakers, _ = check_speaker_overlaps(test_set, train_set)
 
 while overlap_speakers:
     speaker = overlap_speakers.pop()
@@ -106,7 +112,7 @@ while overlap_speakers:
             test_set.add(swap)
             print(f"swap in train_set loop: {swap}")
 
-    overlap_speakers = check_speaker_overlaps(test_set, train_set)
+    overlap_speakers, _ = check_speaker_overlaps(test_set, train_set)
 
 
 

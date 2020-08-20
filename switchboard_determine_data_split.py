@@ -62,11 +62,11 @@ print(f"total dialogues: {total_dialogues}, max test: {max_test_dialogues}, max 
 
 # allocate dialogues randomly to each set
 def allocate_dialogues():
-all_dialogues = list(dialogue_dict.keys())
-random.shuffle(all_dialogues)
-test_set = set(all_dialogues[0:max_test_dialogues])
-train_set = set(all_dialogues[max_test_dialogues:])
-return test_set, train_set
+    all_dialogues = list(dialogue_dict.keys())
+    random.shuffle(all_dialogues)
+    test_set = set(all_dialogues[0:max_test_dialogues])
+    train_set = set(all_dialogues[max_test_dialogues:])
+    return test_set, train_set
 
 
 # check how many speakers appear in both sets

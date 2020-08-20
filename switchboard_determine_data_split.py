@@ -52,29 +52,84 @@ for dialogue in dialogue_root:
         speaker_dict[speakers[1]].append(dialogue_id)
 
 
+pprint(dialogue_dict)
+pprint(speaker_dict)
+
 #work out which speakers are in multiple conversations
 speakers_in_multiple_dialogues = set()
+dialogues_with_overlap_speakers = set()
 for speaker in speaker_dict:
     if len(speaker_dict[speaker]) > 1:
         speakers_in_multiple_dialogues.add(speaker)
 print(f"there are {len(speaker_dict)} distinct speakers in the data set")
 print(f"there are {len(speakers_in_multiple_dialogues)} speakers in multiple dialogues: {speakers_in_multiple_dialogues}")
+for speaker in speakers_in_multiple_dialogues:
+    dialogues_with_overlap_speakers.add(speaker_dict[speaker])
+print(f"there are {len(dialogues_with_overlap_speakers)} dialogues with these speakers in them")
 
 # work out desired size of each split
 max_test_dialogues = int(total_dialogues * test_split)
 max_train_dialogues = total_dialogues - max_test_dialogues
 print(f"total dialogues: {total_dialogues}, max test: {max_test_dialogues}, max train: {max_train_dialogues}")
 
-#put all the speakers in multiple conversations into the test set
+# # allocate dialogues randomly to each set
+# def allocate_dialogues():
+#     all_dialogues = list(dialogue_dict.keys())
+#     random.shuffle(all_dialogues)
+#     test_set = set(all_dialogues[0:max_test_dialogues])
+#     train_set = set(all_dialogues[max_test_dialogues:])
+#     return test_set, train_set
 
 
-#
+# check how many speakers appear in both sets
+def check_speaker_overlaps(test_dialogues, train_dialogues):
+    test_speakers = set()
+    train_speakers = set()
+    for dialogue in test_dialogues:
+        test_speakers.add(dialogue_dict[dialogue][0])
+        test_speakers.add(dialogue_dict[dialogue][1])
+    for dialogue in train_dialogues:
+        train_speakers.add(dialogue_dict[dialogue][0])
+        train_speakers.add(dialogue_dict[dialogue][1])
+    overlap_speakers = test_speakers.intersection(train_speakers)
+    print(f'There are {len(overlap_speakers)} speakers in both data sets.')
+    overlap_dialogues = set()
+    for speaker in overlap_speakers:
+        for dialogue in speaker_dict[speaker]:
+            overlap_dialogues.add(dialogue)
+    print(f'These speakers are in {len(overlap_dialogues)} dialogues.')
+
+    return len(overlap_speakers), len(overlap_dialogues)
+
+# best_test_set = None
+# best_train_set = None
+# lowest_overlap_dialogues = float('inf')
+# lowest_overlap_speakers = float('inf')
+
+# epochs = 5
+# if args.epochs:
+#     epochs = int(args.epochs)
+# for attempt in range(epochs):
+#     test_set, train_set = allocate_dialogues()
+#     overlap_speakers, overlap_dialogues = check_speaker_overlaps(test_set, train_set)
+#     if overlap_dialogues < lowest_overlap_dialogues:
+#         best_test_set = test_set
+#         best_train_set = train_set
+#     elif overlap_dialogues > lowest_overlap_dialogues:
+#         pass
+#     else:
+#         if overlap_speakers < lowest_overlap_speakers:
+#             best_test_set = test_set
+#             best_train_set = train_set
+
+
+
 # with open("suggested_train_set.txt", "w") as f:
 #     for dialogue in best_train_set:
 #         f.writelines(f"{dialogue}\n")
 # with open("suggested_test_set.txt", "w") as f:
 #     for dialogue in best_test_set:
 #         f.writelines(f"{dialogue}\n")
-#
-# print(datetime.now() - startTime)
+
+print(datetime.now() - startTime)
 

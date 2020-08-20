@@ -51,6 +51,7 @@ speakers_in_multiple_dialogues = set()
 for speaker in speaker_dict:
     if len(speaker_dict[speaker]) > 1:
         speakers_in_multiple_dialogues.add(speaker)
+print(f"there are {len(speaker_dict)} distinct speakers in the data set")
 print(f"there are {len(speakers_in_multiple_dialogues)} speakers in multiple dialogues: {speakers_in_multiple_dialogues}")
 
 #allocate all conversations for these speakers to either train or test sets

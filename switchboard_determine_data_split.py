@@ -64,7 +64,8 @@ for speaker in speaker_dict:
 print(f"there are {len(speaker_dict)} distinct speakers in the data set")
 print(f"there are {len(speakers_in_multiple_dialogues)} speakers in multiple dialogues: {speakers_in_multiple_dialogues}")
 for speaker in speakers_in_multiple_dialogues:
-    dialogues_with_overlap_speakers.add(speaker_dict[speaker])
+    for dialogue in speaker_dict[speaker]:
+        dialogues_with_overlap_speakers.add(dialogue)
 print(f"there are {len(dialogues_with_overlap_speakers)} dialogues with these speakers in them")
 
 # work out desired size of each split

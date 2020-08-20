@@ -1,13 +1,18 @@
+import platform
 import xml.etree.ElementTree as ET
 import re
 from pprint import pprint
 from collections import defaultdict
 
-# paths to metadata
-dialogue_tree = ET.parse("./data/dialogues_excerpt.xml")  # local
-swbd_complete_path = "./data/splits/complete_swbd.txt"
-# dialogue_tree = ET.parse("/group/corpora/public/switchboard/nxt/xml/corpus-resources/dialogues.xml") # on DICE
-# swbd_complete_path = "./data/splits/complete.txt"
+# set paths to metadata
+if platform.system() == 'Linux':
+    print('Running on DICE')
+    dialogue_tree = ET.parse("/group/corpora/public/switchboard/nxt/xml/corpus-resources/dialogues.xml") # on DICE
+    swbd_complete_path = "./data/splits/complete.txt"
+else:
+    print('Running on local')
+    dialogue_tree = ET.parse("./data/dialogues_excerpt.xml")  # local
+    swbd_complete_path = "./data/splits/complete_swbd.txt"
 
 # settings
 test_split = 0.25

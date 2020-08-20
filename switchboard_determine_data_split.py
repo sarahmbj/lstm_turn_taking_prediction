@@ -80,7 +80,7 @@ def check_speaker_overlaps(test_dialogues, train_dialogues):
         train_speakers.add(dialogue_dict[dialogue][0])
         train_speakers.add(dialogue_dict[dialogue][1])
     overlap_speakers = test_speakers.intersection(train_speakers)
-    print(f'There are {len(overlap_speakers)} speakers in both test sets.')
+    print(f'There are {len(overlap_speakers)} speakers in both data sets.')
     overlap_dialogues = set()
     for speaker in overlap_speakers:
         for dialogue in speaker_dict[speaker]:
@@ -97,13 +97,13 @@ lowest_overlap_speakers = float('inf')
 for attempt in range(5):
     test_set, train_set = allocate_dialogues()
     overlap_speakers, overlap_dialogues = check_speaker_overlaps(test_set, train_set)
-    if overlap_dialogues < lowest_overlap_dialogues:
+    if overlap_dialogues > lowest_overlap_dialogues:
         best_test_set = test_set
         best_train_set = train_set
-    elif overlap_dialogues > lowest_overlap_dialogues:
+    elif overlap_dialogues < lowest_overlap_dialogues:
         pass
     else:
-        if overlap_speakers < lowest_overlap_speakers:
+        if overlap_speakers > lowest_overlap_speakers:
             best_test_set = test_set
             best_train_set = train_set
 

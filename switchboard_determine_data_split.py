@@ -89,7 +89,7 @@ overlap_speakers = check_speaker_overlaps(test_set, train_set)
 while overlap_speakers:
     speaker = overlap_speakers.pop()
     dialogues = speaker_dict[speaker]
-    for dialogue in dialogues:
+    for dialogue in dialogues[0]:
         if dialogue in test_set:
             test_set.remove(dialogue)
             train_set.add(dialogue)

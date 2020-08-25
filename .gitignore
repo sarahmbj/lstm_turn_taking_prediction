@@ -10,3 +10,4 @@ __pycache__
 .idea
 /model_location.txt
 /two_subnets/
+data/splits

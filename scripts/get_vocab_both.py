@@ -34,7 +34,7 @@ for file in files_feature_list:
     if base_name[0] == 's':
         files_feature_list_switchboard.append(file)
     elif base_name[0] == 'q':
-        files_annotation_list_maptask.append(file)
+        files_feature_list_maptask.append(file)
 
 ########## note that A = g, B = f ########### for switchboard
 

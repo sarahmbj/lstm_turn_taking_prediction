@@ -62,6 +62,9 @@ for file in files_feature_list:
     elif base_name[0] == 'q':
         files_feature_list_maptask.append(file)
 
+print(files_feature_list_maptask)
+
+
 # create 2 lists: xml file names for each feature file's time annotations, csv files for each feature filefor file in files_feature_list:
 for file in files_feature_list_maptask:
     files_annotation_list_maptask.append(os.path.splitext(base_name)[0] + '.timed-units.xml')
@@ -77,7 +80,6 @@ for file in files_feature_list_switchboard:
     files_annotation_list_switchboard.append('/group/corpora/public/switchboard/nxt/xml/terminals/sw{}.{}.terminals.xml'.format(num,speaker))
     files_output_list_switchboard.append('sw{}.{}.csv'.format(num, speaker))
 
-print(files_feature_list_maptask)
 
 #%% Create delayed frame annotations
 

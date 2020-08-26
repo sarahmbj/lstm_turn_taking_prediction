@@ -30,7 +30,7 @@ files_feature_list_switchboard = list()
 files_feature_list_maptask = list()
 
 #split into list of maptask and list of switchboard files
-for file in files_feature_list_switchboard:
+for file in files_feature_list:
     base_name = os.path.basename(file)
     if base_name[0] == 's':
         files_feature_list_switchboard.append(file)

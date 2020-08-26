@@ -47,6 +47,7 @@ files_feature_list = os.listdir(path_to_features)
 files_annotation_list = list()
 files_output_list = list()
 #create 2 lists: xml file names for each feature file's time annotations, csv files for each feature filefor file in files_feature_list:
+for file in files_feature_list:
     base_name = os.path.basename(file)
     files_annotation_list.append(os.path.splitext(base_name)[0]+'.timed-units.xml')
     files_output_list.append(os.path.splitext(base_name)[0]+'.csv')

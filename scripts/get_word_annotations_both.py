@@ -62,6 +62,11 @@ for file in files_feature_list:
     elif base_name[0] == 'q':
         files_annotation_list_maptask.append(file)
 
+print(len(files_feature_list_switchboard))
+print(len(files_feature_list_maptask))
+quit()
+
+
 # create 2 lists: xml file names for each feature file's time annotations, csv files for each feature filefor file in files_feature_list:
 for file in files_feature_list_maptask:
     files_annotation_list_maptask.append(os.path.splitext(base_name)[0] + '.timed-units.xml')

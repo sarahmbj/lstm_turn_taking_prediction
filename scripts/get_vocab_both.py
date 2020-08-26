@@ -24,7 +24,6 @@ path_to_maptask_annotations = './data/maptaskv2-1/Data/timed-units/' # voice act
 path_to_extracted_annotations = './data/extracted_annotations/voice_activity/'
 files_annotation_list_switchboard = list()
 files_annotation_list_maptask = list()
-# files_output_list = list()
 files_feature_list = os.listdir(path_to_features)
 files_feature_list_switchboard = list()
 files_feature_list_maptask = list()
@@ -53,7 +52,6 @@ for file in files_feature_list_switchboard:
 for file in files_feature_list_maptask:
     base_name = os.path.basename(file)
     files_annotation_list_maptask.append(os.path.splitext(base_name)[0]+'.timed-units.xml')
-    files_output_list.append(os.path.splitext(base_name)[0]+'.csv') # gets all file names in synchronised order
 
 no_change, disfluency_count,multi_word_count = 0,0,0
 words_from_annotations = []

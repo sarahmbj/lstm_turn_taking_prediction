@@ -58,7 +58,7 @@ words_from_annotations = []
 #%% Get vocabulary from switchboard
 for i in range(0,len(files_feature_list_switchboard)):
     # sys.stdout.flush()
-    print('percent done vocab build:'+str(i/len(files_feature_list))[0:4])
+    print('percent done vocab build switchboard:'+str(i/len(files_feature_list))[0:4])
     e = xml.etree.ElementTree.parse(files_annotation_list_switchboard[i]).getroot()
     for atype in e.findall('word'):
         target_word = atype.get('orth')
@@ -73,7 +73,7 @@ for i in range(0,len(files_feature_list_switchboard)):
 #%% Get vocabulary from maptask
 for i in range(0,len(files_feature_list_maptask)):
     # sys.stdout.flush()
-    print('percent done vocab build:'+str(i/len(files_feature_list))[0:4])
+    print('percent done vocab build maptask:'+str(i/len(files_feature_list))[0:4])
     e = xml.etree.ElementTree.parse(files_annotation_list_maptask[i]).getroot()
     for atype in e.findall('word'):
         target_word = atype.get('orth')

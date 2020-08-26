@@ -62,8 +62,6 @@ for file in files_feature_list:
     elif base_name[0] == 'q':
         files_feature_list_maptask.append(file)
 
-print(files_feature_list_maptask)
-
 
 # create 2 lists: xml file names for each feature file's time annotations, csv files for each feature filefor file in files_feature_list:
 for file in files_feature_list_maptask:
@@ -87,7 +85,6 @@ for file in files_feature_list_switchboard:
 max_len = 0
 for i in range(0, len(files_feature_list_maptask)):
     print(files_feature_list_maptask[i])
-    print(files_annotation_list_maptask)
 
     print('percent done maptask files create:' + str(i / len(files_feature_list_maptask))[0:4])
     # load csv file and store frame times (0.0,0.5,1.0...) in a column

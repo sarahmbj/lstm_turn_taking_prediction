@@ -58,7 +58,7 @@ for file in files_feature_list_maptask:
 no_change, disfluency_count,multi_word_count = 0,0,0
 words_from_annotations = []
 #%% Get vocabulary from switchboard
-for i in range(0,len(files_feature_list)):
+for i in range(0,len(files_feature_list_switchboard)):
     # sys.stdout.flush()
     print('percent done vocab build:'+str(i/len(files_feature_list))[0:4])
     e = xml.etree.ElementTree.parse(files_annotation_list_switchboard[i]).getroot()

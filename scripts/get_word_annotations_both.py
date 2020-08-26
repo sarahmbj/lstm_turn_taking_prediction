@@ -83,7 +83,7 @@ for file in files_feature_list_switchboard:
 max_len = 0
 for i in range(0, len(files_feature_list_maptask)):
 
-    print('percent done maptask files create:' + str(i / len(files_feature_list))[0:4])
+    print('percent done maptask files create:' + str(i / len(files_feature_list_maptask))[0:4])
     # load csv file and store frame times (0.0,0.5,1.0...) in a column
     frame_times = np.array(
         pd.read_csv(path_to_features + files_feature_list_maptask[i], delimiter=',', usecols=[0])['frame_time'])

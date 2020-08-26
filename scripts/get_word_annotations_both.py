@@ -77,6 +77,8 @@ for file in files_feature_list_switchboard:
     files_annotation_list_switchboard.append('/group/corpora/public/switchboard/nxt/xml/terminals/sw{}.{}.terminals.xml'.format(num,speaker))
     files_output_list_switchboard.append('sw{}.{}.csv'.format(num, speaker))
 
+print(files_feature_list_maptask)
+
 #%% Create delayed frame annotations
 
 max_len = 0

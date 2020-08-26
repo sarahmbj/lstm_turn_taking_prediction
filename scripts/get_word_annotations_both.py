@@ -93,6 +93,7 @@ for i in range(0, len(files_feature_list_maptask)):
     word_values = np.zeros((len(frame_times), max_len_setting))
     check_next_word_array = np.zeros((len(frame_times),))
     # get the set of instances of features for each file
+    print(path_to_annotations_maptask + files_annotation_list_maptask[i])
     e = xml.etree.ElementTree.parse(path_to_annotations_maptask + files_annotation_list_maptask[i]).getroot()
     annotation_data = []
     for atype in e.findall('tu'):

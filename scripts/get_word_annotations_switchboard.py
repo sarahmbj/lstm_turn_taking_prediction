@@ -98,10 +98,6 @@ for i in range(0,len(files_feature_list)):
             if atype.get('{http://nite.sourceforge.net/}end') == 'n/a':
                 continue
         if end_indx_advanced < len(word_values):
-            # word_values[end_indx_advanced] = curr_words
-            if (np.min(np.where(word_values[end_indx_advanced]==0)[0]) > 0):
-                added_to_end_list += 1
-
             arr_strt_indx = np.min(np.where(word_values[end_indx_advanced]==0)[0]) ## i don't understand this -- it might be important for the modification...
             arr_end_indx = arr_strt_indx + len(curr_words)
             if arr_end_indx < max_len_setting:

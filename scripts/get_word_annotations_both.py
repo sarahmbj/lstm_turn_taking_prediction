@@ -47,7 +47,9 @@ if not (os.path.exists(path_to_extracted_annotations)):
     os.mkdir(path_to_extracted_annotations)
 files_annotation_list_switchboard = list()
 files_annotation_list_maptask = list()
-files_output_list = list()
+files_output_list_switchboard = list()
+files_output_list_maptask = list()
+
 
 files_feature_list = os.listdir(path_to_features)
 files_feature_list_maptask = list()
@@ -63,7 +65,7 @@ for file in files_feature_list:
 # create 2 lists: xml file names for each feature file's time annotations, csv files for each feature filefor file in files_feature_list:
 for file in files_feature_list_maptask:
     files_annotation_list_maptask.append(os.path.splitext(base_name)[0] + '.timed-units.xml')
-    files_output_list.append(os.path.splitext(base_name)[0] + '.csv')
+    files_output_list_maptask.append(os.path.splitext(base_name)[0] + '.csv')
 
 for file in files_feature_list_switchboard:
     base_name = os.path.basename(file)
@@ -73,7 +75,7 @@ for file in files_feature_list_switchboard:
     elif base_name.split('.')[1] == 'f':
         speaker = 'B'
     files_annotation_list_switchboard.append('/group/corpora/public/switchboard/nxt/xml/terminals/sw{}.{}.terminals.xml'.format(num,speaker))
-    files_output_list.append('sw{}.{}.csv'.format(num, speaker))
+    files_output_list_switchboard.append('sw{}.{}.csv'.format(num, speaker))
 
 #%% Create delayed frame annotations
 
@@ -125,7 +127,7 @@ for i in range(0, len(files_feature_list_maptask)):
     output = pd.DataFrame(np.concatenate([np.expand_dims(frame_times, 1), word_values], 1).transpose())
     output = np.transpose(output)
     output.columns = ['frameTimes'] + [str(n) for n in range(max_len_setting)]
-    output.to_csv(path_to_extracted_annotations + files_output_list[i], float_format='%.6f', sep=',', index=False,
+    output.to_csv(path_to_extracted_annotations + files_output_list_maptask[i], float_format='%.6f', sep=',', index=False,
                   header=True)
 
 max_len = 0
@@ -170,11 +172,11 @@ for i in range(0,len(files_feature_list_switchboard)):
                 word_values[end_indx_advanced][arr_strt_indx:arr_end_indx] = np.array(curr_words)
 
     # output = pd.DataFrame([frame_times,word_values])
-    if files_output_list[i][7] == 'A':
+    if files_output_list_switchboard[i][7] == 'A':
         speaker = 'g'
-    elif files_output_list[i][7] == 'B':
+    elif files_output_list_switchboard[i][7] == 'B':
         speaker = 'f'
-    name = files_output_list[i][:2]+'0'+files_output_list[i][2:7]+speaker+'.csv'
+    name = files_output_list_switchboard[i][:2]+'0'+files_output_list_switchboard[i][2:7]+speaker+'.csv'
     output = pd.DataFrame(np.concatenate([np.expand_dims(frame_times,1),word_values],1).transpose())
     output=np.transpose(output)
     output.columns = ['frameTimes'] + [str(n) for n in range(max_len_setting)]

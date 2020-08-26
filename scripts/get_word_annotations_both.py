@@ -111,6 +111,8 @@ for i in range(0, len(files_feature_list_maptask)):
 
         if 'neil' in ix_to_word.values():
             print ('NEIL IS IN IX TO WORD VALUES')
+        else:
+            print('we didnt find neil')
         # store words for this 'tu' instance in this file by their index in word_frame_list
         curr_words = [word_to_ix[wrd] for wrd in word_frame_list]
 

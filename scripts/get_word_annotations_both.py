@@ -60,8 +60,8 @@ for file in files_feature_list:
     print(base_name[0])
     if base_name[0] == 's':
         files_feature_list_switchboard.append(file)
-    else:
-        files_annotation_list_maptask.append(file)
+    elif base_name[0] == 'q':
+        files_feature_list_maptask.append(file)
 
 print(len(files_feature_list_switchboard))
 print(len(files_feature_list_maptask))

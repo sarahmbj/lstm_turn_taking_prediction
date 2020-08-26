@@ -57,8 +57,8 @@ no_change, disfluency_count,multi_word_count = 0,0,0
 words_from_annotations = []
 #%% Get vocabulary from switchboard
 for i in range(0,len(files_feature_list_switchboard)):
-    # sys.stdout.flush()
     print('percent done vocab build switchboard:'+str(i/len(files_feature_list_switchboard))[0:4])
+    print(files_feature_list_switchboard[i])
     e = xml.etree.ElementTree.parse(files_annotation_list_switchboard[i]).getroot()
     for atype in e.findall('word'):
         target_word = atype.get('orth')
@@ -72,8 +72,8 @@ for i in range(0,len(files_feature_list_switchboard)):
             words_from_annotations.extend( target_words)
 #%% Get vocabulary from maptask
 for i in range(0,len(files_feature_list_maptask)):
-    # sys.stdout.flush()
-    print('percent done vocab build:'+str(i/len(files_feature_list_maptask))[0:4])
+    print('percent done vocab build maptask:'+str(i/len(files_feature_list_maptask))[0:4])
+    print(files_feature_list_maptask[i])
     e = xml.etree.ElementTree.parse(path_to_maptask_annotations+files_annotation_list_maptask[i]).getroot()
     for atype in e.findall('tu'):
         target_word = atype.text

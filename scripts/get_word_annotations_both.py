@@ -41,7 +41,6 @@ path_to_annotations_maptask = './data/maptaskv2-1/Data/timed-units/'
 path_to_annotations_switchboard = '/group/corpora/public/switchboard/nxt/xml/terminals/'
 # load dictionary containing word to index key-value pairs
 word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb'))
-ix_to_word = word_to_ix = pickle.load(open('./data/extracted_annotations/ix_to_word.p', 'rb'))
 
 # check directory for extracted annotations exists
 if not (os.path.exists(path_to_extracted_annotations)):

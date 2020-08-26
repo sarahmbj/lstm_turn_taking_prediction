@@ -45,19 +45,40 @@ word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb')
 # check directory for extracted annotations exists
 if not (os.path.exists(path_to_extracted_annotations)):
     os.mkdir(path_to_extracted_annotations)
-files_feature_list = os.listdir(path_to_features)
-files_annotation_list = list()
+files_annotation_list_switchboard = list()
+files_annotation_list_maptask = list()
 files_output_list = list()
-# create 2 lists: xml file names for each feature file's time annotations, csv files for each feature filefor file in files_feature_list:
+
+files_feature_list = os.listdir(path_to_features)
+files_feature_list_maptask = list()
+files_feature_list_switchboard = list()
+#split into list of maptask and list of switchboard files
 for file in files_feature_list:
     base_name = os.path.basename(file)
-    files_annotation_list.append(os.path.splitext(base_name)[0] + '.timed-units.xml')
+    if base_name[0] == 's':
+        files_feature_list_switchboard.append(file)
+    elif base_name[0] == 'q':
+        files_annotation_list_maptask.append(file)
+
+# create 2 lists: xml file names for each feature file's time annotations, csv files for each feature filefor file in files_feature_list:
+for file in files_feature_list_maptask:
+    files_annotation_list_maptask.append(os.path.splitext(base_name)[0] + '.timed-units.xml')
     files_output_list.append(os.path.splitext(base_name)[0] + '.csv')
+
+for file in files_feature_list_switchboard:
+    base_name = os.path.basename(file)
+    num = base_name.split('.')[0][3:]
+    if base_name.split('.')[1] == 'g':
+        speaker = 'A'
+    elif base_name.split('.')[1] == 'f':
+        speaker = 'B'
+    files_annotation_list_switchboard.append('/group/corpora/public/switchboard/nxt/xml/terminals/sw{}.{}.terminals.xml'.format(num,speaker))
+    files_output_list.append('sw{}.{}.csv'.format(num, speaker))
 
 #%% Create delayed frame annotations
 
 max_len = 0
-for i in range(0, len(files_feature_list)):
+for i in range(0, len(files_feature_list_maptask)):
 
     print('percent done files create:' + str(i / len(files_feature_list))[0:4])
     # load csv file and store frame times (0.0,0.5,1.0...) in a column
@@ -67,7 +88,7 @@ for i in range(0, len(files_feature_list)):
     word_values = np.zeros((len(frame_times), max_len_setting))
     check_next_word_array = np.zeros((len(frame_times),))
     # get the set of instances of features for each file
-    e = xml.etree.ElementTree.parse(path_to_annotations + files_annotation_list[i]).getroot()
+    e = xml.etree.ElementTree.parse(path_to_annotations_maptask + files_annotation_list_maptask[i]).getroot()
     annotation_data = []
     for atype in e.findall('tu'):
         # create a list of all word tokens for each instance of feature 'tu' (which means...individual words?)
@@ -83,25 +104,15 @@ for i in range(0, len(files_feature_list)):
         # store words for this 'tu' instance in this file by their index in word_frame_list
         curr_words = [word_to_ix[wrd] for wrd in word_frame_list]
 
-        # delete this stuff
-        #         lengths_list.append(len(curr_words))
-        #         if len(curr_words) > 1:
-        #             longer_than_one_list.append(curr_words)
-
         # only store up to the maximum number of words
         if len(curr_words) > max_len:
             max_len = len(curr_words)
             curr_words = curr_words[:max_len_setting]
 
-        # %% problem here too!!!
         # get the index of the end of the last frame of the 'tu' instance
         end_indx_advanced = find_nearest(frame_times, float(atype.get('end'))) + frame_delay
         # make sure end index is not greater than the number of words (which would raise an index error)
         if end_indx_advanced < len(word_values):
-            # word_values[end_indx_advanced] = curr_words
-            if (np.min(np.where(word_values[end_indx_advanced] == 0)[0]) > 0):
-                added_to_end_list += 1
-
             # get the index of the start of the 'tu' instance: the lowest index where the word value = 0
             arr_strt_indx = np.min(np.where(word_values[end_indx_advanced] == 0)[0])
             # get the index of the end of the 'tu' instance: the start index + the number of words
@@ -116,5 +127,58 @@ for i in range(0, len(files_feature_list)):
     output.columns = ['frameTimes'] + [str(n) for n in range(max_len_setting)]
     output.to_csv(path_to_extracted_annotations + files_output_list[i], float_format='%.6f', sep=',', index=False,
                   header=True)
+
+max_len = 0
+for i in range(0,len(files_feature_list_switchboard)):
+
+    print('percent done files create:'+str(i/len(files_feature_list_switchboard))[0:4])
+    frame_times = np.array(pd.read_csv(path_to_features+files_feature_list[i],delimiter=',',usecols = [0])['frame_time'])
+    word_values = np.zeros((len(frame_times),max_len_setting))
+    check_next_word_array = np.zeros((len(frame_times),))
+    e = xml.etree.ElementTree.parse(files_annotation_list_switchboard[i]).getroot()
+    annotation_data = []
+    stored_words = []
+    for atype in e.findall('word'):
+        word_frame_list = []
+        target_word = atype.get('orth')
+        target_word = target_word.strip()
+        if '--' in target_word:
+            word_frame_list =['--disfluency_token--']
+        else:
+            word_frame_list = nltk.word_tokenize(target_word)
+
+        curr_words = [word_to_ix[wrd] for wrd in word_frame_list]
+
+        if len(curr_words) > max_len:
+            max_len = len(curr_words)
+            curr_words = curr_words[:max_len_setting]
+
+        try:
+            end_indx_advanced = find_nearest(frame_times,float(atype.get('{http://nite.sourceforge.net/}end'))) + frame_delay
+        except ValueError:
+            if atype.get('{http://nite.sourceforge.net/}end') == 'non-aligned':
+                # stored_words.append(target_word) ### for now... ignore -- but this isn't a long term solution
+                continue
+            if atype.get('{http://nite.sourceforge.net/}end') == 'n/a':
+                continue
+        if end_indx_advanced < len(word_values):
+
+            arr_strt_indx = np.min(np.where(word_values[end_indx_advanced]==0)[0]) ## i don't understand this -- it might be important for the modification...
+            arr_end_indx = arr_strt_indx + len(curr_words)
+            if arr_end_indx < max_len_setting:
+
+                word_values[end_indx_advanced][arr_strt_indx:arr_end_indx] = np.array(curr_words)
+
+    # output = pd.DataFrame([frame_times,word_values])
+    if files_output_list[i][7] == 'A':
+        speaker = 'g'
+    elif files_output_list[i][7] == 'B':
+        speaker = 'f'
+    name = files_output_list[i][:2]+'0'+files_output_list[i][2:7]+speaker+'.csv'
+    output = pd.DataFrame(np.concatenate([np.expand_dims(frame_times,1),word_values],1).transpose())
+    output=np.transpose(output)
+    output.columns = ['frameTimes'] + [str(n) for n in range(max_len_setting)]
+    output.to_csv(path_to_extracted_annotations+name, float_format = '%.6f', sep=',', index=False,header=True)
+
 
 print('total_time: ' + str(t.time() - t_1))

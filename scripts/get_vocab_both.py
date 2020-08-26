@@ -72,12 +72,12 @@ for i in range(0,len(files_feature_list_switchboard)):
             words_from_annotations.extend( target_words)
 #%% Get vocabulary from maptask
 for i in range(0,len(files_feature_list_maptask)):
-    print('percent done vocab build maptask:'+str(i/len(files_feature_list_maptask))[0:4])
-    e = xml.etree.ElementTree.parse(path_to_maptask_annotations + files_annotation_list_maptask[i]).getroot()
-    for atype in e.findall('word'):
-        target_word = atype.get('orth')
+    # sys.stdout.flush()
+    print('percent done vocab build:'+str(i/len(files_feature_list_maptask))[0:4])
+    e = xml.etree.ElementTree.parse(path_to_maptask_annotations+files_annotation_list_maptask[i]).getroot()
+    for atype in e.findall('tu'):
+        target_word = atype.text
         target_word = target_word.strip()
-        print(target_word)
         if '--' in target_word:
             target_word ='--disfluency_token--'
             words_from_annotations.append(target_word)

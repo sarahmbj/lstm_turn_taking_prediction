@@ -59,7 +59,7 @@ for file in files_feature_list:
     base_name = os.path.basename(file)
     if base_name[0] == 's':
         files_feature_list_switchboard.append(file)
-    elif base_name[0] == 'q':
+    else:
         files_annotation_list_maptask.append(file)
 
 print(len(files_feature_list_switchboard))

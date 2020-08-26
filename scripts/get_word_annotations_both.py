@@ -57,7 +57,6 @@ files_feature_list_switchboard = list()
 #split into list of maptask and list of switchboard files
 for file in files_feature_list:
     base_name = os.path.basename(file)
-    print(base_name[0])
     if base_name[0] == 's':
         files_feature_list_switchboard.append(file)
     elif base_name[0] == 'q':

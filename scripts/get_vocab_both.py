@@ -84,6 +84,7 @@ for i in range(0,len(files_feature_list_maptask)):
             disfluency_count += 1
         else:
             target_words = nltk.word_tokenize(target_word)
+            print(target_words)
             words_from_annotations.extend( target_words)
 
 vocab = set(words_from_annotations)

@@ -84,6 +84,7 @@ print(files_feature_list_maptask)
 max_len = 0
 for i in range(0, len(files_feature_list_maptask)):
     print(files_feature_list_maptask[i])
+    print(files_annotation_list_maptask)
 
     print('percent done maptask files create:' + str(i / len(files_feature_list_maptask))[0:4])
     # load csv file and store frame times (0.0,0.5,1.0...) in a column

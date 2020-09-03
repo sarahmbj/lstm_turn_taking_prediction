@@ -114,6 +114,10 @@ class TurnPredictionDataset(Dataset):
 
                         h_data = h5py.File(feature_dict['folder_path'],'r')
                         for feature_name in feature_dict['features']:
+                            print(feature_name)
+                            print(feature_dict['modality'])
+                            print(filename)
+                            print(data_select_dict[data_select][0])
                             data_f[ feature_dict['modality'] ]['x'][feature_name] = h_data[filename+'/'+data_select_dict[data_select][0]+'/x/'+feature_name]
                             data_f[ feature_dict['modality'] ]['x_i'][feature_name] = h_data[filename+'/'+data_select_dict[data_select][0]+'/x_i/'+feature_name]
                             data_g[ feature_dict['modality'] ]['x'][feature_name] = h_data[filename+'/'+data_select_dict[data_select][1]+'/x/'+feature_name]

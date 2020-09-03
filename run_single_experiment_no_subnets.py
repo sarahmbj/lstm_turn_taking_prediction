@@ -1,20 +1,11 @@
 # -*- coding: utf-8 -*-
 import json
-# from subprocess import Popen,PIPE
 import subprocess
-import torch.multiprocessing as multiprocessing
-
-import sys
-import pandas as pd
-import time as t
-import platform
 import os
 import pickle
 import numpy as np
 import feature_vars as feat_dicts
-from time import gmtime, strftime
-# import shutil
-from random import randint
+
 
 # lr_list = [0.01]
 word_embed_out_dim = 64

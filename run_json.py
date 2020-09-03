@@ -57,7 +57,7 @@ print('Number of arguments is: ' + str(len(argv)))
 if not (len(argv) == proper_num_args):
     # %% Single run settings (settings when not being called as a subprocess)
     no_subnets = True
-    feature_dict_list = feat_dicts.gemaps_50ms_dict_list
+    feature_dict_list = feat_dicts.gemaps_10ms_dict_list
 
     train_on_f = True
     train_on_g = True

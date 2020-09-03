@@ -15,7 +15,7 @@ no_subnets = True
 
 experiment_top_path = './TEST_no_subnets/'
 
-py_env = '/afs/inf.ed.ac.uk/user/s09/s0910315/miniconda3/bin/python'
+py_env = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/miniconda3/etc/profile.d/conda.sh'
 
 # %% Common settings for all experiments
 

@@ -24,7 +24,7 @@ experiment_top_path = './f_and_g_two_subnets/'
 
 if platform.system() == 'Linux':
     print('Running on DICE')
-    py_env = '/afs/inf.ed.ac.uk/user/s09/s0910315/miniconda3/bin/python'
+    py_env = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/miniconda3/etc/profile.d/conda.sh'
 else:
     print('Running on local')
     py_env = '/Users/sarahburnejames/miniconda3/bin/python'

@@ -20,8 +20,8 @@ import matplotlib.pyplot as plt
 
 num_layers = 1
 annotations_dir = './data/extracted_annotations/voice_activity/'
-test_list_path = './data/splits/testing.txt'
-train_list_path = './data/splits/training.txt'  # only used for onsets evaluation to get the classification threshold
+# test_list_path = './data/splits/testing.txt'
+# train_list_path = './data/splits/training.txt'  # only used for onsets evaluation to get the classification threshold
 prediction_length = 60  # (60 is 3 seconds of prediction)
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
 p_memory = True
@@ -179,7 +179,7 @@ def load_test_set(args_dict, test_on_g=True, test_on_f=True):
     return test_dataset, test_dataloader
 
 
-def load_training_set(args_dict, train_on_f=True, train_on_g=True):
+def load_training_set(args_dict, train_list_path, train_on_f=True, train_on_g=True):
     """needed to get the threshold value for prediction at onsets"""
     train_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir, train_list_path,
                                           args_dict['sequence_length'], prediction_length, 'train',
@@ -201,7 +201,8 @@ def plot_person_error(name_list, data, results_path, results_key='barchart'):
 
 
 def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset, onset_test_flag=True,
-         onset_test_length=[0,60], prediction_at_overlap_flag=True, error_per_person_flag=True):
+         onset_test_length=[0,60], prediction_at_overlap_flag=True, error_per_person_flag=True,
+         test_list_path=None, train_list_path=None):
     losses_test = list()
     results_dict = dict()
     losses_dict = dict()
@@ -487,7 +488,8 @@ def get_test_set_name(f, g):
 
 
 def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_on_g=True, trained_on_f=True,
-                            onset_prediction_frames=[0,60], report_dict_name=None):
+                            onset_prediction_frames=[0,60], report_dict_name=None,
+                            train_list_path='./data/splits/testing.txt', test_list_path='./data/splits/training.txt'):
     test_path = f'{trial_path}/test'
     # Loop through all the trained models in this trial path
     results_dicts = []
@@ -522,7 +524,8 @@ def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_
         # perform test on loaded model
         model.eval()
         test_results = test(model, test_set, test_loader, train_results_dict, train_set,
-                            onset_test_length=onset_prediction_frames)
+                            onset_test_length=onset_prediction_frames,
+                            train_list_path=train_list_path, test_list_path=test_list_path)
         with open(results_path + '/results.txt', 'w') as file:
             file.write(str(test_results))
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))
@@ -664,6 +667,29 @@ if __name__ == "__main__":
 #     test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True,
 #                             onset_prediction_frames=onset_prediction_length)
 
-# to test and train on different datasets
-    # trial_path = './no_subnets/2_Acous_10ms'
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard')
+# to test models trained on both sets, on different datasets
+    trial_path = './no_subnets/2_Acous_10ms'
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
+                            test_list_path="./data/splits/testing_maptask.txt")
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
+                            test_list_path="./data/splits/testing_switchboard.txt")
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
+                            test_list_path="./data/splits/testing_both.txt")
+
+    trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
+                            test_list_path="./data/splits/testing_maptask.txt")
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
+                            test_list_path="./data/splits/testing_switchboard.txt")
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
+                            test_list_path="./data/splits/testing_both.txt")
+
+    trial_path = './no_subnets/3_Ling_50ms'
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
+                            test_list_path="./data/splits/testing_maptask.txt")
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
+                            test_list_path="./data/splits/testing_switchboard.txt")
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
+                            test_list_path="./data/splits/testing_both.txt")
+
+# TODO: test the other models on different datasets (will it work to just change trial path?)

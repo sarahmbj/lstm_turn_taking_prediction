@@ -168,7 +168,7 @@ def load_model(pickled_model, args_dict, test_data):
     return model
 
 
-def load_test_set(args_dict, test_on_g=True, test_on_f=True):
+def load_test_set(args_dict, test_list_path, test_on_g=True, test_on_f=True):
     test_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir, test_list_path,
                                          args_dict['sequence_length'], prediction_length, 'test',
                                          data_select=data_set_select, test_on_f=test_on_f, test_on_g=test_on_g)
@@ -511,7 +511,7 @@ def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_
 
         # load settings, model, data and create directories for results
         args = load_args(settings_path)
-        test_set, test_loader = load_test_set(args, test_on_g=test_on_g, test_on_f=test_on_f)
+        test_set, test_loader = load_test_set(args, test_list_path, test_on_g=test_on_g, test_on_f=test_on_f)
         model = load_model(model_path, args, test_set)
         os.makedirs(results_path)
 

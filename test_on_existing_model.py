@@ -704,28 +704,28 @@ if __name__ == "__main__":
 #                             test_list_path="./data/splits/testing_both.txt",
 #                             train_list_path="./data/splits/training_maptask.txt")
 
-
-    trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/dev/no_subnets/3_Ling_50ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
-                            test_list_path="./data/splits/testing_maptask.txt",
-                            train_list_path="./data/splits/training_maptask.txt")
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
-                            test_list_path="./data/splits/testing_switchboard.txt",
-                            train_list_path="./data/splits/training_maptask.txt")
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
-                            test_list_path="./data/splits/testing_both.txt",
-                            train_list_path="./data/splits/training_maptask.txt")
-
-    trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/dev/two_subnets/2_Acous_10ms_Ling_50ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
-                            test_list_path="./data/splits/testing_maptask.txt",
-                            train_list_path="./data/splits/training_maptask.txt")
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
-                            test_list_path="./data/splits/testing_switchboard.txt",
-                            train_list_path="./data/splits/training_maptask.txt")
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
-                            test_list_path="./data/splits/testing_both.txt",
-                            train_list_path="./data/splits/training_maptask.txt")
+#TODO: how can I solve problem of embeddings not being compatible across trained models? what would this mean for generalisability of models in general?
+    # trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/dev/no_subnets/3_Ling_50ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
+    #                         test_list_path="./data/splits/testing_maptask.txt",
+    #                         train_list_path="./data/splits/training_maptask.txt")
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
+    #                         test_list_path="./data/splits/testing_switchboard.txt",
+    #                         train_list_path="./data/splits/training_maptask.txt")
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
+    #                         test_list_path="./data/splits/testing_both.txt",
+    #                         train_list_path="./data/splits/training_maptask.txt")
+    #
+    # trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/dev/two_subnets/2_Acous_10ms_Ling_50ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
+    #                         test_list_path="./data/splits/testing_maptask.txt",
+    #                         train_list_path="./data/splits/training_maptask.txt")
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
+    #                         test_list_path="./data/splits/testing_switchboard.txt",
+    #                         train_list_path="./data/splits/training_maptask.txt")
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
+    #                         test_list_path="./data/splits/testing_both.txt",
+    #                         train_list_path="./data/splits/training_maptask.txt")
 
 
 # to test models trained on Switchboard, on different datasets
@@ -740,24 +740,24 @@ if __name__ == "__main__":
                             test_list_path="./data/splits/testing_both.txt",
                             train_list_path="./data/splits/training_switchboard.txt")
 
-    trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/switchboard_dev/two_subnets/2_Acous_10ms_Ling_50ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
-                            test_list_path="./data/splits/testing_maptask.txt",
-                            train_list_path="./data/splits/training_switchboard.txt")
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
-                            test_list_path="./data/splits/testing_switchboard.txt",
-                            train_list_path="./data/splits/training_switchboard.txt")
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
-                            test_list_path="./data/splits/testing_both.txt",
-                            train_list_path="./data/splits/training_switchboard.txt")
-
-    trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/switchboard_dev/no_subnets/3_Ling_50ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
-                            test_list_path="./data/splits/testing_maptask.txt",
-                            train_list_path="./data/splits/training_switchboard.txt")
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
-                            test_list_path="./data/splits/testing_switchboard.txt",
-                            train_list_path="./data/splits/training_switchboard.txt")
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
-                            test_list_path="./data/splits/testing_both.txt",
-                            train_list_path="./data/splits/training_switchboard.txt")
+    # trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/switchboard_dev/two_subnets/2_Acous_10ms_Ling_50ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
+    #                         test_list_path="./data/splits/testing_maptask.txt",
+    #                         train_list_path="./data/splits/training_switchboard.txt")
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
+    #                         test_list_path="./data/splits/testing_switchboard.txt",
+    #                         train_list_path="./data/splits/training_switchboard.txt")
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
+    #                         test_list_path="./data/splits/testing_both.txt",
+    #                         train_list_path="./data/splits/training_switchboard.txt")
+    #
+    # trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/switchboard_dev/no_subnets/3_Ling_50ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
+    #                         test_list_path="./data/splits/testing_maptask.txt",
+    #                         train_list_path="./data/splits/training_switchboard.txt")
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
+    #                         test_list_path="./data/splits/testing_switchboard.txt",
+    #                         train_list_path="./data/splits/training_switchboard.txt")
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
+    #                         test_list_path="./data/splits/testing_both.txt",
+    #                         train_list_path="./data/splits/training_switchboard.txt")

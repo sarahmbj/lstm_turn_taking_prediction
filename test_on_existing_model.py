@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 num_layers = 1
 annotations_dir = './data/extracted_annotations/voice_activity/'
 test_list_path = './data/splits/testing.txt'
-train_list_path = './data/splits/training.txt' #only used for onsets evaluation
+train_list_path = './data/splits/training.txt'  # only used for onsets evaluation to get the classification threshold
 prediction_length = 60  # (60 is 3 seconds of prediction)
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
 p_memory = True
@@ -487,12 +487,15 @@ def get_test_set_name(f, g):
 
 
 def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_on_g=True, trained_on_f=True,
-                            onset_prediction_frames=[0,60]):
+                            onset_prediction_frames=[0,60], report_dict_name=None):
     test_path = f'{trial_path}/test'
     # Loop through all the trained models in this trial path
     results_dicts = []
     for directory in os.listdir(test_path):
-        test_set_name = get_test_set_name(test_on_f, test_on_g)
+        if report_dict_name:
+            test_set_name = report_dict_name
+        else:
+            test_set_name = get_test_set_name(test_on_f, test_on_g)
         # paths to stored models, settings, and location for new results
         model_path = f'{test_path}/{directory}/best_model.p'
         settings_path = f'{test_path}/{directory}/settings.json'
@@ -596,67 +599,71 @@ if __name__ == "__main__":
     # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
 
-#to get results with different onset prediction times: TODO: alter code so results don't save over each other
-    onset_prediction_length = [None, None]  # default is [0, 60] (60 frames is 3 seconds)
-    trial_path = './no_subnets/2_Acous_10ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True,onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length)
+# #to get results with different onset prediction times: TODO: add report_dict_name to prevent saving over previous results
+#     onset_prediction_length = [None, None]  # default is [0, 60] (60 frames is 3 seconds)
+#     trial_path = './no_subnets/2_Acous_10ms'
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=False, test_on_g=True,onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length)
+#
+#     trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length)
+#
+#     trial_path = './no_subnets/3_Ling_50ms'
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length)
+#
+#     trial_path = './f_and_g_no_subnets/3_Acous_10ms_ftrain'
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False,
+#                             onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False,
+#                             onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False,
+#                             onset_prediction_frames=onset_prediction_length)
+#
+#     trial_path = './f_and_g_no_subnets/5_Ling_50ms_ftrain'
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False,
+#                             onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False,
+#                             onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False,
+#                             onset_prediction_frames=onset_prediction_length)
+#
+#     trial_path = './f_and_g_no_subnets/4_Acous_10ms_gtrain'
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True,
+#                             onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True,
+#                             onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True,
+#                             onset_prediction_frames=onset_prediction_length)
+#
+#     trial_path = './f_and_g_no_subnets/6_Ling_50ms_gtrain'
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True,
+#                             onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True,
+#                             onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True,
+#                             onset_prediction_frames=onset_prediction_length)
+#
+#     trial_path = './f_and_g_two_subnets/1_Acous_10ms_Ling_50ms_ftrain'
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False,
+#                             onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False,
+#                             onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False,
+#                             onset_prediction_frames=onset_prediction_length)
+#
+#     trial_path = './f_and_g_two_subnets/2_Acous_10ms_Ling_50ms_gtrain'
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True,
+#                             onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True,
+#                             onset_prediction_frames=onset_prediction_length)
+#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True,
+#                             onset_prediction_frames=onset_prediction_length)
 
-    trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length)
-
-    trial_path = './no_subnets/3_Ling_50ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length)
-
-    trial_path = './f_and_g_no_subnets/3_Acous_10ms_ftrain'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False,
-                            onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False,
-                            onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False,
-                            onset_prediction_frames=onset_prediction_length)
-
-    trial_path = './f_and_g_no_subnets/5_Ling_50ms_ftrain'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False,
-                            onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False,
-                            onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False,
-                            onset_prediction_frames=onset_prediction_length)
-
-    trial_path = './f_and_g_no_subnets/4_Acous_10ms_gtrain'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True,
-                            onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True,
-                            onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True,
-                            onset_prediction_frames=onset_prediction_length)
-
-    trial_path = './f_and_g_no_subnets/6_Ling_50ms_gtrain'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True,
-                            onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True,
-                            onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True,
-                            onset_prediction_frames=onset_prediction_length)
-
-    trial_path = './f_and_g_two_subnets/1_Acous_10ms_Ling_50ms_ftrain'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False,
-                            onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False,
-                            onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False,
-                            onset_prediction_frames=onset_prediction_length)
-
-    trial_path = './f_and_g_two_subnets/2_Acous_10ms_Ling_50ms_gtrain'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True,
-                            onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True,
-                            onset_prediction_frames=onset_prediction_length)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True,
-                            onset_prediction_frames=onset_prediction_length)
+# to test and train on different datasets
+    # trial_path = './no_subnets/2_Acous_10ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard')

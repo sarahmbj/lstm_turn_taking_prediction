@@ -516,7 +516,7 @@ def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_
         os.makedirs(results_path)
 
         # use training set to get threshold for onset evaluation
-        train_set, train_loader = load_training_set(args, train_on_g=trained_on_g,
+        train_set, train_loader = load_training_set(args, train_list_path, train_on_g=trained_on_g,
                                                     train_on_f=trained_on_f)  # needs to be how model was originally trained
 
         train_results_dict = get_train_results_dict(model, train_set, train_loader, train_list_path)

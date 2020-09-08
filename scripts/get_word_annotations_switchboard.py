@@ -79,11 +79,6 @@ for i in range(0,len(files_feature_list)):
 
         curr_words = [ word_to_ix[wrd] for wrd in word_frame_list]
 
-        # delete this stuff
-        lengths_list.append(len(curr_words))
-        if len(curr_words) > 1:
-            longer_than_one_list.append(curr_words)
-
         if len(curr_words)> max_len:
             max_len = len(curr_words)
             curr_words = curr_words[:max_len_setting]

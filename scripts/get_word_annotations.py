@@ -76,6 +76,7 @@ for i in range(0,len(files_feature_list)):
         word_frame_list = []
         target_word = atype.text
         target_word = target_word.strip()
+        target_word = target_word.lower()
         #exclude non-words (mumbled/unintelligible words)
         if '--' in target_word:
             word_frame_list =['--disfluency_token--']

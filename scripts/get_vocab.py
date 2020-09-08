@@ -38,6 +38,7 @@ for i in range(0,len(files_feature_list)):
     for atype in e.findall('tu'): # tu corresponds to transcribed utterances
         target_word = atype.text # harvest the text from the utterances
         target_word = target_word.strip() # strip spaces around
+        target_word = target_word.lower()
         if '--' in target_word:
             target_word ='--disfluency_token--'
             words_from_annotations.append(target_word)

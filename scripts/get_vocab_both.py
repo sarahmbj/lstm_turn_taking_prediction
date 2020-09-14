@@ -54,6 +54,7 @@ for file in files_feature_list_maptask:
 
 no_change, disfluency_count,multi_word_count = 0,0,0
 words_from_annotations = []
+regex = re.compile(r"-$|--|^-")
 #%% Get vocabulary from switchboard
 for i in range(0,len(files_feature_list_switchboard)):
     print('percent done vocab build switchboard:'+str(i/len(files_feature_list_switchboard))[0:4])

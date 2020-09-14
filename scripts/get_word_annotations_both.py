@@ -104,6 +104,7 @@ for i in range(0, len(files_feature_list_maptask)):
         word_frame_list = []
         target_word = atype.text
         target_word = target_word.strip()
+        target_word = target_word.lower()
         is_disfluency = re.search(regex, target_word)
         # exclude non-words (mumbled/unintelligible words)
         if is_disfluency:
@@ -148,12 +149,15 @@ for i in range(0,len(files_feature_list_switchboard)):
     e = xml.etree.ElementTree.parse(files_annotation_list_switchboard[i]).getroot()
     annotation_data = []
     stored_words = []
+    regex = re.compile(r"-$|--|^-")
     for atype in e.findall('word'):
         word_frame_list = []
         target_word = atype.get('orth')
         target_word = target_word.strip()
-        if '--' in target_word:
-            word_frame_list =['--disfluency_token--']
+        target_word = target_word.lower()
+        is_disfluency = re.search(regex, target_word)
+        if is_disfluency:
+            word_frame_list = ['--disfluency_token--']
         else:
             word_frame_list = nltk.word_tokenize(target_word)
 

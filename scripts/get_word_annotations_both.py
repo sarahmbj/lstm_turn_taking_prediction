@@ -97,13 +97,15 @@ for i in range(0, len(files_feature_list_maptask)):
     print(path_to_annotations_maptask + files_annotation_list_maptask[i])
     e = xml.etree.ElementTree.parse(path_to_annotations_maptask + files_annotation_list_maptask[i]).getroot()
     annotation_data = []
+    regex = re.compile(r"-$|--|^-")
     for atype in e.findall('tu'):
         # create a list of all word tokens for each instance of feature 'tu' (which means...individual words?)
         word_frame_list = []
         target_word = atype.text
         target_word = target_word.strip()
+        is_disfluency = re.search(regex, target_word)
         # exclude non-words (mumbled/unintelligible words)
-        if '--' in target_word:
+        if is_disfluency:
             word_frame_list = ['--disfluency_token--']
         else:
             word_frame_list = nltk.word_tokenize(target_word)

@@ -62,24 +62,26 @@ for i in range(0,len(files_feature_list)):
 
     print('percent done files create:'+str(i/len(files_feature_list))[0:4])
     frame_times=np.array(pd.read_csv(path_to_features+files_feature_list[i],delimiter=',',usecols = [0])['frame_time'])
-    word_values = np.zeros((len(frame_times),max_len_setting))
+    word_values = np.zeros((len(frame_times), max_len_setting))
     check_next_word_array = np.zeros((len(frame_times),))
     e = xml.etree.ElementTree.parse(files_annotation_list[i]).getroot()
     annotation_data = []
     stored_words = []
+    regex = re.compile(r"-$|--|^-")
     for atype in e.findall('word'):
         word_frame_list = []
         target_word = atype.get('orth')
         target_word = target_word.strip()
         target_word = target_word.lower()
-        if '--' in target_word:
+        is_disfluency = re.search(regex, target_word)
+        if is_disfluency:
             word_frame_list =['--disfluency_token--']
         else:
             word_frame_list = nltk.word_tokenize(target_word)
 
-        curr_words = [ word_to_ix[wrd] for wrd in word_frame_list]
+        curr_words = [word_to_ix[wrd] for wrd in word_frame_list]
 
-        if len(curr_words)> max_len:
+        if len(curr_words) > max_len:
             max_len = len(curr_words)
             curr_words = curr_words[:max_len_setting]
 

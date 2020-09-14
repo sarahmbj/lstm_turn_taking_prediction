@@ -63,6 +63,7 @@ for i in range(0,len(files_feature_list_switchboard)):
     for atype in e.findall('word'):
         target_word = atype.get('orth')
         target_word = target_word.strip()
+        target_word = target_word.lower()
         if '--' in target_word:
             target_word ='--disfluency_token--'
             words_from_annotations.append(target_word)

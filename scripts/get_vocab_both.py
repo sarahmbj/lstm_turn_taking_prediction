@@ -1,14 +1,13 @@
-#Script written by Elliott Gruzin
+#Based on script written by Elliott Gruzin
 
 import xml.etree.ElementTree
 import os
 import numpy as np
-import pandas as pd
 import time as t
 import pickle
-import sys
 import json
 import nltk
+import re
 nltk.download('punkt')
 
 
@@ -64,13 +63,15 @@ for i in range(0,len(files_feature_list_switchboard)):
         target_word = atype.get('orth')
         target_word = target_word.strip()
         target_word = target_word.lower()
-        if '--' in target_word:
-            target_word ='--disfluency_token--'
+        is_disfluency = re.search(regex, target_word)
+        if is_disfluency:
+            target_word = '--disfluency_token--'
             words_from_annotations.append(target_word)
             disfluency_count += 1
         else:
             target_words = nltk.word_tokenize(target_word)
-            words_from_annotations.extend( target_words)
+            words_from_annotations.extend(target_words)
+
 #%% Get vocabulary from maptask
 for i in range(0,len(files_feature_list_maptask)):
     print('percent done vocab build maptask:'+str(i/len(files_feature_list_maptask))[0:4])

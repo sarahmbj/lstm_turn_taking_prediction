@@ -1,4 +1,4 @@
-#Based on cript written by Elliott Gruzin
+#Based on script written by Elliott Gruzin
 
 import xml.etree.ElementTree
 import os

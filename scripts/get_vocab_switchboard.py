@@ -1,14 +1,13 @@
-#Script written by Elliott Gruzin
+#Based on cript written by Elliott Gruzin
 
 import xml.etree.ElementTree
 import os
 import numpy as np
-import pandas as pd
 import time as t
 import pickle
-import sys
 import json
 import nltk
+import re
 nltk.download('punkt')
 
 
@@ -41,6 +40,7 @@ for file in files_feature_list:
 #%% Get vocabulary
 no_change, disfluency_count,multi_word_count = 0,0,0
 words_from_annotations = []
+regex = re.compile(r"-$|--|^-")
 for i in range(0,len(files_feature_list)):
     # sys.stdout.flush()
     print('percent done vocab build:'+str(i/len(files_feature_list))[0:4])
@@ -49,13 +49,14 @@ for i in range(0,len(files_feature_list)):
         target_word = atype.get('orth')
         target_word = target_word.strip()
         target_word = target_word.lower()
-        if '--' in target_word:
-            target_word ='--disfluency_token--'
+        is_disfluency = re.search(regex, target_word)
+        if is_disfluency:
+            target_word = '--disfluency_token--'
             words_from_annotations.append(target_word)
             disfluency_count += 1
         else:
             target_words = nltk.word_tokenize(target_word)
-            words_from_annotations.extend( target_words)
+            words_from_annotations.extend(target_words)
 
 vocab = set(words_from_annotations)
 word_to_ix = {word: i+1 for i, word in enumerate(vocab)} # +1 is because 0 represents no change

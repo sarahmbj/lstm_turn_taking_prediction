@@ -557,10 +557,10 @@ def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_
 
 if __name__ == "__main__":
  # to run on initial models:
-    trial_path = './no_subnets/2_Acous_10ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
+ #    trial_path = './no_subnets/2_Acous_10ms'
+ #    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+ #    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+ #    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
 
     trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)

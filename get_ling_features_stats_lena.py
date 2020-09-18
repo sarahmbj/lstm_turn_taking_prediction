@@ -104,7 +104,7 @@ types_occurring_five_or_less = 0
 for key, value in total_dict.items():
     if value == 1:
         unique_tokens += 1
-    if value > 0 and value <= 5:
+    if 0 < value <= 5:
         types_occurring_five_or_less += 1
 
 with open(f"{conversations_list}_vocab_stats.txt", "a") as file:
@@ -119,12 +119,12 @@ with open(f"{conversations_list}_vocab_stats.txt", "a") as file:
                f"Min: {np.min(types_per_convo)}\tMax: {np.max(types_per_convo)}\tSt. dev: {np.std(types_per_convo)}\n"
                
                f"Number of types appearing once only: {unique_tokens}\n"
-               f"Percentage of total types: {unique_tokens/total_types:.0%}\t "
-               f"Percentage of total tokens: {unique_tokens/total_tokens:.0%}\n\n "
+               f"Percentage of total types: {unique_tokens/total_types:.4%}\t"
+               f"Percentage of total tokens: {unique_tokens/total_tokens:.4%}\n\n"
                
                f"Number of types appearing five times or less: {types_occurring_five_or_less}\n"
-               f"Percentage of total types: {types_occurring_five_or_less/total_types:.0%}\t"
-               f"Percentage of total tokens: {types_occurring_five_or_less/total_tokens:.0%}\n\n ")
+               f"Percentage of total types: {types_occurring_five_or_less/total_types:.4%}\t"
+               f"Percentage of total tokens: {types_occurring_five_or_less/total_tokens:.4%}\n\n")
 
     file.write("****************************************************\n\n\n")
 

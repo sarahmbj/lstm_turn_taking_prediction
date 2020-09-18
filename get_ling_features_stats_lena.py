@@ -46,12 +46,13 @@ ix_to_word = pickle.load(ix_to_word_file)
 print(len(ix_to_word))
 
 conv_vecs = {}
+conv_dict = {}
+total_dict = {}
+conv_types = {}
+conv_tokens = {}
 
 for word in ix_to_word.values():
     conv_vecs[word] = 0
-
-conv_dict = {}
-total_dict = {}
 
 for filename in files_to_include:
     print(filename)
@@ -93,10 +94,9 @@ no_conversations = len(conversations_to_include)
 types_per_convo = []
 tokens_per_convo = []
 for conversation in conv_dict:
-    print(conversation)
-    quit()
-    types_per_convo.append(len(conversation)) #TODO: CHECK THIS!
-    tokens_per_convo.append(sum(conversation.values()))
+    current_conv = conv_dict[conversation]
+    types_per_convo.append(len(current_conv)) #TODO: CHECK THIS!
+    tokens_per_convo.append(sum(current_conv.values()))
 
 with open(f"{conversations_list}_vocab_stats.txt", "a") as file:
     file.write(f"Vocab stats for ~~ {conversations_list} ~~ \n")
@@ -104,6 +104,7 @@ with open(f"{conversations_list}_vocab_stats.txt", "a") as file:
     file.write(f"Number of conversations: {no_conversations}\n")
     file.write(f"Total tokens in dataset: {total_tokens}\n")
     file.write(f"Total types in dataset: {total_types}\n")
+
     file.write(f"Mean tokens per conversation: {np.mean(tokens_per_convo)}\tRange: {np.range(tokens_per_convo)}\t"
                f"Standard dev: {np.std(tokens_per_convo)}\n")
     file.write(f"Mean types per conversation: {np.mean(types_per_convo)}\tRange: {np.range(types_per_convo)}"

@@ -92,15 +92,20 @@ total_types = len(total_dict)
 no_conversations = len(conversations_to_include)
 
 types_per_convo = []
-
 tokens_per_convo = []
 for conversation in conv_dict:
     current_conv = conv_dict[conversation]
-    types_per_convo.append(len(current_conv)) #TODO: CHECK THIS!
+    types_per_convo.append(len(current_conv))
     tokens_per_convo.append(sum(current_conv.values()))
 
-print(types_per_convo)
-quit()
+unique_tokens = 0
+types_occurring_five_or_less = 0
+
+for key, value in total_dict.items():
+    if value == 1:
+        unique_tokens += 1
+    if value > 0 and value <= 5:
+        types_occurring_five_or_less += 1
 
 with open(f"{conversations_list}_vocab_stats.txt", "a") as file:
     file.write(f"Vocab stats for ~~ {conversations_list} ~~ \n"
@@ -111,10 +116,15 @@ with open(f"{conversations_list}_vocab_stats.txt", "a") as file:
                f"Mean tokens per conversation: {np.mean(tokens_per_convo)}\n"
                f"Min: {min(tokens_per_convo)}\tMax: {max(tokens_per_convo)} \tSt. dev: {np.std(tokens_per_convo)}\n"
                f"Mean types per conversation: {np.mean(types_per_convo)}\n"
-               f"Min: {np.min(types_per_convo)}\tMax: {np.max(types_per_convo)}\tSt. dev: {np.std(types_per_convo)}\n")
-
-    file.write("Number of types appearing once only: \n")
-    file.write("Percentage of total types: \t Percentage of total tokens: \t\n ")
+               f"Min: {np.min(types_per_convo)}\tMax: {np.max(types_per_convo)}\tSt. dev: {np.std(types_per_convo)}\n"
+               
+               f"Number of types appearing once only: {unique_tokens}\n"
+               f"Percentage of total types: {unique_tokens/total_types:.0%}\t "
+               f"Percentage of total tokens: {unique_tokens/total_tokens:.0%}\n\n "
+               
+               f"Number of types appearing five times or less: {types_occurring_five_or_less}\n"
+               f"Percentage of total types: {types_occurring_five_or_less/total_types:.0%}\t"
+               f"Percentage of total tokens: {types_occurring_five_or_less/total_tokens:.0%}\n\n ")
 
     file.write("****************************************************\n\n\n")
 

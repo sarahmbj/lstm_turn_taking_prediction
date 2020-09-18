@@ -2,6 +2,7 @@ from os import walk
 import pandas as pd
 import pickle
 import numpy as np
+import sys
 
 """
 Script Modified from script by Lena Smith https://github.com/lnaclst
@@ -15,11 +16,12 @@ conversation. Pickles all 3 dictionaries.
 # Vocab count by conversation by role
 
 base_path = './data/extracted_annotations/'
-
+print(sys.argv)
+quit()
 words_folder = base_path + 'words_advanced_50ms_averaged/'
 conversations_list = 'complete'
 conversations_list_file = f'./data/splits/{conversations_list}.txt'
-include_f = False
+include_f = sys.argv[]False
 include_g = True
 
 # get list of file names to consider for the stats
@@ -114,9 +116,9 @@ with open(f"{conversations_list}_vocab_stats.txt", "a") as file:
                f"Total tokens in dataset: {total_tokens}\n"
                f"Total types in dataset: {total_types}\n"
                f"Mean tokens per conversation: {np.mean(tokens_per_convo)}\n"
-               f"Min: {min(tokens_per_convo)}\tMax: {max(tokens_per_convo)} \tSt. dev: {np.std(tokens_per_convo)}\n"
+               f"Min: {min(tokens_per_convo)}\t Max: {max(tokens_per_convo)} \tSt. dev: {np.std(tokens_per_convo)}\n"
                f"Mean types per conversation: {np.mean(types_per_convo)}\n"
-               f"Min: {np.min(types_per_convo)}\tMax: {np.max(types_per_convo)}\tSt. dev: {np.std(types_per_convo)}\n"
+               f"Min: {np.min(types_per_convo)}\t Max: {np.max(types_per_convo)} \tSt. dev: {np.std(types_per_convo)}\n"
                
                f"Number of types appearing once only: {unique_tokens}\n"
                f"Percentage of total types: {unique_tokens/total_types:.4%}\t"

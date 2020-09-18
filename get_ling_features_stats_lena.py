@@ -25,7 +25,7 @@ include_g = True
 files_to_include = []
 if include_f is True:
     for line in conversations_to_include:
-        files_to_include.append(words_folder + line.strip() + '.f.csv')
+        files_to_include.append(line.strip() + '.f.csv')
 if include_g is True:
     for line in conversations_to_include:
         files_to_include.append(line.strip() + '.g.csv')

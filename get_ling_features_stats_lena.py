@@ -1,6 +1,7 @@
 from os import walk
 import pandas as pd
 import pickle
+import numpy as np
 
 """
 Script Modified from script by Lena Smith https://github.com/lnaclst
@@ -83,16 +84,23 @@ pickle.dump(conv_vecs, open(base_path + 'conv_vectors.p', 'wb'))
 pickle.dump(conv_dict, open(base_path + 'conv_count_dict.p', 'wb'))
 pickle.dump(total_dict, open(base_path + 'total_count_dict.p', 'wb'))
 
+# Write stats to file
+
 total_tokens = sum(total_dict.values())
 total_types = len(total_dict)
 no_conversations = len(conversations_to_include)
-with open(f"{conversations_list}_stats.txt", "a") as file:
-    file.write(f"Vocab stats for ~~ {conversations_list} ~~")
+with open(f"{conversations_list}_vocab_stats.txt", "a") as file:
+    file.write(f"Vocab stats for ~~ {conversations_list} ~~ \n")
     file.write(f"include_f is: {str(include_f)}\t include_g is: {str(include_g)}\n")
     file.write(f"Number of conversations: {no_conversations}\n")
     file.write(f"Total tokens in dataset: {total_tokens}\n")
     file.write(f"Total types in dataset: {total_types}\n")
-    file.write(f"Mean tokens per conversation: {total_tokens/no_conversations}\tRange:\tStandard dev: \n")
-    file.write(f"Mean types per conversation:{total_types/no_conversations}\tRange:\tStandard dev: \n")
+    file.write(f"Mean tokens per conversation: {np.mean(conv_dict.values())}\tRange: {np.range(conv_dict.values())}\t"
+               f"Standard dev: {np.std(conv_dict.values())}\n")
+    file.write(f"Mean types per conversation:{total_types/no_conversations}\tRange:\tStandard dev: \n") # this is wrong - need to loop through conv_dict
+
+    file.write("Number of types appearing once only: \n")
+    file.write("Percentage of total types: \t Percentage of total tokens: \t\n ")
+
     file.write("****************************************************\n\n\n")
 

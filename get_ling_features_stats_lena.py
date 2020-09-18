@@ -99,16 +99,15 @@ for conversation in conv_dict:
     tokens_per_convo.append(sum(current_conv.values()))
 
 with open(f"{conversations_list}_vocab_stats.txt", "a") as file:
-    file.write(f"Vocab stats for ~~ {conversations_list} ~~ \n")
-    file.write(f"include_f is: {str(include_f)}\t include_g is: {str(include_g)}\n")
-    file.write(f"Number of conversations: {no_conversations}\n")
-    file.write(f"Total tokens in dataset: {total_tokens}\n")
-    file.write(f"Total types in dataset: {total_types}\n")
-
-    file.write(f"Mean tokens per conversation: {np.mean(tokens_per_convo)}\tRange: {np.range(tokens_per_convo)}\t"
-               f"Standard dev: {np.std(tokens_per_convo)}\n")
-    file.write(f"Mean types per conversation: {np.mean(types_per_convo)}\tRange: {np.range(types_per_convo)}"
-               f"\tStandard dev: {np.std(types_per_convo)}\n")
+    file.write(f"Vocab stats for ~~ {conversations_list} ~~ \n"
+               f"include_f is: {str(include_f)}\t include_g is: {str(include_g)}\n"
+               f"Number of conversations: {no_conversations}\n"
+               f"Total tokens in dataset: {total_tokens}\n"
+               f"Total types in dataset: {total_types}\n"
+               f"Mean tokens per conversation: {np.mean(tokens_per_convo)}\n"
+               f"Min: {min(tokens_per_convo)}\tMax: {max(tokens_per_convo)} \tSt. dev: {np.std(tokens_per_convo)}\n"
+               f"Mean types per conversation: {np.mean(types_per_convo)}\n"
+               f"Min: {np.min(types_per_convo)}\tMax: {np.max(types_per_convo)}\tSt. dev: {np.std(types_per_convo)}\n")
 
     file.write("Number of types appearing once only: \n")
     file.write("Percentage of total types: \t Percentage of total tokens: \t\n ")

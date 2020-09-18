@@ -17,7 +17,7 @@ base_path = './data/extracted_annotations/'
 
 words_folder = base_path + 'words_advanced_50ms_averaged/'
 conversations_list_file = './data/splits/complete.txt'
-include_f = True
+include_f = False
 include_g = True
 
 # get list of file names to consider for the stats

@@ -92,13 +92,15 @@ total_types = len(total_dict)
 no_conversations = len(conversations_to_include)
 
 types_per_convo = []
-print(types_per_convo)
-quit()
+
 tokens_per_convo = []
 for conversation in conv_dict:
     current_conv = conv_dict[conversation]
     types_per_convo.append(len(current_conv)) #TODO: CHECK THIS!
     tokens_per_convo.append(sum(current_conv.values()))
+
+print(types_per_convo)
+quit()
 
 with open(f"{conversations_list}_vocab_stats.txt", "a") as file:
     file.write(f"Vocab stats for ~~ {conversations_list} ~~ \n"

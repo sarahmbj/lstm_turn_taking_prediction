@@ -23,7 +23,6 @@ include_g = True
 
 # get list of file names to consider for the stats
 conversations_to_include = []
-no_conversations = None
 with open(conversations_list_file, "r") as file:
     no_conversations = len(file)
     for line in file:
@@ -87,6 +86,7 @@ pickle.dump(total_dict, open(base_path + 'total_count_dict.p', 'wb'))
 
 total_tokens = sum(total_dict.values())
 total_types = len(total_dict)
+no_conversations = len(conversations_to_include)
 with open(f"{conversations_list}_stats.txt", "a") as file:
     file.write(f"Vocab stats for ~~ {conversations_list} ~~")
     file.write(f"include_f is: {str(include_f)}\t include_g is: {str(include_g)}\n")

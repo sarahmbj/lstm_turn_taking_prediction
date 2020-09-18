@@ -19,8 +19,14 @@ base_path = './data/extracted_annotations/'
 words_folder = base_path + 'words_advanced_50ms_averaged/'
 conversations_list = sys.argv[1]  # complete, testing or training
 conversations_list_file = f'./data/splits/{conversations_list}.txt'
-include_f = int(sys.argv[2])  # Bool
-include_g = int(sys.argv[3])  # Bool
+if sys.argv[2] is 0:
+    include_f = False
+else:
+    include_f = True
+if sys.argv[3] is 0:
+    include_g = False
+else:
+    include_g = True
 
 
 # get list of file names to consider for the stats

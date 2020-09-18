@@ -74,7 +74,9 @@ for filename in files_to_include:
 
 print(len(conv_vecs))
 print(len(conv_dict))
+print(conv_dict)
 print(len(total_dict))
+print(total_dict)
 
 pickle.dump(conv_vecs, open(base_path + 'conv_vectors.p', 'wb'))
 pickle.dump(conv_dict, open(base_path + 'conv_count_dict.p', 'wb'))

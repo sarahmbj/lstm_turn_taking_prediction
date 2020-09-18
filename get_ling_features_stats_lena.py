@@ -16,12 +16,15 @@ conversation. Pickles all 3 dictionaries.
 base_path = './data/extracted_annotations/'
 
 words_folder = base_path + 'words_advanced_50ms_averaged/'
-
-conversations_to_include = './data/splits/training.txt'
+conversations_list_file = './data/splits/training.txt'
 include_f = True
 include_g = True
 
-#get list of file names to consider for the stats
+# get list of file names to consider for the stats
+conversations_to_include = []
+with open(conversations_list_file, "r") as file:
+    for line in file:
+        conversations_to_include.append(line)
 files_to_include = []
 if include_f is True:
     for line in conversations_to_include:
@@ -33,7 +36,6 @@ if include_g is True:
         print(line)
         files_to_include.append(line.strip() + '.g.csv')
         print(files_to_include[-1])
-
 
 
 ix_to_word_file = open(base_path + 'ix_to_word.p', 'rb')

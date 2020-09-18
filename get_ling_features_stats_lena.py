@@ -84,7 +84,9 @@ pickle.dump(conv_dict, open(base_path + 'conv_count_dict.p', 'wb'))
 pickle.dump(total_dict, open(base_path + 'total_count_dict.p', 'wb'))
 
 with open(f"{conversations_list}_stats.txt", "a") as file:
-    file.write(f"include_f is: {str(include_f)}, include_g is: {str(include_g)}")
-    file.write("Total tokens in dataset: ")
-    file.write("Total types in dataset: ")
-    
+    file.write(f"include_f is: {str(include_f)}\t include_g is: {str(include_g)}\n")
+    file.write(f"Total tokens in dataset:{sum(total_dict.values())}\n")
+    file.write(f"Total types in dataset:{len(total_dict)}\n")
+    file.write("Mean tokens per conversation:\tRange:\tStandard dev: ")
+    file.write("Mean types per conversation:\tRange:\tStandard dev: ")
+

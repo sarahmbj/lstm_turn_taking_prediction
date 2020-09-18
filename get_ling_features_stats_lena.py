@@ -16,8 +16,6 @@ conversation. Pickles all 3 dictionaries.
 # Vocab count by conversation by role
 
 base_path = './data/extracted_annotations/'
-print(sys.argv)
-quit()
 words_folder = base_path + 'words_advanced_50ms_averaged/'
 conversations_list = sys.argv[1]  # complete, testing or training
 conversations_list_file = f'./data/splits/{conversations_list}.txt'

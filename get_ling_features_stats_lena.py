@@ -16,7 +16,8 @@ conversation. Pickles all 3 dictionaries.
 base_path = './data/extracted_annotations/'
 
 words_folder = base_path + 'words_advanced_50ms_averaged/'
-conversations_list_file = './data/splits/complete.txt'
+conversations_list = 'complete'
+conversations_list_file = f'./data/splits/{conversations_list}.txt'
 include_f = False
 include_g = True
 
@@ -82,3 +83,8 @@ pickle.dump(conv_vecs, open(base_path + 'conv_vectors.p', 'wb'))
 pickle.dump(conv_dict, open(base_path + 'conv_count_dict.p', 'wb'))
 pickle.dump(total_dict, open(base_path + 'total_count_dict.p', 'wb'))
 
+with open(f"{conversations_list}_stats.txt", "a") as file:
+    file.write(f"include_f is: {str(include_f)}, include_g is: {str(include_g)}")
+    file.write("Total tokens in dataset: ")
+    file.write("Total types in dataset: ")
+    

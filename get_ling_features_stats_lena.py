@@ -3,7 +3,7 @@ import pandas as pd
 import pickle
 
 """
-Script written by Lena Smith https://github.com/lnaclst
+Script Modified from script by Lena Smith https://github.com/lnaclst
 Script creates 3 dictionaries: conv_dict, which contains word count by conversation, total_dict, which contains
 total word count in the data set, and conv_vecs, which contains vectors with the counts of each word by index in each
 conversation. Pickles all 3 dictionaries.
@@ -17,6 +17,26 @@ base_path = './data/extracted_annotations/'
 
 words_folder = base_path + 'words_advanced_50ms_averaged/'
 
+conversations_to_include = './data/splits/complete.txt'
+include_f = True
+include_g = True
+
+#get list of file names to consider for the stats
+files_to_include = []
+if include_f is True:
+    for line in files_to_include:
+        files_to_include.append(line.strip() + '.f.csv')
+if include_g is True:
+    for line in files_to_include:
+        files_to_include.append(line.strip() + '.g.csv')
+
+# #get list of file names that actually exist in the words_folder
+# files_in_words_folder = []
+# for (dirpath, dirnames, filenames) in walk(words_folder):
+#     for filename in filenames:
+#         files_in_words_folder.append(filename)
+
+
 ix_to_word_file = open(base_path + 'ix_to_word.p', 'rb')
 ix_to_word = pickle.load(ix_to_word_file)
 
@@ -29,28 +49,27 @@ for word in ix_to_word.values():
 
 conv_dict = {}
 total_dict = {}
-for (dirpath, dirnames, filenames) in walk(words_folder):
-    for filename in filenames:
-        if '.csv' in filename:
-            if filename not in conv_dict:
-                conv_dict[filename] = {}
-            csv = pd.read_csv(words_folder + filename, usecols=['word'])
 
-            if filename not in conv_vecs:
-                conv_vecs[filename] = [0]*len(ix_to_word)
+for filename in files_to_include:
+    if filename not in conv_dict:
+        conv_dict[filename] = {}
+    csv = pd.read_csv(words_folder + filename, usecols=['word'])
 
-            for x in csv['word']:
-                if x != 0:
-                    conv_vecs[filename][int(x)] += 1
+    if filename not in conv_vecs:
+        conv_vecs[filename] = [0]*len(ix_to_word)
 
-                    if ix_to_word[x] not in total_dict:
-                        total_dict[ix_to_word[x]] = 1
-                    else:
-                        total_dict[ix_to_word[x]] += 1
-                    if ix_to_word[x] not in conv_dict[filename]:
-                        conv_dict[filename][ix_to_word[x]] = 1
-                    else:
-                        conv_dict[filename][ix_to_word[x]] += 1
+    for x in csv['word']:
+        if x != 0:  # don't count timestamps with no associated word
+            conv_vecs[filename][int(x)] += 1
+
+            if ix_to_word[x] not in total_dict:
+                total_dict[ix_to_word[x]] = 1
+            else:
+                total_dict[ix_to_word[x]] += 1
+            if ix_to_word[x] not in conv_dict[filename]:
+                conv_dict[filename][ix_to_word[x]] = 1
+            else:
+                conv_dict[filename][ix_to_word[x]] += 1
 
 
 # print(conv_vecs)

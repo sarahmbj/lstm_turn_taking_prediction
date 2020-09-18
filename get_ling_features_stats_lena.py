@@ -25,10 +25,15 @@ include_g = True
 files_to_include = []
 if include_f is True:
     for line in conversations_to_include:
+        print(line)
         files_to_include.append(line.strip() + '.f.csv')
+        print(files_to_include[-1])
 if include_g is True:
     for line in conversations_to_include:
+        print(line)
         files_to_include.append(line.strip() + '.g.csv')
+        print(files_to_include[-1])
+
 
 
 ix_to_word_file = open(base_path + 'ix_to_word.p', 'rb')

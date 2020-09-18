@@ -93,6 +93,8 @@ no_conversations = len(conversations_to_include)
 types_per_convo = []
 tokens_per_convo = []
 for conversation in conv_dict:
+    print(conversation)
+    quit()
     types_per_convo.append(len(conversation)) #TODO: CHECK THIS!
     tokens_per_convo.append(sum(conversation.values()))
 

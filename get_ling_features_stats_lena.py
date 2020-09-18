@@ -92,6 +92,8 @@ total_types = len(total_dict)
 no_conversations = len(conversations_to_include)
 
 types_per_convo = []
+print(types_per_convo)
+quit()
 tokens_per_convo = []
 for conversation in conv_dict:
     current_conv = conv_dict[conversation]

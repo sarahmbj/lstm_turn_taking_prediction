@@ -24,7 +24,6 @@ include_g = True
 # get list of file names to consider for the stats
 conversations_to_include = []
 with open(conversations_list_file, "r") as file:
-    no_conversations = len(file)
     for line in file:
         conversations_to_include.append(line)
 files_to_include = []

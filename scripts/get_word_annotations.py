@@ -23,8 +23,8 @@ if speed_setting == 0:
     path_to_extracted_annotations = './data/extracted_annotations/words_advanced_50ms_raw/'
     # define number of frames for delaying the word.
     frame_delay = 2  # word should only be output 100 ms after it is said
-    max_len_setting = 2 # using 2 for the moment for the purpose of speed
-elif speed_setting ==1:
+    max_len_setting = 2  # using 2 for the moment for the purpose of speed
+elif speed_setting == 1:
     path_to_features = './data/signals/gemaps_features_processed_10ms/znormalized/'
     path_to_extracted_annotations = './data/extracted_annotations/words_advanced_10ms_raw/'
     frame_delay = 10
@@ -85,7 +85,7 @@ for i in range(0,len(files_feature_list)):
         for wrd in word_frame_list:
             try:
                 curr_words.append(word_to_ix[wrd])
-            except IndexError:  # allow for unknown words
+            except KeyError:  # allow for unknown words
                 curr_words.append(word_to_ix["--unk--"])
 
         # only store up to the maximum number of words

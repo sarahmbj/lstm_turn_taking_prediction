@@ -30,7 +30,6 @@ for file in files_feature_list:
 no_change, disfluency_count, multi_word_count = 0, 0, 0
 words_from_annotations = defaultdict(int)
 for i in range(0, len(files_feature_list)):
-    # sys.stdout.flush()
     print('percent done vocab build:'+str(i/len(files_feature_list))[0:4])
     e = xml.etree.ElementTree.parse(path_to_annotations+files_annotation_list[i]).getroot() # returns all roots from XML file -- can parse this tree to browse more specific constituents
     for atype in e.findall('tu'):  # tu corresponds to transcribed utterances

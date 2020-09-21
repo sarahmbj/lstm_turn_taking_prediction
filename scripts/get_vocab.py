@@ -18,13 +18,13 @@ path_to_features = './data/signals/gemaps_features_processed_50ms/znormalized/' 
 path_to_annotations = './data/maptaskv2-1/Data/timed-units/'  # voice activity files
 unknown_word_threshold = 5  # set to 0 if you don't want to have an --unk-- token
 
-files_feature_list = os.listdir(path_to_features) # file list
+files_feature_list = os.listdir(path_to_features)  # file list
 files_annotation_list = list()
 files_output_list = list()
 for file in files_feature_list:
     base_name = os.path.basename(file)
-    files_annotation_list.append(os.path.splitext(base_name)[0]+'.timed-units.xml')
-    files_output_list.append(os.path.splitext(base_name)[0]+'.csv')  # gets all file names in synchronised order
+    files_annotation_list.append(os.path.splitext(base_name)[0] + '.timed-units.xml')
+    files_output_list.append(os.path.splitext(base_name)[0] +'.csv')  # gets all file names in synchronised order
 
 # Get vocabulary
 no_change, disfluency_count, multi_word_count = 0, 0, 0

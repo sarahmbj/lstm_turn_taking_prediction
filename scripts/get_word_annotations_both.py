@@ -113,7 +113,12 @@ for i in range(0, len(files_feature_list_maptask)):
             word_frame_list = nltk.word_tokenize(target_word)
 
         # store words for this 'tu' instance in this file by their index in word_frame_list
-        curr_words = [word_to_ix[wrd] for wrd in word_frame_list]
+        curr_words = []
+        for wrd in word_frame_list:
+            try:
+                curr_words.append(word_to_ix[wrd])
+            except KeyError:  # allow for unknown words
+                curr_words.append(word_to_ix["--unk--"])
 
         # only store up to the maximum number of words
         if len(curr_words) > max_len:

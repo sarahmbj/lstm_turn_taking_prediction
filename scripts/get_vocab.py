@@ -46,6 +46,7 @@ for i in range(0, len(files_feature_list)):
             for word in target_words:
                 words_from_annotations[word] += 1
 
+words_from_annotations["--unk--"] = 0
 words_to_remove = set()
 for word in words_from_annotations:
     if words_from_annotations[word] <= unknown_word_threshold:

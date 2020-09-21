@@ -166,7 +166,12 @@ for i in range(0,len(files_feature_list_switchboard)):
         else:
             word_frame_list = nltk.word_tokenize(target_word)
 
-        curr_words = [word_to_ix[wrd] for wrd in word_frame_list]
+        curr_words = []
+        for wrd in word_frame_list:
+            try:
+                curr_words.append(word_to_ix[wrd])
+            except KeyError:  # allow for unknown words
+                curr_words.append(word_to_ix["--unk--"])
 
         if len(curr_words) > max_len:
             max_len = len(curr_words)

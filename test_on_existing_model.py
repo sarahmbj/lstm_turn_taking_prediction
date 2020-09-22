@@ -19,7 +19,8 @@ import matplotlib.pyplot as plt
 
 
 num_layers = 1
-annotations_dir = './data/extracted_annotations/voice_activity/'
+annotations_dir_train = './data/extracted_annotations/voice_activity/'
+annotations_dir_test = './data/extracted_annotations/voice_activity/'
 # test_list_path = './data/splits/testing.txt'
 # train_list_path = './data/splits/training.txt'  # only used for onsets evaluation to get the classification threshold
 prediction_length = 60  # (60 is 3 seconds of prediction)
@@ -169,7 +170,7 @@ def load_model(pickled_model, args_dict, test_data):
 
 
 def load_test_set(args_dict, test_list_path, test_on_g=True, test_on_f=True):
-    test_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir, test_list_path,
+    test_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir_test, test_list_path,
                                          args_dict['sequence_length'], prediction_length, 'test',
                                          data_select=data_set_select, test_on_f=test_on_f, test_on_g=test_on_g)
 
@@ -181,7 +182,7 @@ def load_test_set(args_dict, test_list_path, test_on_g=True, test_on_f=True):
 
 def load_training_set(args_dict, train_list_path, train_on_f=True, train_on_g=True):
     """needed to get the threshold value for prediction at onsets"""
-    train_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir, train_list_path,
+    train_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir_train, train_list_path,
                                           args_dict['sequence_length'], prediction_length, 'train',
                                           data_select=data_set_select, train_on_f=train_on_f, train_on_g=train_on_g)
     train_dataloader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=False, num_workers=0,
@@ -699,7 +700,6 @@ if __name__ == "__main__":
 #                             test_list_path="./data/splits/testing_both.txt",
 #                             train_list_path="./data/splits/training_maptask.txt")
 
-#TODO: how can I solve problem of embeddings not being compatible across trained models? what would this mean for generalisability of models in general?
     # trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/dev/no_subnets/3_Ling_50ms'
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
     #                         test_list_path="./data/splits/testing_maptask.txt",

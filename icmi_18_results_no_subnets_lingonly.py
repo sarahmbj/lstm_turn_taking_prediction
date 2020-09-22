@@ -6,6 +6,7 @@ import os
 import pickle
 import numpy as np
 import feature_vars as feat_dicts
+import sys
 
 
 
@@ -147,7 +148,7 @@ Acous_10ms_Ling_10ms = {
 
 #%% Experiments list
 
-gpu_select = 3
+gpu_select = sys.argv[1]
 test_indices = [0,1,2,3,4]
 
 experiment_name_list = [

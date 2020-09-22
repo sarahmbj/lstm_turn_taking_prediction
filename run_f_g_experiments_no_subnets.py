@@ -1,22 +1,13 @@
 # -*- coding: utf-8 -*-
 import json
-# from subprocess import Popen,PIPE
 import subprocess
-import torch.multiprocessing as multiprocessing
-
 import sys
-import pandas as pd
-import time as t
 import platform
 import os
 import pickle
 import numpy as np
 import feature_vars as feat_dicts
-from time import gmtime, strftime
-# import shutil
-from random import randint
 
-# lr_list = [0.01]
 word_embed_out_dim = 64
 word_embed_out_dim_glove = 300
 seq_length = 600
@@ -151,7 +142,7 @@ Ling_50ms_gtrain = {
 
 # %% Experiments list
 
-gpu_select = 5
+gpu_select = sys.argv[1]
 test_indices = [0, 1, 2, 3, 4]
 
 experiment_name_list = [

@@ -12,7 +12,6 @@ import os
 import numpy as np
 import pandas as pd
 import h5py 
-#import pickle
 from itertools import zip_longest
 import time as t
 import multiprocessing
@@ -23,8 +22,10 @@ import sys
 num_workers = 4
 data_select = 0
 
+dataset = "switchboard_data"  # default should be "data" - change if doing cross-corpora tests
+
 # %% Settings
-if len(sys.argv)==2:
+if len(sys.argv) == 2:
     speed_setting = int(sys.argv[1])
 else:
     speed_setting = 0 
@@ -32,21 +33,21 @@ else:
 
 if speed_setting == 0:  # regular/fast_irregular 50ms
     max_len = 1
-    annotations_dir = './data/extracted_annotations/voice_activity'
+    annotations_dir = f'./{dataset}/extracted_annotations/voice_activity'
     time_scale_folder = 'words_advanced_50ms_averaged'
     output_name = 'words_split_50ms'
     features_list = ['word']
 
 elif speed_setting == 1:  # regular 10ms
     max_len = 2
-    annotations_dir = './data/extracted_annotations/voice_activity' # for chunking into 50ms chunks
+    annotations_dir = f'./{dataset}/extracted_annotations/voice_activity'  # for chunking into 50ms chunks
     time_scale_folder = 'words_advanced_10ms_averaged'
     output_name = 'words_split_10ms_5_chunked'
     features_list = ['word']
 
 elif speed_setting == 2:  # irregular 50ms
     max_len = 2
-    annotations_dir = './data/extracted_annotations/voice_activity'
+    annotations_dir = f'./{dataset}/extracted_annotations/voice_activity'
     time_scale_folder = 'words_advanced_50ms_raw'
     output_name = 'words_split_irreg_50ms'
     # features_list = ['frameTimes', 'word']
@@ -54,7 +55,7 @@ elif speed_setting == 2:  # irregular 50ms
 # todo: irregular 10ms
 
 time_label_select = 2
-file_list = list(pd.read_csv('./data/splits/complete.txt', header=None, dtype=str)[0])
+file_list = list(pd.read_csv(f'./{dataset}/splits/complete.txt', header=None, dtype=str)[0])
 
 
 # %% Funcs
@@ -94,11 +95,11 @@ time_label_select_dict = {0: 'frame_time',  # gemaps
                           1: 'timestamp',  # openface
                           2: 'frameTimes'}  # annotations
 
-if os.path.exists('./data/datasets/' + output_name + '.hdf5'):
-    os.remove('./data/datasets/' + output_name + '.hdf5')
+if os.path.exists('./{dataset}/datasets/' + output_name + '.hdf5'):
+    os.remove('./{dataset}/datasets/' + output_name + '.hdf5')
 
-out_split = h5py.File('./data/datasets/' + output_name + '.hdf5', 'w')
-folder_path = os.path.join('./data/extracted_annotations', time_scale_folder)
+out_split = h5py.File('./{dataset}/datasets/' + output_name + '.hdf5', 'w')
+folder_path = os.path.join('./{dataset}/extracted_annotations', time_scale_folder)
 
 # structure: of_split/file/[f,g][x,x_i]/feature/matrix[T,4]
 #%% run

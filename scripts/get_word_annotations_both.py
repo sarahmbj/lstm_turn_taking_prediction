@@ -10,7 +10,7 @@ import re
 
 nltk.download('punkt')
 
-dataset = "data"  # default should be "data" - change if doing cross-corpora tests
+dataset = "both_data"  # default should be "data" - change if doing cross-corpora tests
 
 # select settings for 50ms (0) or 10ms (1) features
 if len(sys.argv) == 2:

@@ -40,7 +40,7 @@ def find_nearest(array, value):
 t_1 = t.time()
 
 # define filepath to time annotations
-path_to_annotations_maptask = './data/maptaskv2-1/Data/timed-units/'
+path_to_annotations_maptask = f'./{dataset}/maptaskv2-1/Data/timed-units/'
 path_to_annotations_switchboard = '/group/corpora/public/switchboard/nxt/xml/terminals/'
 # load dictionary containing word to index key-value pairs
 word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb'))

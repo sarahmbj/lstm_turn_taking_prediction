@@ -95,11 +95,11 @@ time_label_select_dict = {0: 'frame_time',  # gemaps
                           1: 'timestamp',  # openface
                           2: 'frameTimes'}  # annotations
 
-if os.path.exists('./{dataset}/datasets/' + output_name + '.hdf5'):
-    os.remove('./{dataset}/datasets/' + output_name + '.hdf5')
+if os.path.exists(f'./{dataset}/datasets/' + output_name + '.hdf5'):
+    os.remove(f'./{dataset}/datasets/' + output_name + '.hdf5')
 
-out_split = h5py.File('./{dataset}/datasets/' + output_name + '.hdf5', 'w')
-folder_path = os.path.join('./{dataset}/extracted_annotations', time_scale_folder)
+out_split = h5py.File(f'./{dataset}/datasets/' + output_name + '.hdf5', 'w')
+folder_path = os.path.join(f'./{dataset}/extracted_annotations', time_scale_folder)
 
 # structure: of_split/file/[f,g][x,x_i]/feature/matrix[T,4]
 #%% run

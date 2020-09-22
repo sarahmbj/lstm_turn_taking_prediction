@@ -11,7 +11,7 @@ nltk.download('punkt')
 
 # takes 36 seconds for 50ms version, 2 mins for 10ms version
 
-dataset = "data"  # default should be "data" - change if doing cross-corpora tests
+dataset = "maptask_data"  # default should be "data" - change if doing cross-corpora tests
 
 # select settings for 50ms (0) or 10ms (1) features
 if len(sys.argv) == 2:

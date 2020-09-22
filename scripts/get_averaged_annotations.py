@@ -10,7 +10,9 @@ import nltk
 """Takes in raw word embeddings and outputs averaged word embeddings.
 Averaged word embeddings are the async word representations collected at the end of each word (rather than at each time interval).
 Averaging is done for each time interval (10ms/50ms) so the words can be input to the LSTMs along with other features being 
-measured at those intervals (i.e. acoustic features).""" #?
+measured at those intervals (i.e. acoustic features)."""
+
+dataset = "switchboard_data"  # default should be "data" - change if doing cross-corpora tests
 
 # select settings for 50ms (0) or 10ms (1) features
 # takes 1.5mins for 50ms, 3 mins for 10ms setting
@@ -20,16 +22,16 @@ else:
     speed_setting = 0 # 0 for 50ms, 1 for 10ms
 
 if speed_setting == 0:
-    path_to_features = './data/signals/gemaps_features_processed_50ms/znormalized/'
-    path_to_orig_embeds = './data/extracted_annotations/words_advanced_50ms_raw/'
-    path_to_extracted_annotations = './data/extracted_annotations/words_advanced_50ms_averaged/'
-    output_set_dict = './data/extracted_annotations/set_dict_50ms.p'
+    path_to_features = f'./{dataset}/signals/gemaps_features_processed_50ms/znormalized/'
+    path_to_orig_embeds = f'./{dataset}/extracted_annotations/words_advanced_50ms_raw/'
+    path_to_extracted_annotations = f'./{dataset}/extracted_annotations/words_advanced_50ms_averaged/'
+    output_set_dict = f'./{dataset}/extracted_annotations/set_dict_50ms.p'
 
 elif speed_setting == 1:
-    path_to_features = './data/signals/gemaps_features_processed_10ms/znormalized/'
-    path_to_orig_embeds = './data/extracted_annotations/words_advanced_10ms_raw/'
-    path_to_extracted_annotations = './data/extracted_annotations/words_advanced_10ms_averaged/'
-    output_set_dict = './data/extracted_annotations/set_dict_10ms.p'
+    path_to_features = f'./{dataset}/signals/gemaps_features_processed_10ms/znormalized/'
+    path_to_orig_embeds = f'./{dataset}/extracted_annotations/words_advanced_10ms_raw/'
+    path_to_extracted_annotations = f'./{dataset}/extracted_annotations/words_advanced_10ms_averaged/'
+    output_set_dict = f'./{dataset}/extracted_annotations/set_dict_10ms.p'
 
 
 def find_nearest(array,value):

@@ -11,6 +11,8 @@ nltk.download('punkt')
 
 # takes 36 seconds for 50ms version, 2 mins for 10ms version
 
+dataset = "data"  # default should be "data" - change if doing cross-corpora tests
+
 # select settings for 50ms (0) or 10ms (1) features
 if len(sys.argv) == 2:
     speed_setting = int(sys.argv[1])
@@ -19,14 +21,14 @@ else:
 
 # define filepaths to word features depending on speed setting, 50ms or 10ms
 if speed_setting == 0:
-    path_to_features = './data/signals/gemaps_features_processed_50ms/znormalized/'
-    path_to_extracted_annotations = './data/extracted_annotations/words_advanced_50ms_raw/'
+    path_to_features = f'./{dataset}/signals/gemaps_features_processed_50ms/znormalized/'
+    path_to_extracted_annotations = f'./{dataset}/extracted_annotations/words_advanced_50ms_raw/'
     # define number of frames for delaying the word.
     frame_delay = 2  # word should only be output 100 ms after it is said
     max_len_setting = 2  # using 2 for the moment for the purpose of speed
 elif speed_setting == 1:
-    path_to_features = './data/signals/gemaps_features_processed_10ms/znormalized/'
-    path_to_extracted_annotations = './data/extracted_annotations/words_advanced_10ms_raw/'
+    path_to_features = f'./{dataset}/signals/gemaps_features_processed_10ms/znormalized/'
+    path_to_extracted_annotations = f'./{dataset}/extracted_annotations/words_advanced_10ms_raw/'
     frame_delay = 10
     max_len_setting = 2
 

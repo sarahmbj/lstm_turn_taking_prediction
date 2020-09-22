@@ -38,7 +38,7 @@ def find_nearest(array, value):
 t_1 = t.time()
 
 # define filepath to time annotations
-path_to_annotations = './data/maptaskv2-1/Data/timed-units/'
+path_to_annotations = f'./{dataset}/maptaskv2-1/Data/timed-units/'
 # load dictionary containing word to index key-value pairs
 word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb'))
 

@@ -412,12 +412,15 @@ class TurnPredictionDataset(Dataset):
 
                     if not (feature_dict['is_h5_file']):
                         print("INSIDE NOT H5")
-                        data_f_temp = pd.read_csv(
-                            feature_dict['folder_path'] + '/' + filename + '.' + data_select_dict[data_select][
-                                0] + '.csv')
-                        data_g_temp = pd.read_csv(
-                            feature_dict['folder_path'] + '/' + filename + '.' + data_select_dict[data_select][
-                                1] + '.csv')
+                        data_f_path = feature_dict['folder_path'] + '/' + filename + '.' + data_select_dict[data_select][
+                                0] + '.csv'
+                        data_f_path = data_f_path.replace("//", "/")
+                        data_f_temp = pd.read_csv(data_f_path)
+
+                        data_g_path = feature_dict['folder_path'] + '/' + filename + '.' + data_select_dict[data_select][
+                                1] + '.csv'
+                        data_g_path = data_g_path.replace("//", "/")
+                        data_g_temp = pd.read_csv(data_g_path)
                         if 'embedding' in feature_dict and feature_dict['embedding'] == True:
                             embed_info = {}
                             #                        embed_info['features'] = feature_dict['features'] # need to add 'f_' and 'g_' do this at end
@@ -445,7 +448,6 @@ class TurnPredictionDataset(Dataset):
                     #                        self.uses_master_time_rate_bool[feature_dict['modality']] = feature_dict['uses_master_time_rate']
                     #                        self.is_irregular[feature_dict['modality']] = feature_dict['is_irregular']
                     else:
-                        print("INSIDE H5")
 
                         h_data = h5py.File(feature_dict['folder_path'], 'r')
                         for feature_name in feature_dict['features']:

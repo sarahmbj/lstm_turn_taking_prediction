@@ -40,7 +40,7 @@ time_label_select_dict = {0: 'frame_time',  # gemaps
 class TurnPredictionDataset(Dataset):
 
     def __init__(self, feature_dict_list, annotations_dir, file_list, seq_length, prediction_length=60, set_type='test',
-                 data_select=0, train_on_f=True, train_on_g=True, test_on_f=True, test_on_g=True):
+                 data_select=0, train_on_f=True, train_on_g=True, test_on_f=True, test_on_g=True, data_dir='data'):
         # inputs: feature_dict_list is string path of folder with extracted data csv files
         # file_list is string with path to a .txt file with file list in it
         self.len = 0
@@ -415,11 +415,13 @@ class TurnPredictionDataset(Dataset):
                         data_f_path = feature_dict['folder_path'] + '/' + filename + '.' + data_select_dict[data_select][
                                 0] + '.csv'
                         data_f_path = data_f_path.replace("//", "/")
+                        data_f_path = data_f_path.replace("data", data_dir)
                         data_f_temp = pd.read_csv(data_f_path)
 
                         data_g_path = feature_dict['folder_path'] + '/' + filename + '.' + data_select_dict[data_select][
                                 1] + '.csv'
                         data_g_path = data_g_path.replace("//", "/")
+                        data_g_path = data_g_path.replace("data", data_dir)
                         data_g_temp = pd.read_csv(data_g_path)
                         if 'embedding' in feature_dict and feature_dict['embedding'] == True:
                             embed_info = {}

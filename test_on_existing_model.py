@@ -156,10 +156,11 @@ def load_model(pickled_model, args_dict, test_data):
     return model
 
 
-def load_test_set(args_dict, test_list_path, test_annotations_path, test_on_g=True, test_on_f=True):
+def load_test_set(args_dict, test_list_path, test_annotations_path, data_dir='data', test_on_g=True, test_on_f=True):
     test_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], test_annotations_path, test_list_path,
                                          args_dict['sequence_length'], prediction_length, 'test',
-                                         data_select=data_set_select, test_on_f=test_on_f, test_on_g=test_on_g)
+                                         data_select=data_set_select, data_dir=data_dir,
+                                         test_on_f=test_on_f, test_on_g=test_on_g)
 
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=0, drop_last=False,
                                  pin_memory=p_memory)
@@ -167,11 +168,12 @@ def load_test_set(args_dict, test_list_path, test_annotations_path, test_on_g=Tr
     return test_dataset, test_dataloader
 
 
-def load_training_set(args_dict, train_list_path, train_annotations_path, train_on_f=True, train_on_g=True):
+def load_training_set(args_dict, train_list_path, train_annotations_path, data_dir='data', train_on_f=True, train_on_g=True):
     """needed to get the threshold value for prediction at onsets"""
     train_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], train_annotations_path, train_list_path,
                                           args_dict['sequence_length'], prediction_length, 'train',
-                                          data_select=data_set_select, train_on_f=train_on_f, train_on_g=train_on_g)
+                                          data_select=data_set_select, data_dir=data_dir,
+                                          train_on_f=train_on_f, train_on_g=train_on_g)
     train_dataloader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=False, num_workers=0,
                                   drop_last=True, pin_memory=p_memory)
     return train_dataset, train_dataloader
@@ -456,6 +458,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
                       'bar_chart_vals': bar_chart_vals}
         results_save['indiv_perf'].append(indiv_perf)
     # majority baseline:
+    # majority baseline:
     # f1_score(true_vals,np.zeros([len(true_vals),]).tolist(),average='weighted')
     return results_save
 
@@ -497,14 +500,15 @@ def test_on_existing_models(trial_path, test_data_dir=None, train_data_dir=None,
 
         # load settings, model, data and create directories for results
         args = load_args(settings_path)
-        test_set, test_loader = load_test_set(args, test_list_path, test_annotations_dir, test_on_g=test_on_g,
-                                              test_on_f=test_on_f)
+        test_set, test_loader = load_test_set(args, test_list_path, test_annotations_dir, data_dir=test_data_dir,
+                                test_on_g=test_on_g, test_on_f=test_on_f)
         model = load_model(model_path, args, test_set)
         os.makedirs(results_path)
 
-        # use training set to get threshold for onset evaluation
-        train_set, train_loader = load_training_set(args, train_list_path, train_annotations_dir, train_on_g=trained_on_g,
-                                                    train_on_f=trained_on_f)  # needs to be how model was originally trained
+        # use training set to get threshold for onset evaluation - needs to be how model was originally trained
+        train_set, train_loader = load_training_set(args, train_list_path, train_annotations_dir,
+                                                    data_dir=train_data_dir, train_on_g=trained_on_g,
+                                                    train_on_f=trained_on_f)
 
         train_results_dict = get_train_results_dict(model, train_set, train_loader, train_list_path)
 

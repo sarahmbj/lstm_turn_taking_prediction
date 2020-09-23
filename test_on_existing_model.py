@@ -16,10 +16,11 @@ from pprint import pprint
 import pickle
 import shutil
 import matplotlib.pyplot as plt
+from collections import defaultdict
 
 num_layers = 1
-annotations_dir_train = './data/extracted_annotations/voice_activity/'
-annotations_dir_test = './data/extracted_annotations/voice_activity/'
+# annotations_dir_train = './data/extracted_annotations/voice_activity/'
+# annotations_dir_test = './data/extracted_annotations/voice_activity/'
 prediction_length = 60  # (60 is 3 seconds of prediction)
 data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard in Roddy code, always using 0 in this file
 p_memory = True
@@ -199,7 +200,8 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
     pause_str_list = ['50ms', '250ms', '500ms']
     overlap_str_list = ['overlap_hold_shift', 'overlap_hold_shift_exclusive']
     onset_str_list = ['short_long']
-    results_save = dict()
+    results_save = defaultdict(list)
+
     for pause_str in pause_str_list + overlap_str_list + onset_str_list:
         results_save['f_scores_' + pause_str] = list()
         results_save['tn_' + pause_str] = list()
@@ -397,7 +399,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
         results_save['fp_' + onset_str_list[0]].append(fp)
         results_save['fn_' + onset_str_list[0]].append(fn)
         results_save['tp_' + onset_str_list[0]].append(tp)
-        results_save['onset_thresh' + onset_str_list[0]].append(onset_thresh)
+        results_save['onset_thresh_' + onset_str_list[0]].append(onset_thresh)
 
 
     # get prediction at overlap f-scores
@@ -523,7 +525,7 @@ def test_on_existing_models(trial_path, test_data_dir=None, train_data_dir=None,
 
         # combine metrics across trials
         eval_metric_list = ['f_scores_50ms', 'f_scores_250ms', 'f_scores_500ms', 'f_scores_overlap_hold_shift',
-                            'f_scores_overlap_hold_shift_exclusive', 'f_scores_short_long', 'onset_threshold_short_long',
+                            'f_scores_overlap_hold_shift_exclusive', 'f_scores_short_long', 'onset_thresh_short_long',
                             'train_losses', 'test_losses', 'test_losses_l1']
         combined_results = {}
         for metric in eval_metric_list:

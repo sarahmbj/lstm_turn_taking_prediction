@@ -659,14 +659,14 @@ if __name__ == "__main__":
 #                             test_list_path="./data/splits/testing_both.txt")
 #
     train_data = 'data'
-    test_data = 'maptask_data'
+    test_data = 'data'
 
     trial_path = './no_subnets/3_Ling_50ms'
     test_on_existing_models(trial_path, test_data_dir=test_data, train_data_dir=train_data,
-                            test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask')
+                            test_on_f=True, test_on_g=True, report_dict_name='test_on_original_data')
     trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
     test_on_existing_models(trial_path, test_data_dir=test_data, train_data_dir=train_data,
-                            test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask')
+                            test_on_f=True, test_on_g=True, report_dict_name='test_on_original_data')
 
 #
 #     trial_path = './no_subnets/3_Ling_50ms'

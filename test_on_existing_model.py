@@ -20,10 +20,8 @@ import matplotlib.pyplot as plt
 num_layers = 1
 annotations_dir_train = './data/extracted_annotations/voice_activity/'
 annotations_dir_test = './data/extracted_annotations/voice_activity/'
-# test_list_path = './data/splits/testing.txt'
-# train_list_path = './data/splits/training.txt'  # only used for onsets evaluation to get the classification threshold
 prediction_length = 60  # (60 is 3 seconds of prediction)
-data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard
+data_set_select = 0  # 0 for maptask, 1 for mahnob, 2 for switchboard in Roddy code, always using 0 in this file
 p_memory = True
 train_batch_size = 128
 
@@ -157,8 +155,8 @@ def load_model(pickled_model, args_dict, test_data):
     return model
 
 
-def load_test_set(args_dict, test_list_path, test_on_g=True, test_on_f=True):
-    test_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir_test, test_list_path,
+def load_test_set(args_dict, test_list_path, test_annotations_path, test_on_g=True, test_on_f=True):
+    test_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], test_annotations_path, test_list_path,
                                          args_dict['sequence_length'], prediction_length, 'test',
                                          data_select=data_set_select, test_on_f=test_on_f, test_on_g=test_on_g)
 
@@ -168,9 +166,9 @@ def load_test_set(args_dict, test_list_path, test_on_g=True, test_on_f=True):
     return test_dataset, test_dataloader
 
 
-def load_training_set(args_dict, train_list_path, train_on_f=True, train_on_g=True):
+def load_training_set(args_dict, train_list_path, train_annotations_path, train_on_f=True, train_on_g=True):
     """needed to get the threshold value for prediction at onsets"""
-    train_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], annotations_dir_train, train_list_path,
+    train_dataset = TurnPredictionDataset(args_dict['feature_dict_list'], train_annotations_path, train_list_path,
                                           args_dict['sequence_length'], prediction_length, 'train',
                                           data_select=data_set_select, train_on_f=train_on_f, train_on_g=train_on_g)
     train_dataloader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=False, num_workers=0,
@@ -469,10 +467,14 @@ def get_test_set_name(f, g):
         return 'test_on_g'
 
 
-def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_on_g=True, trained_on_f=True,
-                            onset_prediction_frames=[0, 60], report_dict_name=None,
-                            train_list_path='./data/splits/testing.txt', test_list_path='./data/splits/training.txt'):
+def test_on_existing_models(trial_path, test_data_dir=None, train_data_dir=None, test_on_g=True, test_on_f=True, trained_on_g=True, trained_on_f=True,
+                            onset_prediction_frames=[0, 60], report_dict_name=None):
     test_path = f'{trial_path}/test'
+
+    test_annotations_dir = f'./{test_data_dir}/extracted_annotations/voice_activity/'
+    train_annotations_dir = f'./{train_data_dir}/extracted_annotations/voice_activity/'
+    train_list_path = f'./{train_data_dir}/splits/testing.txt'
+    test_list_path = f'./{test_data_dir}/splits/testing.txt'
     # Loop through all the trained models in this trial path
     results_dicts = []
     for directory in os.listdir(test_path):
@@ -493,12 +495,13 @@ def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_
 
         # load settings, model, data and create directories for results
         args = load_args(settings_path)
-        test_set, test_loader = load_test_set(args, test_list_path, test_on_g=test_on_g, test_on_f=test_on_f)
+        test_set, test_loader = load_test_set(args, test_list_path, test_annotations_dir, test_on_g=test_on_g,
+                                              test_on_f=test_on_f)
         model = load_model(model_path, args, test_set)
         os.makedirs(results_path)
 
         # use training set to get threshold for onset evaluation
-        train_set, train_loader = load_training_set(args, train_list_path, train_on_g=trained_on_g,
+        train_set, train_loader = load_training_set(args, train_list_path, train_annotations_dir, train_on_g=trained_on_g,
                                                     train_on_f=trained_on_f)  # needs to be how model was originally trained
 
         train_results_dict = get_train_results_dict(model, train_set, train_loader, train_list_path)
@@ -541,10 +544,10 @@ def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_
 
 if __name__ == "__main__":
     # to run on initial models:
-    trial_path = './no_subnets/2_Acous_10ms'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
+    # trial_path = './no_subnets/2_Acous_10ms'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
 
     # trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
@@ -561,25 +564,25 @@ if __name__ == "__main__":
     # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
 
-    trial_path = './f_and_g_no_subnets/5_Ling_50ms_ftrain'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
-
-    trial_path = './f_and_g_no_subnets/6_Ling_50ms_gtrain'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
-
-    trial_path = './f_and_g_two_subnets/1_Acous_10ms_Ling_50ms_ftrain'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
-
-    trial_path = './f_and_g_two_subnets/2_Acous_10ms_Ling_50ms_gtrain'
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
-    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
+    # trial_path = './f_and_g_no_subnets/5_Ling_50ms_ftrain'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
+    #
+    # trial_path = './f_and_g_no_subnets/6_Ling_50ms_gtrain'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
+    #
+    # trial_path = './f_and_g_two_subnets/1_Acous_10ms_Ling_50ms_ftrain'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
+    #
+    # trial_path = './f_and_g_two_subnets/2_Acous_10ms_Ling_50ms_gtrain'
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
+    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
 
 # #to get results with different onset prediction times: TODO: add report_dict_name to prevent saving over previous results
 #     onset_prediction_length = [None, None]  # default is [0, 60] (60 frames is 3 seconds)
@@ -655,13 +658,18 @@ if __name__ == "__main__":
 #     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
 #                             test_list_path="./data/splits/testing_both.txt")
 #
-#     trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
-#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
-#                             test_list_path="./data/splits/testing_maptask.txt")
-#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
-#                             test_list_path="./data/splits/testing_switchboard.txt")
-#     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
-#                             test_list_path="./data/splits/testing_both.txt")
+    train_data = 'data'
+    test_data = 'maptask_data'
+
+    trial_path = './no_subnets/3_Ling_50ms'
+    test_on_existing_models(trial_path, test_data_dir=test_data, train_data_dir=train_data,
+                            test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
+                            test_list_path="./maptask_data/splits/testing.txt")
+    trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
+    test_on_existing_models(trial_path, test_data_dir=test_data, train_data_dir=train_data,
+                            test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
+                            test_list_path="./maptask_data/splits/testing.txt")
+
 #
 #     trial_path = './no_subnets/3_Ling_50ms'
 #     test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',

@@ -397,6 +397,8 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
         results_save['fp_' + onset_str_list[0]].append(fp)
         results_save['fn_' + onset_str_list[0]].append(fn)
         results_save['tp_' + onset_str_list[0]].append(tp)
+        results_save['onset_thresh' + onset_str_list[0]].append(onset_thresh)
+
 
     # get prediction at overlap f-scores
     if prediction_at_overlap_flag:
@@ -448,8 +450,6 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
 
         results_save['test_losses'].append(loss_weighted_mean)
         results_save['test_losses_l1'].append(loss_weighted_mean_l1)
-        #    results_save['test_losses_mse'].append(loss_weighted_mean_mse)
-
         indiv_perf = {'bar_chart_labels': bar_chart_labels,
                       'bar_chart_vals': bar_chart_vals}
         results_save['indiv_perf'].append(indiv_perf)
@@ -523,8 +523,8 @@ def test_on_existing_models(trial_path, test_data_dir=None, train_data_dir=None,
 
         # combine metrics across trials
         eval_metric_list = ['f_scores_50ms', 'f_scores_250ms', 'f_scores_500ms', 'f_scores_overlap_hold_shift',
-                            'f_scores_overlap_hold_shift_exclusive', 'f_scores_short_long', 'train_losses',
-                            'test_losses', 'test_losses_l1']
+                            'f_scores_overlap_hold_shift_exclusive', 'f_scores_short_long', 'onset_threshold_short_long',
+                            'train_losses', 'test_losses', 'test_losses_l1']
         combined_results = {}
         for metric in eval_metric_list:
             combined_results[metric] = []

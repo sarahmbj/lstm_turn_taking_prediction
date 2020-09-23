@@ -475,7 +475,7 @@ def test_on_existing_models(trial_path, test_data_dir=None, train_data_dir=None,
 
     test_annotations_dir = f'./{test_data_dir}/extracted_annotations/voice_activity/'
     train_annotations_dir = f'./{train_data_dir}/extracted_annotations/voice_activity/'
-    train_list_path = f'./{train_data_dir}/splits/testing.txt'
+    train_list_path = f'./{train_data_dir}/splits/training.txt'
     test_list_path = f'./{test_data_dir}/splits/testing.txt'
     # Loop through all the trained models in this trial path
     results_dicts = []
@@ -661,7 +661,7 @@ if __name__ == "__main__":
 #                             test_list_path="./data/splits/testing_both.txt")
 #
     train_data = 'data'
-    test_data = 'data'
+    test_data = 'switchboard_data'
 
     trial_path = './no_subnets/3_Ling_50ms'
     test_on_existing_models(trial_path, test_data_dir=test_data, train_data_dir=train_data,

@@ -40,17 +40,15 @@ def get_train_results_dict(model, train_dataset, train_dataloader, train_list_pa
     print('Use CUDA: ' + str(use_cuda))
     if use_cuda:
         dtype = torch.cuda.FloatTensor
-        dtype_long = torch.cuda.LongTensor
     else:
         dtype = torch.FloatTensor
-        dtype_long = torch.LongTensor
 
     model.eval()
     train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
     train_results_dict = dict()
     train_results_lengths = train_dataset.get_results_lengths()
     for file_name in train_file_list:
-        for g_f in ['g','f']:
+        for g_f in ['g', 'f']:
             # create new arrays for the onset results (the continuous predictions)
             train_results_dict[file_name + '/' + g_f] = np.zeros(
                 [train_results_lengths[file_name], prediction_length])
@@ -72,18 +70,10 @@ def get_train_results_dict(model, train_dataset, train_dataloader, train_list_pa
         info = batch[5]
         model_output_logits = model(model_input)
 
-        # loss = loss_func_BCE_Logit(model_output_logits,y)
-        # loss_list.append(loss.cpu().data.numpy())
-        # loss.backward()
-        # if grad_clip_bool:
-        #     clip_grad_norm(model.parameters(), grad_clip)
-        # for opt in optimizer_list:
-        #     opt.step()
         file_name_list = info['file_names']
         gf_name_list = info['g_f']
         time_index_list = info['time_indices']
         train_batch_length = y.shape[1]
-        #                model_output = torch.transpose(model_output,0,1)
         model_output = torch.transpose(model_output_logits, 0, 1)
         for file_name, g_f_indx, time_indices, batch_indx in zip(file_name_list,
                                                                  gf_name_list,
@@ -202,7 +192,7 @@ def plot_person_error(name_list, data, results_path, results_key='barchart'):
 
 
 def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset, onset_test_flag=True,
-         onset_test_length=[0,60], prediction_at_overlap_flag=True, error_per_person_flag=True,
+         onset_test_length=[0, 60], prediction_at_overlap_flag=True, error_per_person_flag=True,
          test_list_path=None, train_list_path=None):
     losses_test = list()
     results_dict = dict()
@@ -228,10 +218,8 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
     print('Use CUDA: ' + str(use_cuda))
     if use_cuda:
         dtype = torch.cuda.FloatTensor
-        dtype_long = torch.cuda.LongTensor
     else:
         dtype = torch.FloatTensor
-        dtype_long = torch.LongTensor
 
     # initialise loss functions
     loss_func_L1 = nn.L1Loss()
@@ -249,7 +237,6 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
                         1: ['c1', 'c2'],
                         2: ['A', 'B']}
     for file_name in test_file_list:
-        #        for g_f in ['g','f']:
         for g_f in data_select_dict[data_set_select]:
             # create new arrays for the results
             results_dict[file_name + '/' + g_f] = np.zeros([results_lengths[file_name], prediction_length])
@@ -318,7 +305,6 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
     # get weighted mean
     loss_weighted_mean = np.sum(np.array(batch_sizes) * np.squeeze(np.array(losses_test))) / np.sum(batch_sizes)
     loss_weighted_mean_l1 = np.sum(np.array(batch_sizes) * np.squeeze(np.array(losses_l1))) / np.sum(batch_sizes)
-    #    loss_weighted_mean_mse = np.sum( np.array(batch_sizes)*np.squeeze(np.array(losses_mse))) / np.sum( batch_sizes )
 
     for conv_key in test_file_list:
 
@@ -343,7 +329,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
                     # make sure the index is not out of bounds
                     if frame_indx < len(results_dict[conv_key + '/' + g_f_key]):
                         true_vals.append(true_val)
-                        if np.sum( # using model outputs to decide a prediction of hold or shift
+                        if np.sum(  # using model outputs to decide a prediction of hold or shift
                                 results_dict[conv_key + '/' + g_f_key][frame_indx, 0:length_of_future_window]) > np.sum(
                                 results_dict[conv_key + '/' + g_f_key_not[0]][frame_indx, 0:length_of_future_window]):
                             predicted_class.append(0)
@@ -413,7 +399,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
         if not(len(true_vals_onset) == 0):
             tn, fp, fn, tp = confusion_matrix(true_vals_onset, predicted_class_onset).ravel()
         else:
-            tn,fp,fn,tp, = 0,0,0,0
+            tn, fp, fn, tp, = 0, 0, 0, 0
         results_save['tn_' + onset_str_list[0]].append(tn)
         results_save['fp_' + onset_str_list[0]].append(fp)
         results_save['fn_' + onset_str_list[0]].append(fn)

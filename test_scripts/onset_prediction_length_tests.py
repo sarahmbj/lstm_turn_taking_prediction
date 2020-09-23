@@ -1,4 +1,4 @@
-from test_on_existing_model import test_on_existing_models
+from .. import test_on_existing_model as t
 
 # can run on maptask and switchboard
 # remove acous only tests to make a version to run on unk
@@ -7,102 +7,102 @@ from test_on_existing_model import test_on_existing_models
 #to get results with different onset prediction times:
 onset_prediction_length = [0, 21]  # default is [0, 60] (60 frames is 3 seconds)
 trial_path = './no_subnets/2_Acous_10ms'
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_20_both_roles')
-test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_20_test_on_g')
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_20_test_on_f')
 
 trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_20_test_on_both_roles')
-test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_20_test_on_g')
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_20_test_on_f')
 
 trial_path = './no_subnets/3_Ling_50ms'
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_20_test_on_both_roles')
-test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_20_test_on_g')
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_20_test_on_f')
 
 onset_prediction_length = [20, 41]  # default is [0, 60] (60 frames is 3 seconds)
 trial_path = './no_subnets/2_Acous_10ms'
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_20_40_test_on_both_roles')
-test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_20_40_test_on_g')
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_20_40_test_on_f')
 
 trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_20_40_test_on_both_roles')
-test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_20_40_test_on_bg')
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_20_40_test_on_f')
 
 trial_path = './no_subnets/3_Ling_50ms'
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_20_40_test_on_both_roles')
-test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_20_40_test_on_g')
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_20_40_test_on_f')
 
 onset_prediction_length = [40, 61]  # default is [0, 60] (60 frames is 3 seconds)
 trial_path = './no_subnets/2_Acous_10ms'
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_40_60_test_on_both_roles')
-test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_40_60_test_on_g')
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_40_60_test_on_f')
 
 trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_40_60_test_on_both_roles')
-test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_40_60_test_on_g')
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_40_60_test_on_f')
 
 trial_path = './no_subnets/3_Ling_50ms'
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_40_60_test_on_both_roles')
-test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_40_60_test_on_g')
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_40_60_test_on_f')
 
 onset_prediction_length = [0, 41]  # default is [0, 60] (60 frames is 3 seconds)
 trial_path = './no_subnets/2_Acous_10ms'
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_40_test_on_both_roles')
-test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_40_test_on_g')
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_40_test_on_f')
 
 trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_40_test_on_both_roles')
-test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_40_test_on_g')
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_40_test_on_f')
 
 trial_path = './no_subnets/3_Ling_50ms'
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_40_test_on_both_roles')
-test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_40_test_on_g')
-test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
+t.test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, onset_prediction_frames=onset_prediction_length,
                         report_dict_name='onset_0_40_test_on_f')
 
 # trial_path = './f_and_g_no_subnets/3_Acous_10ms_ftrain'

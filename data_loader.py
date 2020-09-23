@@ -378,7 +378,6 @@ class TurnPredictionDataset(Dataset):
             self.feature_size = 0
 
             for filename, conv_indx_i in zip(self.file_list, range(len(self.file_list))):
-                print(f'********{filename}**********')
                 #                data_f_pd = pd.DataFrame()
                 #                data_g_pd = pd.DataFrame()
                 data_f = {'acous': {'x': {}, 'x_i': {}},
@@ -411,7 +410,6 @@ class TurnPredictionDataset(Dataset):
                             'uses_master_time_rate']
 
                     if not (feature_dict['is_h5_file']):
-                        print("INSIDE NOT H5")
                         data_f_path = feature_dict['folder_path'] + '/' + filename + '.' + data_select_dict[data_select][
                                 0] + '.csv'
                         data_f_path = data_f_path.replace("//", "/")

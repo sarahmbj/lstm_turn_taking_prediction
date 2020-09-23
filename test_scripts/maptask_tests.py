@@ -1,0 +1,53 @@
+from test_on_existing_model import test_on_existing_models
+
+# These tests can be run on the models trained on maptask and switchboard, this includes models trained on one role only
+    # can also run on models trained on the combined data - will fail when it gets to individual roles, as I have not
+    # trained these models
+
+# models trained on both
+trial_path = './no_subnets/2_Acous_10ms'
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
+
+trial_path = './no_subnets/3_Ling_50ms'
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
+
+trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
+
+# models trained on f only
+trial_path = './f_and_g_no_subnets/3_Acous_10ms_ftrain'
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
+test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
+
+trial_path = './f_and_g_no_subnets/5_Ling_50ms_ftrain'
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
+test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
+
+trial_path = './f_and_g_two_subnets/1_Acous_10ms_Ling_50ms_ftrain'
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
+test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
+
+# models trained on g only
+trial_path = './f_and_g_no_subnets/3_Acous_10ms_ftrain'
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=True, trained_on_g=False)
+test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=True, trained_on_g=False)
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=True, trained_on_g=False)
+
+trial_path = './f_and_g_no_subnets/6_Ling_50ms_gtrain'
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
+test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)
+
+trial_path = './f_and_g_two_subnets/2_Acous_10ms_Ling_50ms_gtrain'
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, trained_on_f=False, trained_on_g=True)
+test_on_existing_models(trial_path, test_on_f=False, test_on_g=True, trained_on_f=False, trained_on_g=True)
+test_on_existing_models(trial_path, test_on_f=True, test_on_g=False, trained_on_f=False, trained_on_g=True)

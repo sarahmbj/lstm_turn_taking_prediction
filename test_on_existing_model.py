@@ -17,7 +17,6 @@ import pickle
 import shutil
 import matplotlib.pyplot as plt
 
-
 num_layers = 1
 annotations_dir_train = './data/extracted_annotations/voice_activity/'
 annotations_dir_test = './data/extracted_annotations/voice_activity/'
@@ -58,7 +57,7 @@ def get_train_results_dict(model, train_dataset, train_dataloader, train_list_pa
         # b should be of form: (x,x_i,v,v_i,y,info)
         model_input = []
 
-        for b_i, bat in enumerate(batch): #b_i is each item in the batch i.e. a frame
+        for b_i, bat in enumerate(batch):  # b_i is each item in the batch i.e. a frame
             if len(bat) == 0:
                 model_input.append(bat)
             elif (b_i == 1) or (b_i == 3):
@@ -129,7 +128,6 @@ def load_evaluation_data():
 
 
 def load_model(pickled_model, args_dict, test_data):
-
     lstm_settings_dict = {  # this works because these variables are set in locals from json_dict
         'no_subnets': args_dict['no_subnets'],
         'hidden_dims': {
@@ -280,7 +278,6 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
         y_test = y_test.permute(2, 0, 1)
         loss_no_reduce = loss_func_L1_no_reduce(out_test, y_test.transpose(0, 1))
 
-
         out_test_list.append(out_test)
         y_test_list.extend(y_test)
 
@@ -288,7 +285,6 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
                                                                  gf_name_list,
                                                                  time_index_list,
                                                                  range(batch_length)):
-
             results_dict[file_name + '/' + g_f_indx][time_indices[0]:time_indices[1]] = out_test[
                 batch_indx].data.cpu().numpy()
             losses_dict[file_name + '/' + g_f_indx][time_indices[0]:time_indices[1]] = loss_no_reduce[
@@ -307,7 +303,6 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
     loss_weighted_mean_l1 = np.sum(np.array(batch_sizes) * np.squeeze(np.array(losses_l1))) / np.sum(batch_sizes)
 
     for conv_key in test_file_list:
-
         results_dict[conv_key + '/' + data_select_dict[data_set_select][1]] = np.array(
             results_dict[conv_key + '/' + data_select_dict[data_set_select][1]]).reshape(-1, prediction_length)
         results_dict[conv_key + '/' + data_select_dict[data_set_select][0]] = np.array(
@@ -331,13 +326,13 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
                         true_vals.append(true_val)
                         if np.sum(  # using model outputs to decide a prediction of hold or shift
                                 results_dict[conv_key + '/' + g_f_key][frame_indx, 0:length_of_future_window]) > np.sum(
-                                results_dict[conv_key + '/' + g_f_key_not[0]][frame_indx, 0:length_of_future_window]):
+                            results_dict[conv_key + '/' + g_f_key_not[0]][frame_indx, 0:length_of_future_window]):
                             predicted_class.append(0)
                         else:
                             predicted_class.append(1)
         f_score = f1_score(true_vals, predicted_class, average='weighted')
         results_save['f_scores_' + pause_str].append(f_score)
-        tn, fp, fn, tp = confusion_matrix(true_vals, predicted_class).ravel() # true negative, false positive etc.
+        tn, fp, fn, tp = confusion_matrix(true_vals, predicted_class).ravel()  # true negative, false positive etc.
         results_save['tn_' + pause_str].append(tn)
         results_save['fp_' + pause_str].append(fp)
         results_save['fn_' + pause_str].append(fn)
@@ -346,7 +341,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
             f1_score(true_vals, np.zeros([len(predicted_class)]).tolist(), average='weighted')))
     # get prediction at onset f-scores
     # first get best threshold from training data
-    g_f_keys = [] #only do this on the speaker role(s) that are in the training set
+    g_f_keys = []  # only do this on the speaker role(s) that are in the training set
     if train_dataset.train_on_g: g_f_keys.append('g')
     if test_dataset.train_on_f: g_f_keys.append('f')
     train_file_list = list(pd.read_csv(train_list_path, header=None, dtype=str)[0])
@@ -365,7 +360,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
                         vals_to_average_train = train_results_dict[conv_key + '/' + g_f_key][frame_indx, :]
                         onset_train_mean_vals.append(
                             np.mean(vals_to_average_train[onset_test_length[0]:onset_test_length[1]]))
-        if not(len(onset_train_true_vals) == 0):
+        if not (len(onset_train_true_vals) == 0):
             fpr, tpr, thresholds = roc_curve(np.array(onset_train_true_vals), np.array(onset_train_mean_vals))
         else:
             fpr, tpr, thresholds = 0, 0, [0]
@@ -382,7 +377,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
                 for frame_indx, true_val in onsets['short_long' + '/' + conv_key + '/' + g_f_key]:
                     # make sure the index is not out of bounds
                     if (frame_indx < len(results_dict[conv_key + '/' + g_f_key])) and not (
-                    np.isnan(np.mean(results_dict[conv_key + '/' + g_f_key][frame_indx, :]))):
+                            np.isnan(np.mean(results_dict[conv_key + '/' + g_f_key][frame_indx, :]))):
                         true_vals_onset.append(true_val)
                         vals_to_average_test = results_dict[conv_key + '/' + g_f_key][frame_indx, :]
                         onset_mean = np.mean(vals_to_average_test[onset_test_length[0]:onset_test_length[1]])
@@ -396,7 +391,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
         print('majority vote f-score:' + str(
             f1_score(true_vals_onset, np.zeros([len(true_vals_onset), ]).tolist(), average='weighted')))
         results_save['f_scores_' + onset_str_list[0]].append(f_score)
-        if not(len(true_vals_onset) == 0):
+        if not (len(true_vals_onset) == 0):
             tn, fp, fn, tp = confusion_matrix(true_vals_onset, predicted_class_onset).ravel()
         else:
             tn, fp, fn, tp, = 0, 0, 0, 0
@@ -540,14 +535,16 @@ def test_on_existing_models(trial_path, test_on_g=True, test_on_f=True, trained_
         combined_results['means'] = averaged_results
         pprint(combined_results)
 
-        json.dump(combined_results, open(trial_path + f'/report_dict_{test_set_name}.json', 'w'), indent=4, sort_keys=True)
+        json.dump(combined_results, open(trial_path + f'/report_dict_{test_set_name}.json', 'w'), indent=4,
+                  sort_keys=True)
+
 
 if __name__ == "__main__":
- # to run on initial models:
- #    trial_path = './no_subnets/2_Acous_10ms'
- #    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
- #    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
- #    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
+    # to run on initial models:
+    trial_path = './no_subnets/2_Acous_10ms'
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
+    test_on_existing_models(trial_path, test_on_f=False, test_on_g=True)
+    test_on_existing_models(trial_path, test_on_f=True, test_on_g=False)
 
     # trial_path = './two_subnets/2_Acous_10ms_Ling_50ms'
     # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True)
@@ -686,27 +683,27 @@ if __name__ == "__main__":
 #                             test_list_path="./data/splits/testing_both.txt",
 #                             train_list_path="./data/splits/training_maptask.txt")
 
-    # trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/dev/no_subnets/3_Ling_50ms'
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
-    #                         test_list_path="./data/splits/testing_maptask.txt",
-    #                         train_list_path="./data/splits/training_maptask.txt")
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
-    #                         test_list_path="./data/splits/testing_switchboard.txt",
-    #                         train_list_path="./data/splits/training_maptask.txt")
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
-    #                         test_list_path="./data/splits/testing_both.txt",
-    #                         train_list_path="./data/splits/training_maptask.txt")
-    #
-    # trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/dev/two_subnets/2_Acous_10ms_Ling_50ms'
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
-    #                         test_list_path="./data/splits/testing_maptask.txt",
-    #                         train_list_path="./data/splits/training_maptask.txt")
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
-    #                         test_list_path="./data/splits/testing_switchboard.txt",
-    #                         train_list_path="./data/splits/training_maptask.txt")
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
-    #                         test_list_path="./data/splits/testing_both.txt",
-    #                         train_list_path="./data/splits/training_maptask.txt")
+# trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/dev/no_subnets/3_Ling_50ms'
+# test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
+#                         test_list_path="./data/splits/testing_maptask.txt",
+#                         train_list_path="./data/splits/training_maptask.txt")
+# test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
+#                         test_list_path="./data/splits/testing_switchboard.txt",
+#                         train_list_path="./data/splits/training_maptask.txt")
+# test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
+#                         test_list_path="./data/splits/testing_both.txt",
+#                         train_list_path="./data/splits/training_maptask.txt")
+#
+# trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/dev/two_subnets/2_Acous_10ms_Ling_50ms'
+# test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
+#                         test_list_path="./data/splits/testing_maptask.txt",
+#                         train_list_path="./data/splits/training_maptask.txt")
+# test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
+#                         test_list_path="./data/splits/testing_switchboard.txt",
+#                         train_list_path="./data/splits/training_maptask.txt")
+# test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
+#                         test_list_path="./data/splits/testing_both.txt",
+#                         train_list_path="./data/splits/training_maptask.txt")
 
 
 # to test models trained on Switchboard, on different datasets
@@ -721,24 +718,24 @@ if __name__ == "__main__":
 #                             test_list_path="./data/splits/testing_both.txt",
 #                             train_list_path="./data/splits/training_switchboard.txt")
 
-    # trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/switchboard_dev/two_subnets/2_Acous_10ms_Ling_50ms'
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
-    #                         test_list_path="./data/splits/testing_maptask.txt",
-    #                         train_list_path="./data/splits/training_switchboard.txt")
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
-    #                         test_list_path="./data/splits/testing_switchboard.txt",
-    #                         train_list_path="./data/splits/training_switchboard.txt")
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
-    #                         test_list_path="./data/splits/testing_both.txt",
-    #                         train_list_path="./data/splits/training_switchboard.txt")
-    #
-    # trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/switchboard_dev/no_subnets/3_Ling_50ms'
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
-    #                         test_list_path="./data/splits/testing_maptask.txt",
-    #                         train_list_path="./data/splits/training_switchboard.txt")
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
-    #                         test_list_path="./data/splits/testing_switchboard.txt",
-    #                         train_list_path="./data/splits/training_switchboard.txt")
-    # test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
-    #                         test_list_path="./data/splits/testing_both.txt",
-    #                         train_list_path="./data/splits/training_switchboard.txt")
+# trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/switchboard_dev/two_subnets/2_Acous_10ms_Ling_50ms'
+# test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
+#                         test_list_path="./data/splits/testing_maptask.txt",
+#                         train_list_path="./data/splits/training_switchboard.txt")
+# test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
+#                         test_list_path="./data/splits/testing_switchboard.txt",
+#                         train_list_path="./data/splits/training_switchboard.txt")
+# test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
+#                         test_list_path="./data/splits/testing_both.txt",
+#                         train_list_path="./data/splits/training_switchboard.txt")
+#
+# trial_path = '/group/project/cstr1/mscslp/2019-20/s0910315_Sarah_Burne_James/switchboard_dev/no_subnets/3_Ling_50ms'
+# test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_maptask',
+#                         test_list_path="./data/splits/testing_maptask.txt",
+#                         train_list_path="./data/splits/training_switchboard.txt")
+# test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_switchboard',
+#                         test_list_path="./data/splits/testing_switchboard.txt",
+#                         train_list_path="./data/splits/training_switchboard.txt")
+# test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, report_dict_name='test_on_both_datasets',
+#                         test_list_path="./data/splits/testing_both.txt",
+#                         train_list_path="./data/splits/training_switchboard.txt")

@@ -99,7 +99,7 @@ def load_args(args_path):
     return args_dict
 
 
-def load_evaluation_data():
+def load_evaluation_data(test_data_dir):
     if 'hold_shift' in locals():
         if isinstance(hold_shift, h5py.File):  # Just HDF5 files
             try:
@@ -192,7 +192,7 @@ def plot_person_error(name_list, data, results_path, results_key='barchart'):
 
 def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset, onset_test_flag=True,
          onset_test_length=[0, 60], prediction_at_overlap_flag=True, error_per_person_flag=True,
-         test_list_path=None, train_list_path=None):
+         test_list_path=None, train_list_path=None, test_data_dir='data'):
     losses_test = list()
     results_dict = dict()
     losses_dict = dict()
@@ -516,7 +516,7 @@ def test_on_existing_models(trial_path, test_data_dir=None, train_data_dir=None,
         model.eval()
         test_results = test(model, test_set, test_loader, train_results_dict, train_set,
                             onset_test_length=onset_prediction_frames,
-                            train_list_path=train_list_path, test_list_path=test_list_path)
+                            train_list_path=train_list_path, test_list_path=test_list_path, test_data_dir=test_data_dir)
         with open(results_path + '/results.txt', 'w') as file:
             file.write(str(test_results))
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))

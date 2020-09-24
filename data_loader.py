@@ -448,8 +448,9 @@ class TurnPredictionDataset(Dataset):
                     #                        self.uses_master_time_rate_bool[feature_dict['modality']] = feature_dict['uses_master_time_rate']
                     #                        self.is_irregular[feature_dict['modality']] = feature_dict['is_irregular']
                     else:
-
-                        h_data = h5py.File(feature_dict['folder_path'], 'r')
+                        folder_path = feature_dict['folder_path']
+                        folder_path = folder_path.replace("data", data_dir)
+                        h_data = h5py.File(folder_path, 'r')
                         for feature_name in feature_dict['features']:
                             data_f[feature_dict['modality']]['x'][feature_name] = h_data[
                                 filename + '/' + data_select_dict[data_select][0] + '/x/' + feature_name]

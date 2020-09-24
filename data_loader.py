@@ -449,9 +449,7 @@ class TurnPredictionDataset(Dataset):
                     #                        self.is_irregular[feature_dict['modality']] = feature_dict['is_irregular']
                     else:
                         folder_path = feature_dict['folder_path']
-                        print(folder_path)
                         folder_path = folder_path.replace("/data/", f"/{data_dir}/")
-                        print(folder_path)
                         h_data = h5py.File(folder_path, 'r')
                         for feature_name in feature_dict['features']:
                             data_f[feature_dict['modality']]['x'][feature_name] = h_data[

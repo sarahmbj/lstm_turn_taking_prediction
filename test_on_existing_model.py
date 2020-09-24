@@ -119,9 +119,9 @@ def load_evaluation_data(test_data_dir):
             except:
                 pass  # Was already closed
 
-    hold_shift = h5py.File('./data/datasets/hold_shift.hdf5', 'r')
-    onsets = h5py.File('./data/datasets/onsets.hdf5', 'r')
-    overlaps = h5py.File('./data/datasets/overlaps.hdf5', 'r')
+    hold_shift = h5py.File(f'./{test_data_dir}/datasets/hold_shift.hdf5', 'r')
+    onsets = h5py.File(f'./{test_data_dir}/datasets/onsets.hdf5', 'r')
+    overlaps = h5py.File(f'./{test_data_dir}/datasets/overlaps.hdf5', 'r')
 
     return hold_shift, onsets, overlaps
 
@@ -310,7 +310,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
         results_dict[conv_key + '/' + data_select_dict[data_set_select][0]] = np.array(
             results_dict[conv_key + '/' + data_select_dict[data_set_select][0]]).reshape(-1, prediction_length)
 
-    hold_shift, onsets, overlaps = load_evaluation_data()
+    hold_shift, onsets, overlaps = load_evaluation_data(test_data_dir)
 
     # get hold-shift f-scores
     length_of_future_window = 20  # (1 second)

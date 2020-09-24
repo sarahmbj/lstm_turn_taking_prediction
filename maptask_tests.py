@@ -1,8 +1,7 @@
 from test_on_existing_model import test_on_existing_models
 
-# These tests can be run on the models trained on maptask and switchboard, this includes models trained on one role only
-    # can also run on models trained on the combined data - will fail when it gets to individual roles, as I have not
-    # trained these models
+# These tests can be run on the models trained on maptask, this includes models trained on one role only
+
 
 train_data = 'data'
 test_data = 'data'

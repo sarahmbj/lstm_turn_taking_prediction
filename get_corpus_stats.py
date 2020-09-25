@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 
 base_path = './data/extracted_annotations/voice_activity/'
 conversations_list = sys.argv[1]  # complete, testing or training
@@ -17,11 +18,11 @@ for file in files_to_include:
     with open(base_path + file, "r") as f:
         last_line = f.readlines()[-1]
         print(file)
-        print(last_line.split(",")[0])
-        quit()
-        # get frame number of last line, append to file lengths
+        file_length = float(last_line.split(",")[0])
+        file_lengths.append(file_length)
 
-# get sum of file lengths
-# get mean of file lengths
+print(sum(file_lengths))
+print(np.mean(file_lengths))
+
 
 

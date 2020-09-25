@@ -21,8 +21,8 @@ for file in files_to_include:
         file_length = float(last_line.split(",")[0])
         file_lengths.append(file_length)
 
-print(sum(file_lengths))
-print(np.mean(file_lengths))
+print(sum(file_lengths)/60000)
+print(np.mean(file_lengths)/60000)
 
 
 

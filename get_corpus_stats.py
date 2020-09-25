@@ -23,6 +23,8 @@ for file in files_to_include:
 
 print(sum(file_lengths)/60)
 print(np.mean(file_lengths)/60)
-
+print(min(file_lengths)/60)
+print(max(file_lengths)/60)
+print(np.std(file_lengths)/60)
 
 

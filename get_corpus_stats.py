@@ -1,3 +1,5 @@
+import sys
+
 base_path = './data/extracted_annotations/voice_activity/'
 conversations_list = sys.argv[1]  # complete, testing or training
 conversations_list_file = f'.data/splits/{conversations_list}.txt'

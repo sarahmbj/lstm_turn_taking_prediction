@@ -20,10 +20,11 @@ for file in files_to_include:
         file_length = float(last_line.split(",")[0])
         file_lengths.append(file_length)
 
-print(sum(file_lengths)/60)
-print(np.mean(file_lengths)/60)
-print(min(file_lengths)/60)
-print(max(file_lengths)/60)
-print(np.std(file_lengths)/60)
+print(f"Data set is: {conversations_list}")
+print(f"Total length (mins): {sum(file_lengths)/60}")
+print(f"Mean per conversation: {np.mean(file_lengths)/60}")
+print(f"Min conv length: {min(file_lengths)/60}")
+print(f"Max conv length: {max(file_lengths)/60}")
+print(f"Stand dev: {np.std(file_lengths)/60}")
 
 

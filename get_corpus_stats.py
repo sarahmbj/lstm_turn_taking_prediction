@@ -17,7 +17,6 @@ file_lengths = []
 for file in files_to_include:
     with open(base_path + file, "r") as f:
         last_line = f.readlines()[-1]
-        print(file)
         file_length = float(last_line.split(",")[0])
         file_lengths.append(file_length)
 

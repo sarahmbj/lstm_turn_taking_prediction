@@ -17,7 +17,7 @@ for file in files_to_include:
     with open(base_path + file, "r") as f:
         last_line = f.readlines()[-1]
         print(file)
-        print(last_line)
+        print(last_line.split(",")[0])
         quit()
         # get frame number of last line, append to file lengths
 

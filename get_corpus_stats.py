@@ -14,7 +14,7 @@ with open(conversations_list_file, "r") as file:
 #loop through every conversation in the set (f or g, it doesnt matter)
 file_lengths = []
 for file in files_to_include:
-    with open(file, "r") as f:
+    with open(base_path + file, "r") as f:
         last_line = f.readlines()[-1]
         print(file)
         print(last_line)

@@ -1,6 +1,5 @@
 from test_on_existing_model import test_on_existing_models
 
-# removed acous only tests to make a version to run on unk
 # removed role tests to make a version to run on combined data set
 
 train_data = 'data'

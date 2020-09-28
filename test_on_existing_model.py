@@ -472,7 +472,7 @@ def get_test_set_name(f, g):
         return 'test_on_g'
 
 
-def test_on_existing_models(trial_path, test_data_dir=None, train_data_dir=None, test_on_g=True, test_on_f=True, trained_on_g=True, trained_on_f=True,
+def test_on_existing_models(trial_path, test_data_dir='data', train_data_dir='data', test_on_g=True, test_on_f=True, trained_on_g=True, trained_on_f=True,
                             onset_prediction_frames=[0, 60], report_dict_name=None):
     test_path = f'{trial_path}/test'
 

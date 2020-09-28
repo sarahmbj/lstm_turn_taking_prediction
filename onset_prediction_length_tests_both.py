@@ -1,8 +1,7 @@
 from test_on_existing_model import test_on_existing_models
 
-# can run on maptask and switchboard
-# remove acous only tests to make a version to run on unk
-# remove role tests to make a version to run on combined data set
+# removed acous only tests to make a version to run on unk
+# removed role tests to make a version to run on combined data set
 
 train_data = 'data'
 test_data = 'data'

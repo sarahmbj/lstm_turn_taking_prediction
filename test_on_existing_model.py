@@ -311,7 +311,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
             results_dict[conv_key + '/' + data_select_dict[data_set_select][0]]).reshape(-1, prediction_length)
 
     hold_shift, onsets, overlaps = load_evaluation_data(test_data_dir)
-    train_hold_shift, train_onsets, train_overlaps = load_evaluation_data(train_data_dir)
+    _, train_onsets, _ = load_evaluation_data(train_data_dir)
 
     # get hold-shift f-scores
     length_of_future_window = 20  # (1 second)
@@ -352,9 +352,9 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
         onset_train_true_vals = list()
         onset_train_mean_vals = list()
         onset_threshs = []
-        for conv_key in list(set(train_file_list).intersection(onsets['short_long'].keys())):
+        for conv_key in list(set(train_file_list).intersection(train_onsets['short_long'].keys())):
             for g_f_key in g_f_keys:
-                for frame_indx, true_val in onsets['short_long' + '/' + conv_key + '/' + g_f_key]:
+                for frame_indx, true_val in train_onsets['short_long' + '/' + conv_key + '/' + g_f_key]:
                     # make sure the index is not out of bounds
 
                     if (frame_indx < len(train_results_dict[conv_key + '/' + g_f_key])) and not (

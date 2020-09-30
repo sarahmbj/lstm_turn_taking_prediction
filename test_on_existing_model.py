@@ -192,7 +192,7 @@ def plot_person_error(name_list, data, results_path, results_key='barchart'):
 
 def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset, onset_test_flag=True,
          onset_test_length=[0, 60], prediction_at_overlap_flag=True, error_per_person_flag=True,
-         test_list_path=None, train_list_path=None, test_data_dir='data'):
+         test_list_path=None, train_list_path=None, test_data_dir='data', train_data_dir=None):
     losses_test = list()
     results_dict = dict()
     losses_dict = dict()
@@ -311,6 +311,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
             results_dict[conv_key + '/' + data_select_dict[data_set_select][0]]).reshape(-1, prediction_length)
 
     hold_shift, onsets, overlaps = load_evaluation_data(test_data_dir)
+    train_hold_shift, train_onsets, train_overlaps = load_evaluation_data(train_data_dir)
 
     # get hold-shift f-scores
     length_of_future_window = 20  # (1 second)
@@ -363,8 +364,10 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
                         onset_train_mean_vals.append(
                             np.mean(vals_to_average_train[onset_test_length[0]:onset_test_length[1]]))
         if not (len(onset_train_true_vals) == 0):
+            print("I'M IN THE IF NOT STATEMENT YAYYYYYYYY")  # TODO: delete line
             fpr, tpr, thresholds = roc_curve(np.array(onset_train_true_vals), np.array(onset_train_mean_vals))
         else:
+            print("I'M IN THE ELSE STATEMENT NOOOOOOOOO")  # TODO: delete line
             fpr, tpr, thresholds = 0, 0, [0]
         thresh_indx = np.argmax(tpr - fpr)
         onset_thresh = thresholds[thresh_indx]
@@ -374,7 +377,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
         if test_dataset.test_on_g == True: g_f_keys.append('g')
         if test_dataset.test_on_f == True: g_f_keys.append('f')
         true_vals_onset, onset_test_mean_vals, predicted_class_onset = [], [], []
-        for conv_key in list(set(test_file_list).intersection(onsets['short_long'].keys())):
+        for conv_key in list(et(test_file_list).intersection(onsets['short_long'].keys())):
             for g_f_key in g_f_keys:
                 for frame_indx, true_val in onsets['short_long' + '/' + conv_key + '/' + g_f_key]:
                     # make sure the index is not out of bounds
@@ -516,7 +519,8 @@ def test_on_existing_models(trial_path, test_data_dir='data', train_data_dir='da
         model.eval()
         test_results = test(model, test_set, test_loader, train_results_dict, train_set,
                             onset_test_length=onset_prediction_frames,
-                            train_list_path=train_list_path, test_list_path=test_list_path, test_data_dir=test_data_dir)
+                            train_list_path=train_list_path, test_list_path=test_list_path, test_data_dir=test_data_dir,
+                            train_data_dir=train_data_dir)
         with open(results_path + '/results.txt', 'w') as file:
             file.write(str(test_results))
         pickle.dump(test_results, open(results_path + '/results.p', 'wb'))

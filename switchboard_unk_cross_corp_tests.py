@@ -5,7 +5,7 @@ from test_on_existing_model import test_on_existing_models
 # still to run
 
 
-train_data = 'data'
+train_data = 'data' #TODO: why is onset thresh 0.0?
 test_data = 'maptask_data'
 trial_path = './no_subnets/2_Acous_10ms'
 test_on_existing_models(trial_path, test_on_f=True, test_on_g=True, test_data_dir=test_data, train_data_dir=train_data,

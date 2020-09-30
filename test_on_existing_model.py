@@ -364,10 +364,8 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
                         onset_train_mean_vals.append(
                             np.mean(vals_to_average_train[onset_test_length[0]:onset_test_length[1]]))
         if not (len(onset_train_true_vals) == 0):
-            print("I'M IN THE IF NOT STATEMENT YAYYYYYYYY")  # TODO: delete line
             fpr, tpr, thresholds = roc_curve(np.array(onset_train_true_vals), np.array(onset_train_mean_vals))
         else:
-            print("I'M IN THE ELSE STATEMENT NOOOOOOOOO")  # TODO: delete line
             fpr, tpr, thresholds = 0, 0, [0]
         thresh_indx = np.argmax(tpr - fpr)
         onset_thresh = thresholds[thresh_indx]

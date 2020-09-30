@@ -263,6 +263,8 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
         else:
             model.change_batch_size_no_reset(batch_length)
 
+        print(type(model_input))
+        print(model_input.shape)
         out_test = model(model_input)
         out_test = torch.transpose(out_test, 0, 1)
 

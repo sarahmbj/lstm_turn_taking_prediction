@@ -211,6 +211,7 @@ class LSTMPredictor(nn.Module):
     def embedding_helper(self, in_data, modality):
         embeds_one = []
         embeds_two = []
+        print(modality)
         print(type(in_data))
         print(in_data.shape)
         # print(self.embedding_indices[modality][0][0][0])

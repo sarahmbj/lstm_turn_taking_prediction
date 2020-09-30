@@ -377,7 +377,7 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
         if test_dataset.test_on_g == True: g_f_keys.append('g')
         if test_dataset.test_on_f == True: g_f_keys.append('f')
         true_vals_onset, onset_test_mean_vals, predicted_class_onset = [], [], []
-        for conv_key in list(et(test_file_list).intersection(onsets['short_long'].keys())):
+        for conv_key in list(set(test_file_list).intersection(onsets['short_long'].keys())):
             for g_f_key in g_f_keys:
                 for frame_indx, true_val in onsets['short_long' + '/' + conv_key + '/' + g_f_key]:
                     # make sure the index is not out of bounds

@@ -74,7 +74,7 @@ set_dict, glove_embed_dict_50ms = {}, {}
 for indx, glove_combination in enumerate(total_set):
     set_dict[glove_combination] = indx+1
 
-set_dict[set([0])] = 0
+set_dict[frozenset([0])] = 0
 
 # get new word_reg annotations for new embedding dict
 for i in range(0, len(files_feature_list)):
@@ -85,15 +85,15 @@ for i in range(0, len(files_feature_list)):
     word_annotations = np.zeros(frame_times.shape)
     indices = list(set(np.nonzero(np.array(orig_file[orig_file.columns[1:]]))[0]))
     for indx in indices:
-        word_annotations[indx] = set_dict[set(np.array(orig_file[orig_file.columns[1:]])[indx])]
+        word_annotations[indx] = set_dict[frozenset(np.array(orig_file[orig_file.columns[1:]])[indx])]
     output = pd.DataFrame(np.vstack([frame_times, word_annotations]).transpose())
     output.columns = ['frameTimes', 'word']
     output.to_csv(path_to_extracted_annotations + files_output_list[i], float_format='%.6f', sep=',', index=False,
                   header=True)
 
 pickle.dump(set_dict, open(output_set_dict, 'wb'))
-json.dump(set_dict, open(f'./{dataset}/extracted_annotations/output_dict_averaged_annotations_{speed_string}.json',
-                         'w'), indent=4)
+# json.dump(set_dict, open(f'./{dataset}/extracted_annotations/output_dict_averaged_annotations_{speed_string}.json',
+#                          'w'), indent=4)
 
 print('total_time: ' + str(t.time()-t_1))
 

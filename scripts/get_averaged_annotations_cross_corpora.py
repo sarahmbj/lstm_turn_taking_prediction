@@ -75,7 +75,7 @@ total_set = set(total_list)
 set_dict = pickle.load(open(set_dict_path, 'rb'))
 # load in word_to_ix from training data to get the index of --unk--
 word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb'))
-unk_index = float(word_to_ix['--unk--'])
+unk_index = word_to_ix['--unk--']
 
 print('set dict len: ', len(set_dict))
 print('word to ix len: ', len(word_to_ix))
@@ -97,6 +97,7 @@ for i in range(0, len(files_feature_list)):
             word_annotations[indx] = set_dict[frozenset(np.array(orig_file[orig_file.columns[1:]])[indx])]
         except KeyError:
                 key_error_count += 1
+                print(frozenset(np.array(orig_file[orig_file.columns[1:]])[indx]))
                 word_annotations[indx] = set_dict[frozenset(unk_index)]
 
     output = pd.DataFrame(np.vstack([frame_times, word_annotations]).transpose())

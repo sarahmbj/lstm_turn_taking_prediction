@@ -98,7 +98,7 @@ for i in range(0, len(files_feature_list)):
         except KeyError:
                 key_error_count += 1
                 print(frozenset(np.array(orig_file[orig_file.columns[1:]])[indx]))
-                word_annotations[indx] = set_dict[frozenset(unk_index)]
+                word_annotations[indx] = set_dict[frozenset([unk_index])]
 
     output = pd.DataFrame(np.vstack([frame_times, word_annotations]).transpose())
     output.columns = ['frameTimes', 'word']

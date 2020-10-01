@@ -82,6 +82,9 @@ print('word to ix len: ', len(word_to_ix))
 print("unk index: ", unk_index)
 
 # get new word_reg annotations for new embedding dict
+total_lookups = 0
+successful_lookup_count = 0
+key_error_count = 0
 for i in range(0, len(files_feature_list)):
 
     print('percent done files create:' + str(i/len(files_feature_list))[0:4])
@@ -91,9 +94,7 @@ for i in range(0, len(files_feature_list)):
     # 'indices' is all the frame times with a non-zero annotation (i.e. there is a word there)
     indices = list(set(np.nonzero(np.array(orig_file[orig_file.columns[1:]]))[0]))
     # for all frame times where there are words, add the token index from the new set dict
-    total_lookups = 0
-    successful_lookup_count = 0
-    key_error_count = 0
+
     for indx in indices:  # deal with unknown words TODO
         total_lookups += 1
         try:

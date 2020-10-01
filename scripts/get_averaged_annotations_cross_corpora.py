@@ -75,7 +75,7 @@ total_set = set(total_list)
 set_dict = pickle.load(open(set_dict_path, 'rb'))
 # load in word_to_ix from training data to get the index of --unk--
 word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb'))
-unk_index = word_to_ix['--unk--']
+unk_index = float(word_to_ix['--unk--'])
 
 print('set dict len: ', len(set_dict))
 print('word to ix len: ', len(word_to_ix))

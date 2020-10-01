@@ -77,17 +77,19 @@ print('set dict len: ', len(set_dict))
 word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb'))
 print('word to ix len: ', len(word_to_ix))
 quit()
-# deal with unknown words TODO
+
 
 # get new word_reg annotations for new embedding dict
 for i in range(0, len(files_feature_list)):
 
     print('percent done files create:' + str(i/len(files_feature_list))[0:4])
-    orig_file = pd.read_csv(path_to_orig_embeds+files_feature_list[i], delimiter=',')
+    orig_file = pd.read_csv(path_to_orig_embeds + files_feature_list[i], delimiter=',')
     frame_times = orig_file['frameTimes']
     word_annotations = np.zeros(frame_times.shape)
+    # 'indices' is all the frame times with a non-zero annotation (i.e. there is a word there)
     indices = list(set(np.nonzero(np.array(orig_file[orig_file.columns[1:]]))[0]))
-    for indx in indices:
+    # for all frame times where there are words, add the token index from the new set dict
+    for indx in indices: # deal with unknown words TODO
         word_annotations[indx] = set_dict[frozenset(np.array(orig_file[orig_file.columns[1:]])[indx])]
     output = pd.DataFrame(np.vstack([frame_times, word_annotations]).transpose())
     output.columns = ['frameTimes', 'word']

@@ -12,7 +12,7 @@ Averaged word embeddings are the async word representations collected at the end
 Averaging is done for each time interval (10ms/50ms) so the words can be input to the LSTMs along with other features being 
 measured at those intervals (i.e. acoustic features)."""
 
-dataset = "maptask_data"  # the cross corpus test set that is being prepared (training data will be in ./data/)
+dataset = "both_data"  # the cross corpus test set that is being prepared (training data will be in ./data/)
 
 # select settings for 50ms (0) or 10ms (1) features
 # takes 1.5 mins for 50ms, 3 mins for 10ms setting

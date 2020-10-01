@@ -91,7 +91,5 @@ for i in range(0, len(files_feature_list)):
                   header=True)
 
 pickle.dump(set_dict, open(output_set_dict, 'wb'))
-json.dump(set_dict, open(f'./{dataset}/extracted_annotations/output_dict_averaged_annotations.json', 'w'), indent=4)
-
 print('total_time: ' + str(t.time()-t_1))
 

@@ -12,7 +12,7 @@ Averaged word embeddings are the async word representations collected at the end
 Averaging is done for each time interval (10ms/50ms) so the words can be input to the LSTMs along with other features being 
 measured at those intervals (i.e. acoustic features)."""
 
-dataset = "switchboard_data"  # the cross corpus test set that is being prepared
+dataset = "switchboard_data"  # the cross corpus test set that is being prepared (training data will be in ./data/)
 
 # select settings for 50ms (0) or 10ms (1) features
 # takes 1.5 mins for 50ms, 3 mins for 10ms setting
@@ -71,7 +71,7 @@ total_set = set(total_list)
 # set_dict[frozenset([0])] = 0
 
 # load in the set dict created for the training data TODO
-set_dict = pickle.load(set_dict_path, 'rb')
+set_dict = pickle.load(set_dict_path)
 print('set dict len: ', len(set_dict))
 # load in word_to_ix from training data to get the index of --unk-- TODO
 word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb'))

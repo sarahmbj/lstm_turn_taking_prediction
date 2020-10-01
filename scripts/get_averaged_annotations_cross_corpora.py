@@ -71,7 +71,7 @@ total_set = set(total_list)
 # set_dict[frozenset([0])] = 0
 
 # load in the set dict created for the training data TODO
-set_dict = pickle.load(set_dict_path)
+set_dict = pickle.load(open(set_dict_path), 'rb')
 print('set dict len: ', len(set_dict))
 # load in word_to_ix from training data to get the index of --unk-- TODO
 word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb'))

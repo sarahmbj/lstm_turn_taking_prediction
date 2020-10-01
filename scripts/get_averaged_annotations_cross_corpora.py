@@ -48,7 +48,7 @@ for file in files_feature_list:
 word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb'))
 # glove_embed_table = pickle.load(open('./extracted_annotations/glove_embed_table.p','rb'))
 
-# Create delayed frame annotations
+# Create delayed frame annotations #DO WE NEED THIS IN THE CROSS CORP CASE?
 max_len = 0
 total_list = []
 for i in range(0, len(files_feature_list)):
@@ -63,11 +63,15 @@ for i in range(0, len(files_feature_list)):
 total_set = set(total_list)
 
 # create new averaged glove embedding dict (can maybe try different approaches apart from averaging in future)
-set_dict, glove_embed_dict_50ms = {}, {}
-for indx, glove_combination in enumerate(total_set):
-    set_dict[glove_combination] = indx+1
+# set_dict, glove_embed_dict_50ms = {}, {}
+# for indx, glove_combination in enumerate(total_set):
+#     set_dict[glove_combination] = indx+1
+#
+# set_dict[frozenset([0])] = 0
 
-set_dict[frozenset([0])] = 0
+# load in the set dict created for the training data TODO
+# load in word_to_ix to get the index of --unk--
+# deal with unkmown words
 
 # get new word_reg annotations for new embedding dict
 for i in range(0, len(files_feature_list)):

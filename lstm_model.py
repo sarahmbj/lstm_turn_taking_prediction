@@ -211,15 +211,6 @@ class LSTMPredictor(nn.Module):
     def embedding_helper(self, in_data, modality):
         embeds_one = []
         embeds_two = []
-        print(modality)
-        print(type(in_data))
-        print(in_data.shape)
-        # print(self.embedding_indices[modality][0][0][0])
-        # print(self.embedding_indices[modality][0][0][1])
-        # print('len self.embeddings[modality]',len(self.embeddings[modality]))
-        # print('type self.embeddings[modality]',type(self.embeddings[modality]))
-        print("***",self.embedding_indices[modality][0])
-        print("***", type(self.embedding_indices[modality][0]))
 
         for emb_func_indx in range(len(self.embeddings[modality])):
             # debug1 = self.embeddings[modality][emb_func_indx](
@@ -230,9 +221,6 @@ class LSTMPredictor(nn.Module):
             debug2 = in_data[:, :, self.embedding_indices[modality][emb_func_indx][0][0]:
                                        self.embedding_indices[modality][emb_func_indx][0][1]] \
                          .data.type(self.embed_data_types[modality][emb_func_indx]).squeeze(dim=2)
-            print(debug2.shape)
-            print(debug2)
-            print(torch.max(debug2))
 
             embeds_one_tmp = self.embeddings[modality][emb_func_indx](
                 Variable(in_data[:, :, self.embedding_indices[modality][emb_func_indx][0][0]:

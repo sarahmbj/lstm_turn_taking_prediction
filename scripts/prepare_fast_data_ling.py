@@ -22,7 +22,7 @@ import sys
 num_workers = 4
 data_select = 0
 
-dataset = "switchboard_data"  # default should be "data" - change if doing cross-corpora tests
+dataset = "maptask_data"  # default should be "data" - change if doing cross-corpora tests
 
 # %% Settings
 if len(sys.argv) == 2:

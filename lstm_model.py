@@ -231,6 +231,8 @@ class LSTMPredictor(nn.Module):
                                        self.embedding_indices[modality][emb_func_indx][0][1]] \
                          .data.type(self.embed_data_types[modality][emb_func_indx]).squeeze(dim=2)
             print(debug2.shape)
+            print(debug2)
+            print(torch.max(debug2))
 
             embeds_one_tmp = self.embeddings[modality][emb_func_indx](
                 Variable(in_data[:, :, self.embedding_indices[modality][emb_func_indx][0][0]:

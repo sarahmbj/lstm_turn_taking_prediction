@@ -73,9 +73,9 @@ total_set = set(total_list)
 
 # load in the set dict created for the training data
 set_dict = pickle.load(open(set_dict_path, 'rb'))
-# load in word_to_ix from training data to get the index of --unk-- TODO
+# load in word_to_ix from training data to get the index of --unk--
 word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb'))
-unk_index = word_to_ix['--unk--']
+unk_index = float(word_to_ix['--unk--'])
 
 print('set dict len: ', len(set_dict))
 print('word to ix len: ', len(word_to_ix))
@@ -91,12 +91,19 @@ for i in range(0, len(files_feature_list)):
     # 'indices' is all the frame times with a non-zero annotation (i.e. there is a word there)
     indices = list(set(np.nonzero(np.array(orig_file[orig_file.columns[1:]]))[0]))
     # for all frame times where there are words, add the token index from the new set dict
-    for indx in indices: # deal with unknown words TODO
-        word_annotations[indx] = set_dict[frozenset(np.array(orig_file[orig_file.columns[1:]])[indx])]
+    key_error_count = 0
+    for indx in indices:  # deal with unknown words TODO
+        try:
+            word_annotations[indx] = set_dict[frozenset(np.array(orig_file[orig_file.columns[1:]])[indx])]
+        except KeyError:
+                key_error_count += 1
+                word_annotations[indx] = set_dict[frozenset(unk_index)]
+
     output = pd.DataFrame(np.vstack([frame_times, word_annotations]).transpose())
     output.columns = ['frameTimes', 'word']
     output.to_csv(path_to_extracted_annotations + files_output_list[i], float_format='%.6f', sep=',', index=False,
                   header=True)
 
+print('key error count: ', key_error_count)
 print('total_time: ' + str(t.time()-t_1))
 

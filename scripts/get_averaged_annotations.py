@@ -33,6 +33,7 @@ elif speed_setting == 1:
     path_to_extracted_annotations = f'./{dataset}/extracted_annotations/words_advanced_10ms_averaged/'
     output_set_dict = f'./{dataset}/extracted_annotations/set_dict_10ms.p'
 
+t_1 = t.time()
 
 if not(os.path.exists(path_to_extracted_annotations)):
     os.mkdir(path_to_extracted_annotations)

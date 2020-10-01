@@ -12,7 +12,7 @@ Averaged word embeddings are the async word representations collected at the end
 Averaging is done for each time interval (10ms/50ms) so the words can be input to the LSTMs along with other features being 
 measured at those intervals (i.e. acoustic features)."""
 
-dataset = "switchboard_data"  # default should be "data" - change if processing data for cross-corpora tests
+dataset = "switchboard_data"  # the cross corpus test set that is being prepared
 
 # select settings for 50ms (0) or 10ms (1) features
 # takes 1.5 mins for 50ms, 3 mins for 10ms setting
@@ -25,14 +25,15 @@ if speed_setting == 0:
     path_to_features = f'./{dataset}/signals/gemaps_features_processed_50ms/znormalized/'
     path_to_orig_embeds = f'./{dataset}/extracted_annotations/words_advanced_50ms_raw/'
     path_to_extracted_annotations = f'./{dataset}/extracted_annotations/words_advanced_50ms_averaged/'
-    output_set_dict = f'./{dataset}/extracted_annotations/set_dict_50ms.p'
+    set_dict_path = f'./data/extracted_annotations/set_dict_50ms.p'  # training data set dict
 
 elif speed_setting == 1:
     path_to_features = f'./{dataset}/signals/gemaps_features_processed_10ms/znormalized/'
     path_to_orig_embeds = f'./{dataset}/extracted_annotations/words_advanced_10ms_raw/'
     path_to_extracted_annotations = f'./{dataset}/extracted_annotations/words_advanced_10ms_averaged/'
-    output_set_dict = f'./{dataset}/extracted_annotations/set_dict_10ms.p'
+    set_dict_path = f'./data/extracted_annotations/set_dict_10ms.p'  # training data set dict
 
+t_1 = t.time()
 
 if not(os.path.exists(path_to_extracted_annotations)):
     os.mkdir(path_to_extracted_annotations)
@@ -70,8 +71,13 @@ total_set = set(total_list)
 # set_dict[frozenset([0])] = 0
 
 # load in the set dict created for the training data TODO
-# load in word_to_ix to get the index of --unk--
-# deal with unkmown words
+set_dict = pickle.load(set_dict_path, 'rb')
+print('set dict len: ', len(set_dict))
+# load in word_to_ix from training data to get the index of --unk-- TODO
+word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb'))
+print('word to ix len: ', len(word_to_ix))
+quit()
+# deal with unknown words TODO
 
 # get new word_reg annotations for new embedding dict
 for i in range(0, len(files_feature_list)):
@@ -88,6 +94,5 @@ for i in range(0, len(files_feature_list)):
     output.to_csv(path_to_extracted_annotations + files_output_list[i], float_format='%.6f', sep=',', index=False,
                   header=True)
 
-pickle.dump(set_dict, open(output_set_dict, 'wb'))
 print('total_time: ' + str(t.time()-t_1))
 

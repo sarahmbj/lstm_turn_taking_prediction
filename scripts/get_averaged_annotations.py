@@ -67,7 +67,7 @@ for i in range(0, len(files_feature_list)):
     local_set = [set(i) for i in combins]
     total_list.extend(local_set)
 
-total_set = frozenset(total_list)  # frozenset is just an immutable set
+total_set = set(total_list)
 
 # create new averaged glove embedding dict (can maybe try different approaches apart from averaging in future)
 set_dict, glove_embed_dict_50ms = {}, {}

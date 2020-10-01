@@ -91,9 +91,11 @@ for i in range(0, len(files_feature_list)):
     # 'indices' is all the frame times with a non-zero annotation (i.e. there is a word there)
     indices = list(set(np.nonzero(np.array(orig_file[orig_file.columns[1:]]))[0]))
     # for all frame times where there are words, add the token index from the new set dict
+    total_lookups = 0
     successful_lookup_count = 0
     key_error_count = 0
     for indx in indices:  # deal with unknown words TODO
+        total_lookups += 1
         try:
             word_annotations[indx] = set_dict[frozenset(np.array(orig_file[orig_file.columns[1:]])[indx])]
             successful_lookup_count += 1
@@ -106,6 +108,7 @@ for i in range(0, len(files_feature_list)):
     output.to_csv(path_to_extracted_annotations + files_output_list[i], float_format='%.6f', sep=',', index=False,
                   header=True)
 
+print('total lookups: ', total_lookups)
 print('successful lookup count: ', successful_lookup_count)
 print('key error count: ', key_error_count)
 print('total_time: ' + str(t.time()-t_1))

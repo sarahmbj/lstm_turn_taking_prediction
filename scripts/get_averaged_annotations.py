@@ -78,7 +78,7 @@ set_dict[frozenset([0])] = 0
 # get new word_reg annotations for new embedding dict
 for i in range(0, len(files_feature_list)):
 
-    print('percent done files create:'+str(i/len(files_feature_list))[0:4])
+    print('percent done files create:' + str(i/len(files_feature_list))[0:4])
     orig_file = pd.read_csv(path_to_orig_embeds+files_feature_list[i], delimiter=',')
     frame_times = orig_file['frameTimes']
     word_annotations = np.zeros(frame_times.shape)

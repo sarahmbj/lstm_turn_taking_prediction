@@ -35,6 +35,14 @@ elif speed_setting == 1:
 
 t_1 = t.time()
 
+# load in the set dict created for the training data TODO
+set_dict = pickle.load(open(set_dict_path, 'rb'))
+print('set dict len: ', len(set_dict))
+# load in word_to_ix from training data to get the index of --unk-- TODO
+word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb'))
+print('word to ix len: ', len(word_to_ix))
+quit()
+
 if not(os.path.exists(path_to_extracted_annotations)):
     os.mkdir(path_to_extracted_annotations)
 
@@ -70,13 +78,7 @@ total_set = set(total_list)
 #
 # set_dict[frozenset([0])] = 0
 
-# load in the set dict created for the training data TODO
-set_dict = pickle.load(open(set_dict_path), 'rb')
-print('set dict len: ', len(set_dict))
-# load in word_to_ix from training data to get the index of --unk-- TODO
-word_to_ix = pickle.load(open('./data/extracted_annotations/word_to_ix.p', 'rb'))
-print('word to ix len: ', len(word_to_ix))
-quit()
+# TODO load set_dict in here instead?
 
 
 # get new word_reg annotations for new embedding dict

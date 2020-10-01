@@ -55,7 +55,7 @@ class LSTMPredictor(nn.Module):
 
         # embedding settings
         self.embedding_info = embedding_info
-        print("embedding info", embedding info)
+        print("embedding info", embedding_info)
         quit()
         self.embeddings = {'acous': [], 'visual': []}
         self.embedding_indices = {'acous': [], 'visual': []}

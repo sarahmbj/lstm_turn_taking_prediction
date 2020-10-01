@@ -243,11 +243,9 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
             losses_dict[file_name + '/' + g_f] = np.zeros([results_lengths[file_name], prediction_length])
 
     for batch_indx, batch in enumerate(test_dataloader):
-        print(type(batch), '|||||||')
         model_input = []
 
         for b_i, bat in enumerate(batch):
-            print(type(bat), '//////')
             if len(bat) == 0:
                 model_input.append(bat)
             elif (b_i == 1) or (b_i == 3):
@@ -265,7 +263,6 @@ def test(model, test_dataset, test_dataloader, train_results_dict, train_dataset
             model.change_batch_size_no_reset(batch_length)
 
 
-        print(len(model_input))
         out_test = model(model_input)
         out_test = torch.transpose(out_test, 0, 1)
 

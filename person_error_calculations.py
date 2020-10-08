@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import os
 
 
-def plot_person_error(name_list, data, results_path, architecture, results_key='barchart',f_mean=None, g_mean=None,
+def plot_person_error(name_list, data, results_path, architecture, results_key='barchart', f_mean=None, g_mean=None,
                       colour_list=None):
     y_pos = np.arange(len(name_list))
     plt.figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
@@ -20,7 +20,7 @@ def plot_person_error(name_list, data, results_path, architecture, results_key='
     if f_mean:
         plt.axvline(x=f_mean, color='black', linestyle=":", label="f mean")
     if g_mean:
-        plt.axvline(x=g_mean, color='black', linestyle="--", label = "g mean")
+        plt.axvline(x=g_mean, color='black', linestyle="--", label="g mean")
         plt.legend(["f_mean", "g_mean"])
     plt.savefig(results_path + '/' + results_key + '.pdf')
 
@@ -42,10 +42,10 @@ def plot_mean_person_error(test_directory, architecture):
             individual_results = results['indiv_perf'][0]['bar_chart_vals']
             # pprint(individual_results)
             for speaker in range(len(individual_labels)):
-                ########## note that A = g, B = f ###########
-                if individual_labels[speaker][0] == 's': #change switchboard labels back to a and b
-                    individual_labels[speaker].replace('_g', '_a')
-                    individual_labels[speaker].replace('_f', '_b')
+                # ########## note that A = g, B = f ###########
+                # if individual_labels[speaker][0] == 's':
+                #     individual_labels[speaker].replace('_g', '_a')
+                #     individual_labels[speaker].replace('_f', '_b')
 
                 individual_results_dict[individual_labels[speaker]].append(individual_results[speaker])
 
@@ -64,12 +64,21 @@ def plot_mean_person_error(test_directory, architecture):
     f_results_list = []
 
     for key in mean_results_dict.keys():
+        if key[0] == 's':
+            if key[-1] == 'f': #change switchboard labels back to a and b
+                f_values.append(mean_results_dict[key])
+                modified_key = key[0:-1] + 'b'
+                f_results_list.append((modified_key, mean_results_dict[key]))
+            if key[-1] == 'g':
+                g_values.append(mean_results_dict[key])
+                modified_key = key[0:-1] + 'a'
+                g_results_list.append((modified_key, mean_results_dict[key]))
         if key[-1] == 'f':
-            g_values.append(mean_results_dict[key])
-            g_results_list.append((key, mean_results_dict[key]))
-        if key[-1] == 'g':
             f_values.append(mean_results_dict[key])
             f_results_list.append((key, mean_results_dict[key]))
+        if key[-1] == 'g':
+            g_values.append(mean_results_dict[key])
+            g_results_list.append((key, mean_results_dict[key]))
 
     g_colourlist = ["blue"] * len(g_results_list)
     f_colourlist = ["green"] * len(f_results_list)

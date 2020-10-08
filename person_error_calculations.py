@@ -86,7 +86,7 @@ def plot_mean_person_error(test_directory, architecture):
 if __name__ == '__main__':
     #train on both no subnets models
     for architecture in ["2_Acous_10ms", "3_Ling_50ms"]:
-        file_path = f"no_subnets/{architecture}/test_on_both"
+        file_path = f"no_subnets/{architecture}/test"
         try:
             os.remove(f"{file_path}/mean_person_error.pdf")
         except FileNotFoundError:
@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
     #train on both two subnets models
     for architecture in ["2_Acous_10ms_Ling_50ms"]:
-        file_path = f"two_subnets/{architecture}/test_on_both"
+        file_path = f"two_subnets/{architecture}/test"
         try:
             os.remove(f"{file_path}/mean_person_error.pdf")
         except FileNotFoundError:

@@ -88,6 +88,7 @@ def plot_mean_person_error(test_directory, architecture):
 
     mean_results_list = g_results_list + f_results_list
     # mean_results_list = sorted(mean_results_dict.items())
+    pprint(mean_results_list)
     bar_chart_labels, bar_chart_vals = map(list, zip(*mean_results_list))
     # bar_chart_labels.extend(["f mean", "g mean"])
     # bar_chart_vals.extend([f_mean, g_mean])

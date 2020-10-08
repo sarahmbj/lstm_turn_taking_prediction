@@ -1,6 +1,6 @@
 import pickle
-from pprint import pprint
 from glob import glob
+from pprint import pprint
 from collections import defaultdict
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,7 +10,7 @@ import os
 def plot_person_error(name_list, data, results_path, architecture, results_key='barchart', f_mean=None, g_mean=None,
                       colour_list=None):
     y_pos = np.arange(len(name_list))
-    plt.figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
+    plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     plt.xlim(0, 2)
     plt.barh(y_pos, data, align='center', alpha=0.5, color=colour_list)
     plt.yticks(y_pos, name_list, fontsize=5)
@@ -18,12 +18,11 @@ def plot_person_error(name_list, data, results_path, architecture, results_key='
     plt.xticks(fontsize=7)
     plt.title(f'Individual Error - {architecture[2:]}')
     ########## note that A = g, B = f ###########
-    if f_mean:
-        plt.axvline(x=f_mean, color='black', linestyle=":", label="b mean")
     if g_mean:
         plt.axvline(x=g_mean, color='black', linestyle="--", label="a mean")
-        plt.legend(["b mean", "a mean"])
-    print(f"Attempting to save {architecture}")
+    if f_mean:
+        plt.axvline(x=f_mean, color='black', linestyle=":", label="b mean")
+        plt.legend(["a mean", "b mean"])
     plt.savefig(results_path + '/' + results_key + '.pdf')
 
 
@@ -88,10 +87,7 @@ def plot_mean_person_error(test_directory, architecture):
 
     mean_results_list = g_results_list + f_results_list
     # mean_results_list = sorted(mean_results_dict.items())
-    pprint(mean_results_list)
     bar_chart_labels, bar_chart_vals = map(list, zip(*mean_results_list))
-    # bar_chart_labels.extend(["f mean", "g mean"])
-    # bar_chart_vals.extend([f_mean, g_mean])
 
     plot_person_error(bar_chart_labels, bar_chart_vals, test_directory, architecture, results_key='mean_person_error',
                       f_mean=f_mean, g_mean=g_mean, colour_list=colourlist)
@@ -100,12 +96,10 @@ def plot_mean_person_error(test_directory, architecture):
 if __name__ == '__main__':
     #train on both no subnets models
     for architecture in ["2_Acous_10ms", "3_Ling_50ms"]:
-        print(architecture)
         file_path = f"no_subnets/{architecture}/test"
         try:
             os.remove(f"{file_path}/mean_person_error.pdf")
         except FileNotFoundError:
-            print(f"{file_path} didn't have a mean_person_error.pdf")
             pass
         plot_mean_person_error(file_path, architecture)
 
@@ -118,20 +112,20 @@ if __name__ == '__main__':
             pass
         plot_mean_person_error(file_path, architecture)
 
-    # #f and g two subnets models
-    # for architecture in ["1_Acous_10ms_Ling_50ms_ftrain", "2_Acous_10ms_Ling_50ms_gtrain"]:
-    #     file_path = f"f_and_g_two_subnets/{architecture}/test_on_both"
-    #     try:
-    #         os.remove(f"{file_path}/mean_person_error.pdf")
-    #     except FileNotFoundError:
-    #         pass
-    #     plot_mean_person_error(file_path, architecture)
-    #
-    # # f and g no subnets models
-    # for architecture in ["3_Acous_10ms_ftrain", "4_Acous_10ms_gtrain", "5_Ling_50ms_ftrain", "6_Ling_50ms_gtrain"]:
-    #     file_path = f"f_and_g_no_subnets/{architecture}/test_on_both"
-    #     try:
-    #         os.remove(f"{file_path}/mean_person_error.pdf")
-    #     except FileNotFoundError:
-    #         pass
-    #     plot_mean_person_error(file_path, architecture)
+    #f and g two subnets models
+    for architecture in ["1_Acous_10ms_Ling_50ms_ftrain", "2_Acous_10ms_Ling_50ms_gtrain"]:
+        file_path = f"f_and_g_two_subnets/{architecture}/test_on_both"
+        try:
+            os.remove(f"{file_path}/mean_person_error.pdf")
+        except FileNotFoundError:
+            pass
+        plot_mean_person_error(file_path, architecture)
+
+    # f and g no subnets models
+    for architecture in ["3_Acous_10ms_ftrain", "4_Acous_10ms_gtrain", "5_Ling_50ms_ftrain", "6_Ling_50ms_gtrain"]:
+        file_path = f"f_and_g_no_subnets/{architecture}/test_on_both"
+        try:
+            os.remove(f"{file_path}/mean_person_error.pdf")
+        except FileNotFoundError:
+            pass
+        plot_mean_person_error(file_path, architecture)

@@ -1,6 +1,6 @@
 import pickle
-from pprint import pprint
 from glob import glob
+from pprint import pprint
 from collections import defaultdict
 import numpy as np
 import matplotlib.pyplot as plt
@@ -34,11 +34,9 @@ def plot_mean_person_error(test_directory, architecture):
     # get error for each speaker, in every model
     individual_results_dict = defaultdict(list)
     for model in results_directory:
-        print(model)
         pickled_results = f"{model}/results.p"
 
         with open(pickled_results, "rb") as results_file:
-            print(pickled_results)
             results = pickle.load(results_file)
             # pprint(results)
             individual_labels = results['indiv_perf'][0]['bar_chart_labels']
@@ -90,8 +88,6 @@ def plot_mean_person_error(test_directory, architecture):
     mean_results_list = g_results_list + f_results_list
     # mean_results_list = sorted(mean_results_dict.items())
     bar_chart_labels, bar_chart_vals = map(list, zip(*mean_results_list))
-    # bar_chart_labels.extend(["f mean", "g mean"])
-    # bar_chart_vals.extend([f_mean, g_mean])
 
     plot_person_error(bar_chart_labels, bar_chart_vals, test_directory, architecture, results_key='mean_person_error',
                       f_mean=f_mean, g_mean=g_mean, colour_list=colourlist)

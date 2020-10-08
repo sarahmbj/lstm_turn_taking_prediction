@@ -98,10 +98,12 @@ def plot_mean_person_error(test_directory, architecture):
 if __name__ == '__main__':
     #train on both no subnets models
     for architecture in ["2_Acous_10ms", "3_Ling_50ms"]:
+        print(architecture)
         file_path = f"no_subnets/{architecture}/test"
         try:
             os.remove(f"{file_path}/mean_person_error.pdf")
         except FileNotFoundError:
+            print(f"{file_path} didn't have a mean_person_error.pdf")
             pass
         plot_mean_person_error(file_path, architecture)
 
@@ -114,20 +116,20 @@ if __name__ == '__main__':
             pass
         plot_mean_person_error(file_path, architecture)
 
-    #f and g two subnets models
-    for architecture in ["1_Acous_10ms_Ling_50ms_ftrain", "2_Acous_10ms_Ling_50ms_gtrain"]:
-        file_path = f"f_and_g_two_subnets/{architecture}/test_on_both"
-        try:
-            os.remove(f"{file_path}/mean_person_error.pdf")
-        except FileNotFoundError:
-            pass
-        plot_mean_person_error(file_path, architecture)
-
-    # f and g no subnets models
-    for architecture in ["3_Acous_10ms_ftrain", "4_Acous_10ms_gtrain", "5_Ling_50ms_ftrain", "6_Ling_50ms_gtrain"]:
-        file_path = f"f_and_g_no_subnets/{architecture}/test_on_both"
-        try:
-            os.remove(f"{file_path}/mean_person_error.pdf")
-        except FileNotFoundError:
-            pass
-        plot_mean_person_error(file_path, architecture)
+    # #f and g two subnets models
+    # for architecture in ["1_Acous_10ms_Ling_50ms_ftrain", "2_Acous_10ms_Ling_50ms_gtrain"]:
+    #     file_path = f"f_and_g_two_subnets/{architecture}/test_on_both"
+    #     try:
+    #         os.remove(f"{file_path}/mean_person_error.pdf")
+    #     except FileNotFoundError:
+    #         pass
+    #     plot_mean_person_error(file_path, architecture)
+    #
+    # # f and g no subnets models
+    # for architecture in ["3_Acous_10ms_ftrain", "4_Acous_10ms_gtrain", "5_Ling_50ms_ftrain", "6_Ling_50ms_gtrain"]:
+    #     file_path = f"f_and_g_no_subnets/{architecture}/test_on_both"
+    #     try:
+    #         os.remove(f"{file_path}/mean_person_error.pdf")
+    #     except FileNotFoundError:
+    #         pass
+    #     plot_mean_person_error(file_path, architecture)

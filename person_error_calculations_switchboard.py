@@ -11,7 +11,7 @@ def plot_person_error(name_list, data, results_path, architecture, results_key='
                       colour_list=None):
     y_pos = np.arange(len(name_list))
     plt.figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
-    plt.xlim(0, 2)
+    plt.xlim(0, 3)
     plt.barh(y_pos, data, align='center', alpha=0.5, color=colour_list)
     plt.yticks(y_pos, name_list, fontsize=5)
     plt.xlabel('mean abs error per time frame', fontsize=7)

@@ -42,6 +42,11 @@ def plot_mean_person_error(test_directory, architecture):
             individual_results = results['indiv_perf'][0]['bar_chart_vals']
             # pprint(individual_results)
             for speaker in range(len(individual_labels)):
+                ########## note that A = g, B = f ###########
+                if speaker[0] == 's': #change switchboard labels back to a and b
+                    speaker.replace('_g', '_a')
+                    speaker.replace('_f', '_b')
+
                 individual_results_dict[individual_labels[speaker]].append(individual_results[speaker])
 
     # pprint(individual_results_dict)

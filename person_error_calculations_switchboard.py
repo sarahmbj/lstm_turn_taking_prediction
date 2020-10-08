@@ -18,11 +18,11 @@ def plot_person_error(name_list, data, results_path, architecture, results_key='
     plt.xticks(fontsize=7)
     plt.title(f'Individual Error - {architecture[2:]}')
     ########## note that A = g, B = f ###########
-    if f_mean:
-        plt.axvline(x=f_mean, color='black', linestyle=":", label="f mean")
     if g_mean:
-        plt.axvline(x=g_mean, color='black', linestyle="--", label="g mean")
-        plt.legend(["f mean", "g mean"])
+        plt.axvline(x=g_mean, color='black', linestyle="--", label="a mean")
+    if f_mean:
+        plt.axvline(x=f_mean, color='black', linestyle=":", label="b mean")
+        plt.legend(["a mean", "b mean"])
     plt.savefig(results_path + '/' + results_key + '.pdf')
 
 

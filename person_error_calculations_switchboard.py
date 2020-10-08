@@ -10,7 +10,7 @@ import os
 def plot_person_error(name_list, data, results_path, architecture, results_key='barchart', f_mean=None, g_mean=None,
                       colour_list=None):
     y_pos = np.arange(len(name_list))
-    plt.figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
+    plt.figure(num=None, figsize=(8, 8), dpi=80, facecolor='w', edgecolor='k')
     plt.xlim(0, 2)
     plt.barh(y_pos, data, align='center', alpha=0.5, color=colour_list)
     plt.yticks(y_pos, name_list, fontsize=5)

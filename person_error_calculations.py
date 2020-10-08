@@ -23,6 +23,7 @@ def plot_person_error(name_list, data, results_path, architecture, results_key='
     if g_mean:
         plt.axvline(x=g_mean, color='black', linestyle="--", label="g mean")
         plt.legend(["f mean", "g mean"])
+    print(f"Attempting to save {architecture}")
     plt.savefig(results_path + '/' + results_key + '.pdf')
 
 

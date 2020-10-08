@@ -73,12 +73,13 @@ def plot_mean_person_error(test_directory, architecture):
                 g_values.append(mean_results_dict[key])
                 modified_key = key[0:-1] + 'a'
                 g_results_list.append((modified_key, mean_results_dict[key]))
-        if key[-1] == 'f':
-            f_values.append(mean_results_dict[key])
-            f_results_list.append((key, mean_results_dict[key]))
-        if key[-1] == 'g':
-            g_values.append(mean_results_dict[key])
-            g_results_list.append((key, mean_results_dict[key]))
+        else:
+            if key[-1] == 'f':
+                f_values.append(mean_results_dict[key])
+                f_results_list.append((key, mean_results_dict[key]))
+            if key[-1] == 'g':
+                g_values.append(mean_results_dict[key])
+                g_results_list.append((key, mean_results_dict[key]))
 
     g_colourlist = ["blue"] * len(g_results_list)
     f_colourlist = ["green"] * len(f_results_list)
